@@ -1,6 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/sagioto/LipReading.png)](http://travis-ci.org/sagioto/LipReading)
-
-LipReading
+LipsReading [![Build Status](https://secure.travis-ci.org/sagioto/LipsReading.png)](http://travis-ci.org/sagioto/LipsReading)
 ==========
 
 ## Goal
