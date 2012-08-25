@@ -8,10 +8,8 @@ The goal of this project is to extract text words from a video input using visua
 ## 
 
 LipsReading is the final project of Ben Gurion University Software Engineering students:
-* ![Sagi Bernstein](https://github.com/sagioto)
-* http://github.com - automatic!
-[GitHub](http://github.com)
-* ![Dor Leitman](https://github.com/dorleitman)
-* ![Dagan Sandler](https://github.com/dagansandler)
+* [Sagi Bernstein](https://github.com/sagioto)
+* [Dor Leitman](https://github.com/dorleitman)
+* [Dagan Sandler](https://github.com/dagansandler)
 
 This project is guided by Dr. Kobi Gal
