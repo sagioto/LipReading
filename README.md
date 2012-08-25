@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/sagioto/LipReading.png)](http://travis-ci.org/sagioto/LipReading)
+
 LipReading
 ==========
 
