@@ -5,4 +5,4 @@ before_install:
  - sudo apt-get install -qq build-essential
  - sudo apt-get install -qq libavformat-dev
  - sudo apt-get install -qq ffmpeg
- - sudo apt-get install -qq libcv2.4 libcvaux2.4 libhighgui2.4 python-opencv opencv-doc libcv-dev libcvaux-dev libhighgui-dev
+ - sudo apt-get install -qq libcv2.1 libcvaux2.1 libhighgui2.1 python-opencv opencv-doc libcv-dev libcvaux-dev libhighgui-dev
