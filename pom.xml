@@ -10,7 +10,7 @@
 	<description>The goal of this project is to extract text words from a video input using visual lips tracking and machine learning techniques.</description>
 	<url>https://github.com/sagioto/LipsReading</url>
 	<inceptionYear>2012</inceptionYear>
-	
+
 	<developers>
 		<developer>
 			<name>Sagi Berstein</name>
@@ -24,10 +24,9 @@
 	</developers>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.build.timestamp.format>yyyyMMddhhmm</maven.build.timestamp.format>
 		<javacpp.version>0.2</javacpp.version>
 		<javacv.version>0.2</javacv.version>
 		<platform.name>${os.name}-${os.arch}</platform.name>
@@ -84,7 +83,37 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.name}-${buildNumber}</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Main-Class>edu.lipsreading.vision.LipsReading</Main-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>true</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -212,5 +241,5 @@
 		<system>Travis</system>
 		<url>http://travis-ci.org/#!/sagioto/LipsReading</url>
 	</ciManagement>
-	
+
 </project>
