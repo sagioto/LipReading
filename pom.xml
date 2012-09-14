@@ -1,0 +1,216 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.lipsreading.vision</groupId>
+	<artifactId>LipsReading</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>LipsReading</name>
+	<description>The goal of this project is to extract text words from a video input using visual lips tracking and machine learning techniques.</description>
+	<url>https://github.com/sagioto/LipsReading</url>
+	<inceptionYear>2012</inceptionYear>
+	
+	<developers>
+		<developer>
+			<name>Sagi Berstein</name>
+		</developer>
+		<developer>
+			<name>Dor Leitman</name>
+		</developer>
+		<developer>
+			<name>Dagan Sandler</name>
+		</developer>
+	</developers>
+
+	<properties>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>yyyyMMddhhmm</maven.build.timestamp.format>
+		<javacpp.version>0.2</javacpp.version>
+		<javacv.version>0.2</javacv.version>
+		<platform.name>${os.name}-${os.arch}</platform.name>
+	</properties>
+
+
+	<repositories>
+		<repository>
+			<id>imagej.releases</id>
+			<url>http://maven.imagej.net/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>javacpp</id>
+			<name>JavaCPP</name>
+			<url>http://maven2.javacpp.googlecode.com/git/</url>
+		</repository>
+		<repository>
+			<id>javacv</id>
+			<name>JavaCV</name>
+			<url>http://maven2.javacv.googlecode.com/git/</url>
+		</repository>
+	</repositories>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>com.googlecode.javacpp</groupId>
+			<artifactId>javacpp</artifactId>
+			<version>${javacpp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<version>${javacv.version}</version>
+			<classifier>${platform.name}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+			<version>1.45s</version>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<!-- Used to determine property <platform.name>${os.name}-${os.arch}</platform.name> -->
+	<profiles>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<name>linux</name>
+				</os>
+			</activation>
+			<properties>
+				<os.name>linux</os.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>macosx</id>
+			<activation>
+				<os>
+					<name>mac os x</name>
+				</os>
+			</activation>
+			<properties>
+				<os.name>macosx</os.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<os.name>windows</os.name>
+			</properties>
+		</profile>
+		<profile>
+			<id>i386</id>
+			<activation>
+				<os>
+					<arch>i386</arch>
+				</os>
+			</activation>
+			<properties>
+				<os.arch>x86</os.arch>
+			</properties>
+		</profile>
+		<profile>
+			<id>i486</id>
+			<activation>
+				<os>
+					<arch>i486</arch>
+				</os>
+			</activation>
+			<properties>
+				<os.arch>x86</os.arch>
+			</properties>
+		</profile>
+		<profile>
+			<id>i586</id>
+			<activation>
+				<os>
+					<arch>i586</arch>
+				</os>
+			</activation>
+			<properties>
+				<os.arch>x86</os.arch>
+			</properties>
+		</profile>
+		<profile>
+			<id>i686</id>
+			<activation>
+				<os>
+					<arch>i686</arch>
+				</os>
+			</activation>
+			<properties>
+				<os.arch>x86</os.arch>
+			</properties>
+		</profile>
+		<profile>
+			<id>amd64</id>
+			<activation>
+				<os>
+					<arch>amd64</arch>
+				</os>
+			</activation>
+			<properties>
+				<os.arch>x86_64</os.arch>
+			</properties>
+		</profile>
+		<profile>
+			<id>x86-64</id>
+			<activation>
+				<os>
+					<arch>x86-64</arch>
+				</os>
+			</activation>
+			<properties>
+				<os.arch>x86_64</os.arch>
+			</properties>
+		</profile>
+	</profiles>
+
+	<issueManagement>
+		<url>https://github.com/sagioto/LipsReading/issues</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:https://github.com/sagioto/LipsReading</connection>
+		<url>https://github.com/sagioto/LipsReading</url>
+	</scm>
+
+	<ciManagement>
+		<system>Travis</system>
+		<url>http://travis-ci.org/#!/sagioto/LipsReading</url>
+	</ciManagement>
+	
+</project>

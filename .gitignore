@@ -1,12 +1,26 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# Java #
+*.class
 
-# Compiled Dynamic libraries
-*.so
+# Package Files #
+*.jar
+*.war
+*.ear
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
+# Maven #
+target/
+
+# Eclipse #
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
