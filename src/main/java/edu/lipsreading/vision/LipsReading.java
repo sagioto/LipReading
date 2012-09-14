@@ -62,7 +62,7 @@ public class LipsReading {
 	        // CanvasFrame is a JFrame containing a Canvas component, which is hardware accelerated.
 	        // It can also switch into full-screen mode when called with a screenNumber.
 	        // We should also specify the relative monitor/camera response for proper gamma correction.
-	        CanvasFrame frame = new CanvasFrame("Some Title", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+	        CanvasFrame frame = new CanvasFrame("Lips reading", CanvasFrame.getDefaultGamma()/grabber.getGamma());
 
 	        // Let's create some random 3D rotation...
 	        CvMat randomR = CvMat.create(3, 3), randomAxis = CvMat.create(3, 1);
@@ -122,5 +122,7 @@ public class LipsReading {
 	        frame.dispose();
 	        recorder.stop();
 	        grabber.stop();
+	        
+	        System.exit(0);
 	}
 }
