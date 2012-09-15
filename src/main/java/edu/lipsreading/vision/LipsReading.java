@@ -86,12 +86,12 @@ public class LipsReading {
 	            // Let's try to detect some faces! but we need a grayscale image...
 	            cvCvtColor(grabbedImage, grayImage, CV_BGR2GRAY);
 	            CvSeq faces = cvHaarDetectObjects(grayImage, classifier, storage,
-	                    1.1, 3, CV_HAAR_DO_CANNY_PRUNING);
+	                    2.8, 3, CV_HAAR_DO_CANNY_PRUNING);
 	            int total = faces.total();
 	            for (int i = 0; i < total; i++) {
 	                CvRect r = new CvRect(cvGetSeqElem(faces, i));
 	                int x = r.x(), y = r.y(), w = r.width(), h = r.height();
-	                cvRectangle(grabbedImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
+	                cvRectangle(grabbedImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
 
 	            }
 
