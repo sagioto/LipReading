@@ -14,12 +14,14 @@
 	<developers>
 		<developer>
 			<name>Sagi Berstein</name>
+			<url>http://www.linkedin.com/profile/view?id=103685568</url>
 		</developer>
 		<developer>
 			<name>Dor Leitman</name>
 		</developer>
 		<developer>
 			<name>Dagan Sandler</name>
+			<url>http://www.linkedin.com/profile/view?id=95457922</url>
 		</developer>
 	</developers>
 
@@ -206,6 +208,7 @@
 	</profiles>
 
 	<issueManagement>
+		<system>GitHub</system>
 		<url>https://github.com/sagioto/LipsReading/issues</url>
 	</issueManagement>
 
