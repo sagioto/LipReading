@@ -19,7 +19,7 @@ sudo apt-get install -y libgtk2.0-0 libgtk2.0-dev
 sudo apt-get install -y libjpeg8 libjpeg8-dev
 
 # 5) Download and install install a recent version of v4l (video for linux) from http://www.linuxtv.org/downloads/v4l-utils/. For this guide I used version 0.8.8.
-
+mkdir ~/src
 cd ~/src
 wget http://www.linuxtv.org/downloads/v4l-utils/v4l-utils-0.8.8.tar.bz2
 tar xvf v4l-utils-0.8.8.tar.bz2
