@@ -3,4 +3,4 @@ jdk:
   - oraclejdk7
   
 before_install:
-  - pwd && ls -la && sudo ./opencv-install-ubuntu-12.04.sh
+  - ./opencv-install-ubuntu.sh
