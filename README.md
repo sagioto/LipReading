@@ -12,4 +12,4 @@ LipsReading is the final project of Ben Gurion University Software Engineering s
 * [Dor Leitman](https://github.com/dorleitman)
 * [Dagan Sandler](https://github.com/dagansandler) [(LinkedIn)](http://www.linkedin.com/profile/view?id=95457922)
 
-This project is guided by Dr. Kobi Gal
+This project is guided by [Dr. Kobi Gal](http://www.eecs.harvard.edu/~gal/)
