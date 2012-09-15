@@ -77,7 +77,7 @@ export LD_LIBRARY_PATH=/usr/local/lib
 #
 #    sudo ldconfig /etc/ld.so.conf
 
-cat <<'EOF' > /etc/ld.so.conf.d/opencv.conf
+sudo cat <<'EOF' > /etc/ld.so.conf.d/opencv.conf
   /usr/local/lib
 EOF
 sudo ldconfig /etc/ld.so.conf
