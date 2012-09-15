@@ -53,11 +53,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.googlecode.javacpp</groupId>
-			<artifactId>javacpp</artifactId>
-			<version>${javacpp.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.googlecode.javacv</groupId>
 			<artifactId>javacv</artifactId>
 			<version>${javacv.version}</version>

@@ -1,12 +1,28 @@
 package edu.lipsreading.vision;
 
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
+import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2GRAY;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
+import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
+import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
+
 import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.*;
-import com.googlecode.javacv.cpp.*;
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-import static com.googlecode.javacv.cpp.opencv_calib3d.*;
-import static com.googlecode.javacv.cpp.opencv_objdetect.*;
+import com.googlecode.javacv.CanvasFrame;
+import com.googlecode.javacv.FrameGrabber;
+import com.googlecode.javacv.FrameRecorder;
+import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+import com.googlecode.javacv.cpp.opencv_core.CvSeq;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_objdetect;
+import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 
 
 public class LipsReading {
@@ -47,7 +63,6 @@ public class LipsReading {
 	        int width  = grabbedImage.width();
 	        int height = grabbedImage.height();
 	        IplImage grayImage    = IplImage.create(width, height, IPL_DEPTH_8U, 1);
-	        IplImage rotatedImage = grabbedImage.clone();
 
 	        // Objects allocated with a create*() or clone() factory method are automatically released
 	        // by the garbage collector, but may still be explicitly released by calling release().
@@ -64,20 +79,7 @@ public class LipsReading {
 	        // We should also specify the relative monitor/camera response for proper gamma correction.
 	        CanvasFrame frame = new CanvasFrame("Lips reading", CanvasFrame.getDefaultGamma()/grabber.getGamma());
 
-	        // Let's create some random 3D rotation...
-	        CvMat randomR = CvMat.create(3, 3), randomAxis = CvMat.create(3, 1);
-	        // We can easily and efficiently access the elements of CvMat objects
-	        // with the set of get() and put() methods.
-	        randomAxis.put((Math.random()-0.5)/4, (Math.random()-0.5)/4, (Math.random()-0.5)/4);
-	        cvRodrigues2(randomAxis, randomR, null);
-	        double f = (width + height)/2.0;        randomR.put(0, 2, randomR.get(0, 2)*f);
-	                                                randomR.put(1, 2, randomR.get(1, 2)*f);
-	        randomR.put(2, 0, randomR.get(2, 0)/f); randomR.put(2, 1, randomR.get(2, 1)/f);
-	        System.out.println(randomR);
-
 	        // We can allocate native arrays using constructors taking an integer as argument.
-	        CvPoint hatPoints = new CvPoint(3);
-
 	        while (frame.isVisible() && (grabbedImage = grabber.grab()) != null) {
 	            cvClearMemStorage(storage);
 
@@ -91,33 +93,10 @@ public class LipsReading {
 	                int x = r.x(), y = r.y(), w = r.width(), h = r.height();
 	                cvRectangle(grabbedImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
 
-	                // To access or pass as argument the elements of a native array, call position() before.
-	                hatPoints.position(0).x(x-w/10)   .y(y-h/10);
-	                hatPoints.position(1).x(x+w*11/10).y(y-h/10);
-	                hatPoints.position(2).x(x+w/2)    .y(y-h/2);
-	                cvFillConvexPoly(grabbedImage, hatPoints.position(0), 3, CvScalar.GREEN, CV_AA, 0);
 	            }
 
-	            // Let's find some contours! but first some thresholding...
-	            cvThreshold(grayImage, grayImage, 64, 255, CV_THRESH_BINARY);
-
-	            // To check if an output argument is null we may call either isNull() or equals(null).
-	            CvSeq contour = new CvSeq(null);
-	            cvFindContours(grayImage, storage, contour, Loader.sizeof(CvContour.class),
-	                    CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-	            while (contour != null && !contour.isNull()) {
-	                if (contour.elem_size() > 0) {
-	                    CvSeq points = cvApproxPoly(contour, Loader.sizeof(CvContour.class),
-	                            storage, CV_POLY_APPROX_DP, cvContourPerimeter(contour)*0.02, 0);
-	                    cvDrawContours(grabbedImage, points, CvScalar.BLUE, CvScalar.BLUE, -1, 1, CV_AA);
-	                }
-	                contour = contour.h_next();
-	            }
-
-	            cvWarpPerspective(grabbedImage, rotatedImage, randomR);
-
-	            frame.showImage(rotatedImage);
-	            recorder.record(rotatedImage);
+	            frame.showImage(grabbedImage);
+	            recorder.record(grabbedImage);
 	        }
 	        frame.dispose();
 	        recorder.stop();
