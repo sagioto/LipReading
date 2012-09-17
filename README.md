@@ -5,7 +5,7 @@ LipsReading [![Build Status](https://secure.travis-ci.org/sagioto/LipsReading.pn
 
 The goal of this project is to extract text words from a video input using visual lips tracking and machine learning techniques.
 
-## 
+## Contributors
 
 LipsReading is the final project of Ben Gurion University Software Engineering students:
 * [Sagi Bernstein](https://github.com/sagioto) [(LinkedIn)](http://www.linkedin.com/profile/view?id=103685568)
