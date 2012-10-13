@@ -1,4 +1,4 @@
-package edu.lipsreading;
+package edu.lipsreading.vision;
 
 //imports
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
@@ -16,6 +16,7 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
 import java.awt.Dimension;
+import java.io.File;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
@@ -25,7 +26,8 @@ public class ObjectPositionDetect {
   static int hueUpperR = 180;
 
   public static void main(String[] args) {
-      IplImage orgImg = cvLoadImage("aba7.bmp");
+	  File file = new File("src/main/resources/images/aba7.bmp");
+      IplImage orgImg = cvLoadImage(file.getAbsolutePath());
       IplImage thresholdImage = hsvThreshold(orgImg);
       cvSaveImage("hsvthreshold.jpg", thresholdImage);
       Dimension position = getCoordinates(thresholdImage);
