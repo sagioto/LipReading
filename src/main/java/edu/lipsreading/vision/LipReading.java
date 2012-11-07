@@ -4,14 +4,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.cpp.opencv_core.CvFileStorage;
-import com.googlecode.javacv.cpp.opencv_core.CvMat;
-import com.googlecode.javacv.cpp.opencv_highgui.CvCapture;
-import com.googlecode.javacv.cpp.opencv_highgui.CvVideoWriter;
 
 
 public class LipReading {
@@ -19,7 +16,7 @@ public class LipReading {
 	public static void main(String...args) throws Exception{
 		String filename = null;
 		FrameGrabber grabber = null;
-		
+
 		if (args.length == 0) {
 			try{
 				grabber = FrameGrabber.createDefault(0);
@@ -47,15 +44,41 @@ public class LipReading {
 		System.exit(0);
 	}
 
-	public static void get(String url, String filename) throws MalformedURLException, IOException{
-		InputStream in = new URL(url).openStream();
+	public static void get(String urlToDownload, String filename) throws MalformedURLException, IOException{
+		URL url = new URL(urlToDownload);
+		InputStream in = url.openStream();
+		int size = tryGetFileSize(url);
 		OutputStream out = new FileOutputStream(filename);
 		byte[] buf = new byte[4096];
 		int len;
+		System.out.println("size: " + size);
+		System.out.print("downloading " + filename + ":[");//          ]");
+		int i = 0;
+		int totallen = 0;
 		while ((len = in.read(buf)) > 0) {
 			out.write(buf, 0, len);
+			totallen += len;
+			if(totallen > i * (size / 10)){
+				System.out.print("*");
+				i++;
+			}
 		}
+		System.out.println("]");
 		in.close();
 		out.close();
+	}
+
+	private static int tryGetFileSize(URL url) {
+		HttpURLConnection conn = null;
+		try {
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("HEAD");
+			conn.getInputStream();
+			return conn.getContentLength();
+		} catch (IOException e) {
+			return -1;
+		} finally {
+			conn.disconnect();
+		}
 	}
 }
