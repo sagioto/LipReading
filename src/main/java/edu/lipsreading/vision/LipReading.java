@@ -14,7 +14,7 @@ import com.googlecode.javacv.cpp.opencv_highgui.CvCapture;
 import com.googlecode.javacv.cpp.opencv_highgui.CvVideoWriter;
 
 
-public class LipsReading {
+public class LipReading {
 
 	public static void main(String...args) throws Exception{
 		String filename = null;
