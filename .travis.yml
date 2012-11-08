@@ -3,4 +3,4 @@ jdk:
   - oraclejdk7
   
 before_install:
-  - ./opencv-install-ubuntu.sh
+  - src/main/scripts/opencv-install-ubuntu.sh
