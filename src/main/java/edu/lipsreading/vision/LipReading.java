@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 
 import com.googlecode.javacv.FrameGrabber;
 
@@ -51,19 +52,25 @@ public class LipReading {
 		OutputStream out = new FileOutputStream(filename);
 		byte[] buf = new byte[4096];
 		int len;
-		System.out.println("size: " + size);
-		System.out.print("downloading " + filename + ":[");//          ]");
+		DecimalFormat formatter = new DecimalFormat("###,###,###,###");
+		System.out.println("downloading " + filename + " (" + formatter.format(size) +" Bytes) from " + url + ":");
 		int i = 0;
-		int totallen = 0;
+		int totalLen = 0;
 		while ((len = in.read(buf)) > 0) {
+			String print = "\r[                    ]" + (i * 5) +"%";
 			out.write(buf, 0, len);
-			totallen += len;
-			if(totallen > i * (size / 10)){
-				System.out.print("*");
+			totalLen += len;
+			if(totalLen > i * (size /20)){
+				int j = 0;
+				while( j < i){
+					print = print.replaceFirst(" ", "*");
+					j++;
+				}
+				System.out.print(print);
 				i++;
 			}
 		}
-		System.out.println("]");
+		System.out.println();
 		in.close();
 		out.close();
 	}

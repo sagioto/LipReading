@@ -6,6 +6,14 @@
 *.war
 *.ear
 
+# media files #
+**/*.jpg
+**/*.jpeg
+**/*.mpg
+**/*.mp4
+**/*.bmp
+**/*.3gp
+
 # Maven #
 target/
 
