@@ -57,10 +57,10 @@ public class LipReading {
 		int i = 0;
 		int totalLen = 0;
 		while ((len = in.read(buf)) > 0) {
-			String print = "\r[                    ]" + (i * 5) +"%";
+			String print = "\r[                                                  ]" + (i * 2) + "%";
 			out.write(buf, 0, len);
 			totalLen += len;
-			if(totalLen > i * (size /20)){
+			if(totalLen > i * (size / 50)){
 				int j = 0;
 				while( j < i){
 					print = print.replaceFirst(" ", "*");
