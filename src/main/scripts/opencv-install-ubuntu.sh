@@ -11,18 +11,7 @@ sudo apt-get install build-essential checkinstall git cmake libfaac-dev libjack-
 mkdir ~/src
 cd ~/src
 
-# 1.2) Download and install ffmpeg
 
-	cd ~/src
-	wget http://ffmpeg.org/releases/ffmpeg-0.11.1.tar.bz2
-	tar xvf ffmpeg-0.11.1.tar.bz2
-	cd ffmpeg-0.11.1
-
-	/configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable-x11grab --enable-shared
-
-	make
-	sudo make install
-	
 
 if [ "$USER" != "travis" ]; then
 
@@ -36,7 +25,17 @@ if [ "$USER" != "travis" ]; then
 	make
 	sudo make install
 
-	# ffmpeg was here
+	# 1.2) Download and install ffmpeg
+
+	cd ~/src
+	wget http://ffmpeg.org/releases/ffmpeg-0.11.1.tar.bz2
+	tar xvf ffmpeg-0.11.1.tar.bz2
+	cd ffmpeg-0.11.1
+
+	/configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable-x11grab --enable-shared
+
+	make
+	sudo make install
 
 	# 2) Download and install gstreamer.
 
