@@ -12,9 +12,9 @@ import org.junit.Test;
 import com.googlecode.javacv.FrameGrabber.Exception;
 
 import edu.lipreading.Utils;
-import edu.lipseading.vision.NullFeatureExtrcator;
+import edu.lipreading.vision.NullFeatureExtrcator;
 
-public class AbstractFeatureExtractorTest {
+public class FeatureExtractorTest {
 
 	private static final String FILE_URL = "https://dl.dropbox.com/u/8720454/Hello%20%281%29.3gp";
 	private static final String FILE_NAME = "hello1.3gp";

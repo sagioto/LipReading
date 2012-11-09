@@ -1,7 +1,7 @@
 package edu.lipreading;
 
 import edu.lipreading.classify.NullClassifier;
-import edu.lipseading.vision.NullFeatureExtrcator;
+import edu.lipreading.vision.NullFeatureExtrcator;
 
 
 

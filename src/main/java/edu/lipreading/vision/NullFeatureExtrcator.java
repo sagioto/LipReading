@@ -1,4 +1,4 @@
-package edu.lipseading.vision;
+package edu.lipreading.vision;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package edu.lipseading.vision;
+package edu.lipreading.vision;
 
 //imports
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;

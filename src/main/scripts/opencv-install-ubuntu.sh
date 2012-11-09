@@ -71,7 +71,6 @@ cd OpenCV-2.4.3/
 mkdir build
 cd build
 cmake -D BUILD_PERF_TESTS=0 -D BUILD_EXAMPLES=0 -D BUILD_TESTS=0 -D CMAKE_BUILD_TYPE=RELEASE ..
-#cmake -D CMAKE_BUILD_TYPE=RELEASE ..
 
 # c) Verify that the output of cmake includes the following text:
 #    found gstreamer-base-0.10
