@@ -4,9 +4,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 
 public class Utils {
@@ -21,9 +23,10 @@ public class Utils {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public static void get(String urlToDownload, String filename) throws MalformedURLException, IOException{
+	public static void get(String urlToDownload) throws MalformedURLException, IOException{
 		URL url = new URL(urlToDownload);
 		InputStream in = url.openStream();
+		String filename = getFileNameFromUrl(urlToDownload);
 		int size = tryGetFileSize(url);
 		OutputStream out = new FileOutputStream(filename);
 		byte[] buf = new byte[4096];
@@ -51,7 +54,13 @@ public class Utils {
 		out.close();
 	}
 
-	private static int tryGetFileSize(URL url) {
+	public static String getFileNameFromUrl(String urlToDownload) throws UnsupportedEncodingException {
+	    String[] split = urlToDownload.split("/");
+        String fileName = split[split.length - 1];
+        return URLDecoder.decode(fileName, "ISO-8859-1");
+    }
+
+    private static int tryGetFileSize(URL url) {
 		HttpURLConnection conn = null;
 		try {
 			conn = (HttpURLConnection) url.openConnection();

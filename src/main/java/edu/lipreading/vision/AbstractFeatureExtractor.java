@@ -31,11 +31,9 @@ public abstract class AbstractFeatureExtractor {
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
 		FrameGrabber grabber = null;
-		if(isSourceUrl(source)){
-			String[] split = source.split("/");
-			String fileName = split[split.length - 1];
-			Utils.get(source, fileName);
-			grabber = FFmpegFrameGrabber.createDefault(fileName);
+		if(isSourceUrl(source)){		
+			Utils.get(source);
+			grabber = FFmpegFrameGrabber.createDefault(Utils.getFileNameFromUrl(source));
 		}
 		else if(isSourceFile(source)){
 			grabber = FFmpegFrameGrabber.createDefault(source);
