@@ -14,7 +14,7 @@ import edu.lipreading.Utils;
 
 public abstract class AbstractFeatureExtractor {
 
-	private FrameGrabber grabber;
+	protected FrameGrabber grabber;
 
 	public List<List<Point>> extract(String source) throws Exception, MalformedURLException, IOException{
 		grabber = getGrabber(source);
@@ -26,7 +26,7 @@ public abstract class AbstractFeatureExtractor {
 		return trackPoints;
 	}
 
-	abstract protected List<List<Point>> getPoints();
+	abstract protected List<List<Point>> getPoints() throws Exception;
 
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {

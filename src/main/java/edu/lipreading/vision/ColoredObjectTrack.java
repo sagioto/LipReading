@@ -75,8 +75,6 @@ public class ColoredObjectTrack implements Runnable {
         try {
             grabber.start();
             IplImage img;
-            int posX = 0;
-            int posY = 0;
             while (true) {
                 img = grabber.grab();
                 path.setSize(img.width(), img.height());
@@ -147,7 +145,7 @@ public class ColoredObjectTrack implements Runnable {
 		return res;
 	}
 
-	private void showObject(IplImage img, CvScalar scalarMin, CvScalar scalarMax, Color color) {
+	protected void showObject(IplImage img, CvScalar scalarMin, CvScalar scalarMax, Color color) {
 		int posX;
 		int posY;
 		IplImage detectThrs = getThresholdImage(img, scalarMin, scalarMax);
@@ -177,7 +175,7 @@ public class ColoredObjectTrack implements Runnable {
 
     }
 
-    private IplImage getThresholdImage(IplImage orgImg) {
+    protected IplImage getThresholdImage(IplImage orgImg) {
 
     	
     	IplImage imgThreshold = cvCreateImage(cvGetSize(orgImg), 8, 1);

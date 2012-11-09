@@ -1,4 +1,4 @@
-package edu.lipreading.classify;
+package edu.lipreading.classification;
 
 import java.util.List;
 

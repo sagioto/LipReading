@@ -1,7 +1,11 @@
 package edu.lipreading;
 
-import edu.lipreading.classify.NullClassifier;
-import edu.lipreading.vision.NullFeatureExtrcator;
+import edu.lipreading.classification.Classifier;
+import edu.lipreading.classification.NullClassifier;
+import edu.lipreading.normalization.EmptyNomelizer;
+import edu.lipreading.normalization.Normelizer;
+import edu.lipreading.vision.AbstractFeatureExtractor;
+import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 
 
@@ -9,9 +13,14 @@ import edu.lipreading.vision.NullFeatureExtrcator;
 public class LipReading {
 
 	public static void main(String...args) throws Exception{
+		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
+		Normelizer normelizer = new EmptyNomelizer();
+		Classifier classifier = new NullClassifier(); 
+		
 		System.out.println("got the word: " +
-				new NullClassifier().classify(
-						new NullFeatureExtrcator().extract(args[0])));
+				classifier.classify(
+						normelizer.normelize(
+								fe.extract(args[0]))));
 		System.exit(0);
 	}
 
