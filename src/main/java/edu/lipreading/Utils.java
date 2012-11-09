@@ -1,4 +1,4 @@
-package edu.lipsreading.vision;
+package edu.lipreading;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,42 +9,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 
-import com.googlecode.javacv.FrameGrabber;
-
-
-public class LipReading {
-
-	public static void main(String...args) throws Exception{
-		String filename = null;
-		FrameGrabber grabber = null;
-
-		if (args.length == 0) {
-			try{
-				grabber = FrameGrabber.createDefault(0);
-				grabber.start();
-			}
-			catch(Exception e){
-				System.err.println("could not start camera.");
-				System.exit(-1);				
-			}
-		}
-		else {
-			try{
-				String[] split = args[0].split("/");
-				filename = split[split.length - 1];
-				get(args[0], filename);
-				grabber = FrameGrabber.createDefault(filename);
-			}
-			catch (Exception e){
-				System.err.println("could not open file: " + args[0]);
-				System.exit(-1);								
-			}
-		}
-		grabber.grab();
-
-		System.exit(0);
-	}
-
+public class Utils {
+	
+	
+	/**
+	 * this function will download the file from the url into the filename specified
+	 * in the current directory
+	 * 
+	 * @param urlToDownload
+	 * @param filename
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public static void get(String urlToDownload, String filename) throws MalformedURLException, IOException{
 		URL url = new URL(urlToDownload);
 		InputStream in = url.openStream();
