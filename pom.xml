@@ -2,13 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.lipsreading.vision</groupId>
-	<artifactId>LipsReading</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>LipReading</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>LipsReading</name>
+	<name>LipReading</name>
 	<description>The goal of this project is to extract text words from a video input using visual lips tracking and machine learning techniques.</description>
-	<url>https://github.com/sagioto/LipsReading</url>
+	<url>https://github.com/sagioto/LipReading</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<developers>
@@ -70,6 +70,11 @@
 			<artifactId>ij</artifactId>
 			<version>1.45s</version>
 		</dependency>
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-stable</artifactId>
+			<version>3.6.8</version>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -88,7 +93,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>edu.lipsreading.vision.LipsReading</Main-Class>
+							<Main-Class>edu.lipsreading.vision.LipReading</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -209,17 +214,17 @@
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/sagioto/LipsReading/issues</url>
+		<url>https://github.com/sagioto/LipReading/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:https://github.com/sagioto/LipsReading</connection>
-		<url>https://github.com/sagioto/LipsReading</url>
+		<connection>scm:git:https://github.com/sagioto/LipReading</connection>
+		<url>https://github.com/sagioto/LipReading</url>
 	</scm>
 
 	<ciManagement>
 		<system>Travis</system>
-		<url>http://travis-ci.org/#!/sagioto/LipsReading</url>
+		<url>http://travis-ci.org/#!/sagioto/LipReading</url>
 	</ciManagement>
 
 </project>
