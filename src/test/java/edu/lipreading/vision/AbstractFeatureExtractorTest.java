@@ -14,7 +14,7 @@ import com.googlecode.javacv.FrameGrabber.Exception;
 import edu.lipreading.Utils;
 import edu.lipseading.vision.NullFeatureExtrcator;
 
-public class LipReadingTest {
+public class AbstractFeatureExtractorTest {
 
 	private static final String FILE_URL = "https://dl.dropbox.com/u/8720454/Hello%20%281%29.3gp";
 	private static final String FILE_NAME = "hello1.3gp";
