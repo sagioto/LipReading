@@ -44,8 +44,8 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
             allColorsVector.add(new Vector<Point>());
         }
         IplImage grabbed;
+        grabbed = grabber.grab();
         do{
-            grabbed = grabber.grab();
 
             CvMat mat = grabbed.asCvMat();
             cols = mat.cols();
@@ -68,7 +68,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
             for(int i = 0; i < NUM_OF_STICKERS; i++){
                 allColorsVector.get(i).add(new Point(getX(i), getY(i)));
             }
-
+            grabbed = grabber.grab();
         }
         while(grabbed != null);
 
