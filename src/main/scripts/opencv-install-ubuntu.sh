@@ -11,32 +11,28 @@ sudo apt-get install build-essential checkinstall git cmake libfaac-dev libjack-
 mkdir ~/src
 cd ~/src
 
+echo "installing x264 ffmpeg gstreamr gtk v4l and libjpeg go for coffee..."
+# 1.1) Download and install x264
 
+wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/last_stable_x264.tar.bz2
+tar xvf last_stable_x264.tar.bz2
+cd x264*
+./configure --enable-static
+make
+sudo make install
 
-if [ "$USER" != "shlomo" ]; then
+# 1.2) Download and install ffmpeg
 
-	echo "installing x264 ffmpeg gstreamr gtk v4l and libjpeg go for coffee..."
-	# 1.1) Download and install x264
+cd ~/src
+wget http://ffmpeg.org/releases/ffmpeg-1.0.tar.bz2
+tar xvf ffmpeg-1.0.tar.bz2
+cd ffmpeg-1.0
 
-	wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/last_stable_x264.tar.bz2
-	tar xvf last_stable_x264.tar.bz2
-	cd x264*
-	./configure --enable-static
-	make
-	sudo make install
+./configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable-x11grab --enable-shared
 
-	# 1.2) Download and install ffmpeg
-
-	cd ~/src
-	wget http://ffmpeg.org/releases/ffmpeg-1.0.tar.bz2
-	tar xvf ffmpeg-1.0.tar.bz2
-	cd ffmpeg-1.0
-	
-	./configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable-x11grab --enable-shared
-	
-	make
-	sudo make install
-
+make
+sudo make install
+if [ "$USER" != "travis" ]; then
 	# 2) Download and install gstreamer.
 
 	sudo apt-get install -y libgstreamer0.10-0 libgstreamer0.10-dev gstreamer0.10-tools gstreamer0.10-plugins-base libgstreamer-plugins-base0.10-dev gstreamer0.10-plugins-good gstreamer0.10-plugins-ugly gstreamer0.10-plugins-bad gstreamer0.10-ffmpeg
@@ -56,7 +52,7 @@ if [ "$USER" != "shlomo" ]; then
 	make
 	sudo make install
 else
-	echo "travis!! no need to install anything but opencv"
+	echo "travis!! no need to install gstreamer, gtk, jpeg, v4l"
 fi
 
 # 5) Download and install install OpenCV 2.4.3.
