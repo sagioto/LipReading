@@ -53,6 +53,10 @@ public class Utils {
 		in.close();
 		out.close();
 	}
+	
+	public static boolean isCI() {
+		return System.getProperty("user.name").equals("travis");
+	}
 
 	public static String getFileNameFromUrl(String urlToDownload) throws UnsupportedEncodingException {
 	    String[] split = urlToDownload.split("/");

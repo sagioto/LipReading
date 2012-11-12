@@ -16,7 +16,7 @@ public abstract class AbstractFeatureExtractor {
 
 	protected FrameGrabber grabber;
 
-	public List<List<Point>> extract(String source) throws Exception, MalformedURLException, IOException{
+	public List<List<Point>> extract(String source) throws Exception, MalformedURLException, IOException, InterruptedException{
 		grabber = getGrabber(source);
 		grabber.start();
 		
@@ -26,7 +26,7 @@ public abstract class AbstractFeatureExtractor {
 		return trackPoints;
 	}
 
-	abstract protected List<List<Point>> getPoints() throws Exception;
+	abstract protected List<List<Point>> getPoints() throws Exception, InterruptedException;
 
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
