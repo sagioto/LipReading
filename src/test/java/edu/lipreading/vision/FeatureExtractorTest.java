@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.googlecode.javacv.FrameGrabber.Exception;
 
 import edu.lipreading.Utils;
-import edu.lipreading.vision.NullFeatureExtrcator;
 
 public class FeatureExtractorTest {
 
@@ -38,7 +37,7 @@ public class FeatureExtractorTest {
 	}
 
 	@Test
-	public void readFromFileTest() throws MalformedURLException, IOException, Exception{
+	public void readFromFileTest() throws MalformedURLException, IOException, Exception, InterruptedException{
 		Utils.get(FILE_URL);
 		File file = new File(Utils.getFileNameFromUrl(FILE_URL));
 		Assert.assertTrue("file was not downloaded", file.exists());
@@ -46,7 +45,7 @@ public class FeatureExtractorTest {
 	}
 
 	@Test
-	public void readFromUrlTest() throws MalformedURLException, IOException, Exception{
+	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException{
 		new NullFeatureExtrcator().extract(FILE_URL);
 	}
 
