@@ -40,7 +40,8 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static short[] YELLOW_MAX = {90, 255, 255};
 
 	private static int[][] summeries;
-	private static int cols;
+	private static int channels = 0;
+	private static int cols = 0;
 
 	@Override
 	protected List<List<Point>> getPoints() throws Exception, InterruptedException {
@@ -52,16 +53,17 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		CanvasFrame frame = null;
 		if(!Utils.isCI())
 			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+		frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 
 		while((grabbed = grabber.grab()) != null){
-			grabbed = grabber.grab();
-			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
-
-			CvMat mat = grabbed.asCvMat();
+		    
+		    if(channels == 0)
+		        channels = grabbed.nChannels();
+		    CvMat mat = grabbed.asCvMat();
 			cols = mat.cols();
 			double[] colorMatrix = mat.get();
-			summeries = new int[NUM_OF_STICKERS][3];
-			for (int i = 0; i < colorMatrix.length; i += 3) {
+			summeries = new int[NUM_OF_STICKERS][channels];
+			for (int i = 0; i < colorMatrix.length; i += channels) {
 				if(isRed(colorMatrix[i], colorMatrix[i + 1], colorMatrix[i + 2])){
 					storePoint(RED_VECTOR_INDEX, i);
 				}
@@ -148,8 +150,8 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	}
 
 	private void storePoint(short colorIndex, int i) {
-		summeries[colorIndex][X_VECTOR_INDEX] += (i / 3) % cols ;
-		summeries[colorIndex][Y_VECTOR_INDEX] += (i / 3) / cols;
+		summeries[colorIndex][X_VECTOR_INDEX] += (i / channels) % cols ;
+		summeries[colorIndex][Y_VECTOR_INDEX] += (i / channels) / cols;
 		summeries[colorIndex][COUNT_VECTOR_INDEX]++;
 	}
 

@@ -17,7 +17,7 @@ import edu.lipreading.Utils;
 
 public class FeatureExtractorTest {
 
-	private static final String FILE_URL = "https://dl.dropbox.com/u/8720454/Hello.3gp";
+	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/Hello.3gp";
 
 	@Before
 	public void setUp() throws UnsupportedEncodingException {
