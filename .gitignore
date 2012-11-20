@@ -13,6 +13,9 @@
 **/*.mp4
 **/*.bmp
 **/*.3gp
+**/*.mov
+**/*.MOV
+**/*.log
 
 # Maven #
 target/
