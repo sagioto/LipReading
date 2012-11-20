@@ -14,8 +14,6 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -26,6 +24,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
 import edu.lipreading.Point;
+import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
@@ -50,14 +49,11 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static CvScalar YELLOW_MAX = cvScalar(50, 255, 255, 0);
 
 	@Override
-	protected List<List<Point>> getPoints() throws Exception, InterruptedException {
-		List<List<Point>> allColorsVector = new Vector<List<Point>>(); 
-		for(int i = 0; i < NUM_OF_STICKERS; i++){
-			allColorsVector.add(new Vector<Point>());
-		}
+	protected Sample getPoints() throws Exception, InterruptedException {
+		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
-		CanvasFrame painter = new CanvasFrame("Stickers Detection");
+		CanvasFrame painter = new CanvasFrame("Stickers Detection - " + sampleName);
 		JPanel pointsPanel = null;
 		if(!Utils.isCI()){
 			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
@@ -67,10 +63,10 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		}
 
 		while((grabbed = grabber.grab()) != null){
-			allColorsVector.get(RED_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, RED_MIN, RED_MAX));
-			allColorsVector.get(GREEN_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, GREEN_MIN, GREEN_MAX));
-			allColorsVector.get(BLUE_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, BLUE_MIN, BLUE_MAX));
-			allColorsVector.get(YELLOW_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, YELLOW_MIN, YELLOW_MAX));
+			sample.getMatrix().get(RED_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, RED_MIN, RED_MAX));
+			sample.getMatrix().get(GREEN_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, GREEN_MIN, GREEN_MAX));
+			sample.getMatrix().get(BLUE_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, BLUE_MIN, BLUE_MAX));
+			sample.getMatrix().get(YELLOW_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, YELLOW_MIN, YELLOW_MAX));
 			
 			
 			if(!Utils.isCI()){
@@ -95,7 +91,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 						graphics.setColor(Color.YELLOW);
 						break;
 					}
-					Point point = allColorsVector.get(i).get(allColorsVector.get(i).size() - 1);
+					Point point = sample.getMatrix().get(i).get(sample.getMatrix().get(i).size() - 1);
 					graphics.drawOval(point.getX(), point.getY(), 10, 10);
 				}
 			}
@@ -103,7 +99,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		if(!Utils.isCI()){
 			frame.dispose();
 		}
-		return allColorsVector;
+		return sample;
 	}
 
 

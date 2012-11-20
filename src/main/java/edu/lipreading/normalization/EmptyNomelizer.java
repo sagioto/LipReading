@@ -1,14 +1,12 @@
 package edu.lipreading.normalization;
 
-import java.util.List;
-
-import edu.lipreading.Point;
+import edu.lipreading.Sample;
 
 public class EmptyNomelizer implements Normelizer{
 
 	@Override
-	public List<List<Point>> normelize(List<List<Point>> data) {
-		return data;
+	public Sample normelize(Sample sample) {
+		return sample;
 	}
 	
 }

@@ -1,9 +1,7 @@
 package edu.lipreading.normalization;
 
-import java.util.List;
-
-import edu.lipreading.Point;
+import edu.lipreading.Sample;
 
 public interface Normelizer {
-	public List<List<Point>> normelize(List<List<Point>> data);
+	public Sample normelize(Sample sample);
 }

@@ -2,12 +2,12 @@ package edu.lipreading.classification;
 
 import java.util.List;
 
-import edu.lipreading.Point;
+import edu.lipreading.Sample;
 
 public class NullClassifier implements Classifier {
 
 	@Override
-	public String classify(List<List<Point>> data) {
+	public String classify(List<Sample> training, Sample test) {
 		return null;
 	}
 

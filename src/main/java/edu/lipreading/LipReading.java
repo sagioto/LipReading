@@ -18,7 +18,7 @@ public class LipReading {
 		Classifier classifier = new NullClassifier(); 
 		
 		System.out.println("got the word: " +
-				classifier.classify(
+				classifier.classify(null,
 						normelizer.normelize(
 								fe.extract(args[0]))));
 		System.exit(0);
