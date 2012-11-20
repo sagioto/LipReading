@@ -20,7 +20,6 @@ public class LipReading {
 		Normelizer normelizer = new EmptyNomelizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 
-		
 		for (String sampleName : samplesDir.list()) {
 			File sample = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
 			if(sample.isFile() && sample.getName().contains("MOV"))
