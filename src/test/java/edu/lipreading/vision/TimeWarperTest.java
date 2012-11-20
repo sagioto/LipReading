@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import junit.framework.Assert;
 
@@ -25,8 +26,8 @@ public class TimeWarperTest {
 	protected static final String FILE_URL3 = "https://dl.dropbox.com/u/8720454/no-%2813%29.xml";
 	protected static final String XMLS_DIR = "C:\\Users\\Sagi\\Dropbox\\Public\\xmls";
 	
-	@Test
-	public void testDTW() throws MalformedURLException, IOException, Exception, InterruptedException{
+	//@Test
+	public void testDTW() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
 		ColoredStickersFeatureExtractor extractor = new ColoredStickersFeatureExtractor();
 		TimeWarper tw = new TimeWarper();
 		Sample testSample = extractor.extract(FILE_URL);
@@ -35,7 +36,7 @@ public class TimeWarperTest {
 		System.out.println("DTW:" + ans);
 	}
 	
-	@Test
+	//@Test
 	public void testDTWIdentity() throws java.lang.Exception{
 		Utils.get(FILE_URL3);
 		TimeWarper tw = new TimeWarper();
@@ -45,7 +46,7 @@ public class TimeWarperTest {
 		Assert.assertEquals("the two samples didn't return 0.0", 0.0, ans);
 	}
 	
-	//@Test
+	@Test
 	public void testDTWOnTrainingSet() throws java.lang.Exception{
 		TimeWarper tw = new TimeWarper();
 		File samplesDir = new File(XMLS_DIR);
@@ -62,7 +63,7 @@ public class TimeWarperTest {
 				}
 			}
 		}
-		Sample testSample = (Sample)XStream.read("C:\\Users\\Sagi\\Dropbox\\Public\\yes-(13).xml");
+		Sample testSample = (Sample) XStream.read("C:\\Users\\Sagi\\Dropbox\\Public\\yes-(17).xml");
 		double yes = 0;
 		double no = 0;
 		for (Sample trainingSample : noSamples) {

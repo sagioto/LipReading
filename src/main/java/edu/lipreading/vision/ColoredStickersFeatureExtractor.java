@@ -5,7 +5,6 @@ import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
 import static com.googlecode.javacv.cpp.opencv_core.cvScalar;
-import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_MEDIAN;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
@@ -16,6 +15,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.JPanel;
 
@@ -49,8 +53,9 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static CvScalar YELLOW_MIN = cvScalar(20, 100, 100, 0);
 	private final static CvScalar YELLOW_MAX = cvScalar(50, 255, 255, 0);
 
+
 	@Override
-	protected Sample getPoints() throws Exception, InterruptedException {
+	protected Sample getPoints() throws Exception, InterruptedException, ExecutionException {
 		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
@@ -67,10 +72,17 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 		while((grabbed = grabber.grab()) != null){
 			List<Integer> frameCoordinates = new Vector<Integer>();
-			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, RED_MIN, RED_MAX));
-			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, GREEN_MIN, GREEN_MAX));
-			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, BLUE_MIN, BLUE_MAX));
-			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, YELLOW_MIN, YELLOW_MAX));
+			ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+			Future<List<Integer>> redFuture = threadPool.submit(new CoordinateGetter(grabbed, RED_MIN, RED_MAX));
+			Future<List<Integer>> greenFuture = threadPool.submit(new CoordinateGetter(grabbed, GREEN_MIN, GREEN_MAX));
+			Future<List<Integer>> blueFuture = threadPool.submit(new CoordinateGetter(grabbed, BLUE_MIN, BLUE_MAX));
+			Future<List<Integer>> yellowFuture = threadPool.submit(new CoordinateGetter(grabbed, YELLOW_MIN, YELLOW_MAX));
+			
+			frameCoordinates.addAll(redFuture.get());
+			frameCoordinates.addAll(greenFuture.get());
+			frameCoordinates.addAll(blueFuture.get());
+			frameCoordinates.addAll(yellowFuture.get());
 			
 			sample.getMatrix().add(frameCoordinates);
 			if(!Utils.isCI()){
@@ -105,15 +117,33 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		return sample;
 	}
 
+	class CoordinateGetter implements Callable<List<Integer>>{
+		private IplImage grabbed;
+		private CvScalar min; 
+		private CvScalar max;
+
+		public CoordinateGetter(IplImage grabbed, CvScalar min, CvScalar max) {
+			super();
+			this.grabbed = grabbed;
+			this.min = min;
+			this.max = max;
+		}
+
+		@Override
+		public List<Integer> call() throws java.lang.Exception {
+			return getCoordinatesOfObject(this.grabbed, this.min, this.max);
+		}
+
+	}
 
 	private IplImage getThresholdImage(IplImage orgImg, CvScalar minScalar, CvScalar maxScalar) {
 		IplImage imgThreshold = cvCreateImage(cvGetSize(orgImg), 8, 1);
 		cvInRangeS(orgImg, minScalar, maxScalar, imgThreshold);
 		cvSmooth(imgThreshold, imgThreshold, CV_MEDIAN, 15);
-		cvSaveImage("dsmthreshold.jpg", imgThreshold);
+		//cvSaveImage("dsmthreshold.jpg", imgThreshold);
 		return imgThreshold;
 	}
-	
+
 	private List<Integer> getCoordinatesOfObject(IplImage img, CvScalar scalarMin,
 			CvScalar scalarMax) {
 		IplImage detectThrs = getThresholdImage(img, scalarMin, scalarMax);

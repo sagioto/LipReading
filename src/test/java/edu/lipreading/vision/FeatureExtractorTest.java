@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 
 import junit.framework.Assert;
 
@@ -37,16 +38,16 @@ public class FeatureExtractorTest {
 		Assert.assertTrue("file was not downloaded", new File(Utils.getFileNameFromUrl(FILE_URL)).exists());
 	}
 
-	@Test
-	public void readFromFileTest() throws MalformedURLException, IOException, Exception, InterruptedException{
+	//@Test
+	public void readFromFileTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
 		Utils.get(FILE_URL);
 		File file = new File(Utils.getFileNameFromUrl(FILE_URL));
 		Assert.assertTrue("file was not downloaded", file.exists());
 		new NullFeatureExtrcator().extract(file.getName());
 	}
 
-	//@Test
-	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException{
+	@Test
+	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
 		new ColoredStickersFeatureExtractor().extract(FILE_URL);
 	}
 	

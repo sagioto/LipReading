@@ -2,6 +2,7 @@ package edu.lipreading.vision;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FrameGrabber;
@@ -16,7 +17,7 @@ public abstract class AbstractFeatureExtractor {
 	protected FrameGrabber grabber;
 	protected static String sampleName;
 	
-	public Sample extract(String source) throws Exception, MalformedURLException, IOException, InterruptedException{
+	public Sample extract(String source) throws Exception, MalformedURLException, IOException, InterruptedException, ExecutionException{
 		grabber = getGrabber(source);
 		grabber.start();
 		
@@ -26,7 +27,7 @@ public abstract class AbstractFeatureExtractor {
 		return sample;
 	}
 
-	abstract protected Sample getPoints() throws Exception, InterruptedException;
+	abstract protected Sample getPoints() throws Exception, InterruptedException, ExecutionException;
 
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
