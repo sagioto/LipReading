@@ -27,7 +27,7 @@ public class TimeWarperTest {
 	protected static final String XMLS_DIR = "C:\\Users\\Sagi\\Dropbox\\Public\\xmls";
 	
 	//@Test
-	public void testDTW() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
+	public void DTWTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
 		ColoredStickersFeatureExtractor extractor = new ColoredStickersFeatureExtractor();
 		TimeWarper tw = new TimeWarper();
 		Sample testSample = extractor.extract(FILE_URL);
@@ -37,7 +37,7 @@ public class TimeWarperTest {
 	}
 	
 	//@Test
-	public void testDTWIdentity() throws java.lang.Exception{
+	public void DTWIdentityTest() throws java.lang.Exception{
 		Utils.get(FILE_URL3);
 		TimeWarper tw = new TimeWarper();
 		Sample testSample = (Sample)XStream.read(Utils.getFileNameFromUrl(FILE_URL3));
@@ -47,7 +47,21 @@ public class TimeWarperTest {
 	}
 	
 	@Test
-	public void testDTWOnTrainingSet() throws java.lang.Exception{
+	public void DTWOnTrainingSetYesTest() throws java.lang.Exception{
+		double[] results = DTWOnTrainingSetTest("C:\\Users\\Sagi\\Dropbox\\Public\\yes-(17).xml");
+		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
+		Assert.assertTrue("test returned false result", results[0] > results[1]);
+	}
+
+	@Test
+	public void DTWOnTrainingSetNoTest() throws java.lang.Exception{
+		double[] results = DTWOnTrainingSetTest("C:\\Users\\Sagi\\Dropbox\\Public\\no-(17).xml");
+		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
+		Assert.assertTrue("test returned false result", results[0] < results[1]);
+	}
+	
+	
+	public double[] DTWOnTrainingSetTest(String testFile) throws java.lang.Exception{
 		TimeWarper tw = new TimeWarper();
 		File samplesDir = new File(XMLS_DIR);
 		List<Sample> yesSamples = new Vector<Sample>();
@@ -63,7 +77,7 @@ public class TimeWarperTest {
 				}
 			}
 		}
-		Sample testSample = (Sample) XStream.read("C:\\Users\\Sagi\\Dropbox\\Public\\yes-(17).xml");
+		Sample testSample = (Sample) XStream.read(testFile);
 		double yes = 0;
 		double no = 0;
 		for (Sample trainingSample : noSamples) {
@@ -72,10 +86,7 @@ public class TimeWarperTest {
 		for (Sample trainingSample : yesSamples) {
 			yes += tw.dtw(testSample, trainingSample);
 		}
-		double noAvg = no / noSamples.size();
-		double yesAvg = yes / yesSamples.size();
-		System.out.println("got yes avg: " + yesAvg + " got no avg: " + noAvg);
-		Assert.assertTrue("test returned false result", noAvg < yesAvg);
+		return new double[]{no / noSamples.size(), yes / yesSamples.size()}; 
 	}
 	
 
