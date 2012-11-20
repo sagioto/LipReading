@@ -56,6 +56,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 	@Override
 	protected Sample getPoints() throws Exception, InterruptedException, ExecutionException {
+		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
@@ -72,17 +73,16 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 		while((grabbed = grabber.grab()) != null){
 			List<Integer> frameCoordinates = new Vector<Integer>();
-			ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-			Future<List<Integer>> redFuture = threadPool.submit(new CoordinateGetter(grabbed, RED_MIN, RED_MAX));
-			Future<List<Integer>> greenFuture = threadPool.submit(new CoordinateGetter(grabbed, GREEN_MIN, GREEN_MAX));
-			Future<List<Integer>> blueFuture = threadPool.submit(new CoordinateGetter(grabbed, BLUE_MIN, BLUE_MAX));
-			Future<List<Integer>> yellowFuture = threadPool.submit(new CoordinateGetter(grabbed, YELLOW_MIN, YELLOW_MAX));
+			List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
 			
-			frameCoordinates.addAll(redFuture.get());
-			frameCoordinates.addAll(greenFuture.get());
-			frameCoordinates.addAll(blueFuture.get());
-			frameCoordinates.addAll(yellowFuture.get());
+			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, RED_MIN, RED_MAX)));
+			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, GREEN_MIN, GREEN_MAX)));
+			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, BLUE_MIN, BLUE_MAX)));
+			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, YELLOW_MIN, YELLOW_MAX)));
+			
+			for (Future<List<Integer>> future : futuresList) {
+				frameCoordinates.addAll(future.get());
+			}
 			
 			sample.getMatrix().add(frameCoordinates);
 			if(!Utils.isCI()){
