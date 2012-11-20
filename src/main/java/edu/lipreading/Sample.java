@@ -4,11 +4,10 @@ import java.util.List;
 import java.util.Vector;
 
 public class Sample {
-	private final static short NUM_OF_STICKERS = 4;
 	private String id;
-	private List<List<Point>> matrix;
+	private List<List<Integer>> matrix;
 	
-	public Sample(String id, List<List<Point>> matrix) {
+	public Sample(String id, List<List<Integer>> matrix) {
 		super();
 		this.id = id;
 		this.matrix = matrix;
@@ -17,10 +16,7 @@ public class Sample {
 	public Sample(String id) {
 		super();
 		this.id = id;
-		this.matrix = new Vector<List<Point>>();
-		for (int i = 0; i < NUM_OF_STICKERS; i++) {
-			this.matrix.add(new Vector<Point>());	
-		}
+		this.matrix = new Vector<List<Integer>>();
 	}
 
 	public String getId() {
@@ -32,11 +28,11 @@ public class Sample {
 		return this;
 	}
 
-	public List<List<Point>> getMatrix() {
+	public List<List<Integer>> getMatrix() {
 		return matrix;
 	}
 
-	public Sample setMatrix(List<List<Point>> matrix) {
+	public Sample setMatrix(List<List<Integer>> matrix) {
 		this.matrix = matrix;
 		return this;
 	}

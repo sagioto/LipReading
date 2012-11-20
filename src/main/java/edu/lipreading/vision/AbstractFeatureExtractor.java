@@ -37,8 +37,8 @@ public abstract class AbstractFeatureExtractor {
 			grabber = FFmpegFrameGrabber.createDefault(sampleName);
 		}
 		else if(isSourceFile(source)){
-			sampleName = source;
-			grabber = FFmpegFrameGrabber.createDefault(sampleName);
+			sampleName = Utils.getFileName(source);
+			grabber = FFmpegFrameGrabber.createDefault(source);
 		}
 		else{
 			//try open the default camera

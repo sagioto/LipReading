@@ -14,6 +14,8 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -23,7 +25,6 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
-import edu.lipreading.Point;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
@@ -63,12 +64,13 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		}
 
 		while((grabbed = grabber.grab()) != null){
-			sample.getMatrix().get(RED_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, RED_MIN, RED_MAX));
-			sample.getMatrix().get(GREEN_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, GREEN_MIN, GREEN_MAX));
-			sample.getMatrix().get(BLUE_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, BLUE_MIN, BLUE_MAX));
-			sample.getMatrix().get(YELLOW_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, YELLOW_MIN, YELLOW_MAX));
+			List<Integer> frameCoordinates = new Vector<Integer>();
+			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, RED_MIN, RED_MAX));
+			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, GREEN_MIN, GREEN_MAX));
+			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, BLUE_MIN, BLUE_MAX));
+			frameCoordinates.addAll(getCoordinatesOfObject(grabbed, YELLOW_MIN, YELLOW_MAX));
 			
-			
+			sample.getMatrix().add(frameCoordinates);
 			if(!Utils.isCI()){
 				frame.showImage(grabbed);
 				painter.setSize(frame.getCanvasSize());
@@ -91,8 +93,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 						graphics.setColor(Color.YELLOW);
 						break;
 					}
-					Point point = sample.getMatrix().get(i).get(sample.getMatrix().get(i).size() - 1);
-					graphics.drawOval(point.getX(), point.getY(), 10, 10);
+					graphics.drawOval(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1), 10, 10);
 				}
 			}
 		}
@@ -111,7 +112,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		return imgThreshold;
 	}
 	
-	private Point getCoordinatesOfObject(IplImage img, CvScalar scalarMin,
+	private List<Integer> getCoordinatesOfObject(IplImage img, CvScalar scalarMin,
 			CvScalar scalarMax) {
 		IplImage detectThrs = getThresholdImage(img, scalarMin, scalarMax);
 		CvMoments moments = new CvMoments();
@@ -121,7 +122,10 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		double area = cvGetCentralMoment(moments, 0, 0);
 		int posX = (int) (mom10 / area);
 		int posY = (int) (mom01 / area);
-		return new Point(posX, posY);
+		List<Integer> ans = new Vector<Integer>();
+		ans.add(posX);
+		ans.add(posY);
+		return ans;
 	}
 
 }

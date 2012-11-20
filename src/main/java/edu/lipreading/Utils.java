@@ -77,4 +77,12 @@ public class Utils {
 			conn.disconnect();
 		}
 	}
+
+	public static String getFileName(String source) {
+		String s = System.getProperty("file.separator");
+		if(!s.equals("/"))
+			s = "\\\\";
+		String[] split = source.split(s);
+		return split[split.length - 1];
+	}
 }
