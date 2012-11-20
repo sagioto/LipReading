@@ -1,18 +1,29 @@
 package edu.lipreading.vision;
 
 //import java.awt.Canvas;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
+import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
+import static com.googlecode.javacv.cpp.opencv_core.cvScalar;
+import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_MEDIAN;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
 import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.FrameGrabber.Exception;
-import com.googlecode.javacv.cpp.opencv_core.CvMat;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
 import edu.lipreading.Point;
 import edu.lipreading.Utils;
@@ -20,31 +31,23 @@ import edu.lipreading.Utils;
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static short NUM_OF_STICKERS = 4;
 
-	private final static short X_VECTOR_INDEX = 0;
-	private final static short Y_VECTOR_INDEX = 1;
-	private final static short COUNT_VECTOR_INDEX = 2;
-
 	private final static short RED_VECTOR_INDEX = 0;
 	private final static short GREEN_VECTOR_INDEX = 1;
 	private final static short BLUE_VECTOR_INDEX = 2;
 	private final static short YELLOW_VECTOR_INDEX = 3;
 
 
-	private final static short[] RED_MIN = {0, 0, 130};
-	private final static short[] RED_MAX = {80, 80, 255};
+	private final static CvScalar RED_MIN = cvScalar(20, 40, 200, 0); 
+	private final static CvScalar RED_MAX = cvScalar(40, 80, 255, 0);
 
-	private final static short[] GREEN_MIN = {0, 40 ,0};
-	private final static short[] GREEN_MAX = {50, 255, 50};
+	private final static CvScalar GREEN_MIN = cvScalar(0, 30, 0, 0);
+	private final static CvScalar GREEN_MAX = cvScalar(70, 255, 70, 0);
 
-	private final static short[] BLUE_MIN = {40, 0, 0};
-	private final static short[] BLUE_MAX = {255, 150, 150};
+	private final static CvScalar BLUE_MIN = cvScalar(70, 0, 10, 0);
+	private final static CvScalar BLUE_MAX = cvScalar(170, 60, 70, 0);
 
-	private final static short[] YELLOW_MIN = {0, 120, 120};
-	private final static short[] YELLOW_MAX = {160, 255, 255};
-
-	private static int[][] summeries;
-	private static int channels = 0;
-	private static int cols = 0;
+	private final static CvScalar YELLOW_MIN = cvScalar(20, 100, 100, 0);
+	private final static CvScalar YELLOW_MAX = cvScalar(50, 255, 255, 0);
 
 	@Override
 	protected List<List<Point>> getPoints() throws Exception, InterruptedException {
@@ -55,50 +58,29 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		CanvasFrame painter = new CanvasFrame("Stickers Detection");
-		JPanel changingPanel = null;
+		JPanel pointsPanel = null;
 		if(!Utils.isCI()){
 			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
-			changingPanel = new JPanel();
-			painter.setContentPane(changingPanel);
+			pointsPanel = new JPanel();
+			painter.setContentPane(pointsPanel);
 		}
 
 		while((grabbed = grabber.grab()) != null){
-
-			if(channels == 0)
-				channels = grabbed.nChannels();
-			CvMat mat = grabbed.asCvMat();
-			cols = mat.cols();
-			double[] colorMatrix = mat.get();
-			summeries = new int[NUM_OF_STICKERS][3];
-			for (int i = 0; i < colorMatrix.length; i += channels) {
-				if(isRed(colorMatrix[i], colorMatrix[i + 1], colorMatrix[i + 2])){
-					storePoint(RED_VECTOR_INDEX, i);
-				}
-				if(isGreen(colorMatrix[i], colorMatrix[i + 1], colorMatrix[i + 2])){
-					storePoint(GREEN_VECTOR_INDEX, i);
-				}
-				if(isBlue(colorMatrix[i], colorMatrix[i + 1], colorMatrix[i + 2])){
-					storePoint(BLUE_VECTOR_INDEX, i);
-				}
-				if(isYellow(colorMatrix[i], colorMatrix[i + 1], colorMatrix[i + 2])){
-					storePoint(YELLOW_VECTOR_INDEX, i);
-				}
-			}
+			allColorsVector.get(RED_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, RED_MIN, RED_MAX));
+			allColorsVector.get(GREEN_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, GREEN_MIN, GREEN_MAX));
+			allColorsVector.get(BLUE_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, BLUE_MIN, BLUE_MAX));
+			allColorsVector.get(YELLOW_VECTOR_INDEX).add(getCoordinatesOfObject(grabbed, YELLOW_MIN, YELLOW_MAX));
+			
+			
 			if(!Utils.isCI()){
 				frame.showImage(grabbed);
 				painter.setSize(frame.getCanvasSize());
 			}
 			for(int i = 0; i < NUM_OF_STICKERS; i++){
-				Point point = new Point(getX(i), getY(i));
-				allColorsVector.get(i).add(point);
 
 				if(!Utils.isCI()){
-					//Canvas canvas = new Canvas();
-					//frame.add(canvas);
-					//Graphics graphics = canvas.getGraphics();
-					Graphics graphics = changingPanel.getGraphics();
-
+					Graphics graphics = pointsPanel.getGraphics();
 					switch (i){
 					case RED_VECTOR_INDEX:
 						graphics.setColor(Color.RED);
@@ -113,11 +95,10 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 						graphics.setColor(Color.YELLOW);
 						break;
 					}
+					Point point = allColorsVector.get(i).get(allColorsVector.get(i).size() - 1);
 					graphics.drawOval(point.getX(), point.getY(), 10, 10);
-					//canvas.doLayout();
 				}
 			}
-			TimeUnit.MILLISECONDS.sleep(500);
 		}
 		if(!Utils.isCI()){
 			frame.dispose();
@@ -126,61 +107,25 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	}
 
 
-	private short getCoordinate(int i, int coordinate) {
-		try{
-			return (short)(summeries[i][coordinate] / summeries[i][COUNT_VECTOR_INDEX]);
-		}
-		catch(RuntimeException e){
-			return 0;
-		}
-
+	private IplImage getThresholdImage(IplImage orgImg, CvScalar minScalar, CvScalar maxScalar) {
+		IplImage imgThreshold = cvCreateImage(cvGetSize(orgImg), 8, 1);
+		cvInRangeS(orgImg, minScalar, maxScalar, imgThreshold);
+		cvSmooth(imgThreshold, imgThreshold, CV_MEDIAN, 15);
+		cvSaveImage("dsmthreshold.jpg", imgThreshold);
+		return imgThreshold;
 	}
-
-	private short getY(int i) {
-		return getCoordinate(i, Y_VECTOR_INDEX);
+	
+	private Point getCoordinatesOfObject(IplImage img, CvScalar scalarMin,
+			CvScalar scalarMax) {
+		IplImage detectThrs = getThresholdImage(img, scalarMin, scalarMax);
+		CvMoments moments = new CvMoments();
+		cvMoments(detectThrs, moments, 1);
+		double mom10 = cvGetSpatialMoment(moments, 1, 0);
+		double mom01 = cvGetSpatialMoment(moments, 0, 1);
+		double area = cvGetCentralMoment(moments, 0, 0);
+		int posX = (int) (mom10 / area);
+		int posY = (int) (mom01 / area);
+		return new Point(posX, posY);
 	}
-
-	private short getX(int i) {
-		return getCoordinate(i, X_VECTOR_INDEX);
-	}
-
-	private boolean isYellow(double r, double g, double b) {
-		return isColor(r, g, b, YELLOW_MIN, YELLOW_MAX);
-	}
-
-	private boolean isBlue(double r, double g, double b) {
-		return isColor(r, g, b, BLUE_MIN, BLUE_MAX);
-	}
-
-	private boolean isGreen(double r, double g, double b) {
-		return isColor(r, g, b, GREEN_MIN, GREEN_MAX);
-	}
-
-	private boolean isRed(double r, double g, double b) {
-		return isColor(r, g, b, RED_MIN, RED_MAX);
-	}  
-
-	private boolean isColor(double r, double g, double b, short[] min,
-			short[] max) {
-		return isHigher(r, g, b, min) && isLower(r, g, b, max);
-	}
-
-
-	private boolean isLower(double r, double g, double b, short[] max) {
-		return (r <= max[RED_VECTOR_INDEX]) && (g <= max[GREEN_VECTOR_INDEX])
-				&& (b <= max[BLUE_VECTOR_INDEX]); 
-	}
-
-	private boolean isHigher(double r, double g, double b, short[] min) {
-		return (r >= min[RED_VECTOR_INDEX]) && (g >= min[GREEN_VECTOR_INDEX])
-				&& (b >= min[BLUE_VECTOR_INDEX]); 
-	}
-
-	private void storePoint(short colorIndex, int i) {
-		summeries[colorIndex][X_VECTOR_INDEX] += (i / channels) % cols ;
-		summeries[colorIndex][Y_VECTOR_INDEX] += (i / channels) / cols;
-		summeries[colorIndex][COUNT_VECTOR_INDEX]++;
-	}
-
 
 }

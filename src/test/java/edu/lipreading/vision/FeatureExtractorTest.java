@@ -17,7 +17,7 @@ import edu.lipreading.Utils;
 
 public class FeatureExtractorTest {
 
-	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/Hello.3gp";
+	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/yes%20%2810%29.MOV";
 
 	@Before
 	public void setUp() throws UnsupportedEncodingException {
@@ -30,13 +30,13 @@ public class FeatureExtractorTest {
 			Assert.assertTrue("file was not deleted", file.delete());
     }
 
-	@Test
+	//@Test
 	public void downloadTest() throws MalformedURLException, IOException{
 		Utils.get(FILE_URL);
 		Assert.assertTrue("file was not downloaded", new File(Utils.getFileNameFromUrl(FILE_URL)).exists());
 	}
 
-	@Test
+	//@Test
 	public void readFromFileTest() throws MalformedURLException, IOException, Exception, InterruptedException{
 		Utils.get(FILE_URL);
 		File file = new File(Utils.getFileNameFromUrl(FILE_URL));
@@ -46,7 +46,7 @@ public class FeatureExtractorTest {
 
 	@Test
 	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException{
-		new NullFeatureExtrcator().extract(FILE_URL);
+		new ColoredStickersFeatureExtractor().extract(FILE_URL);
 	}
 
 	@AfterClass

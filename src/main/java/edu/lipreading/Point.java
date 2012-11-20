@@ -1,33 +1,33 @@
 package edu.lipreading;
 
 public class Point {
-	private short x;
-	private short y;
+	private int x;
+	private int y;
 	
 	public Point() {
 		super();
 	}
 
-	public Point(short x, short y) {
+	public Point(int x, int y) {
 		super();
 		this.x = x;
 		this.y = y;
 	}
 
-	public short getX() {
+	public int getX() {
 		return x;
 	}
 
-	public Point setX(short x) {
+	public Point setX(int x) {
 		this.x = x;
 		return this;
 	}
 
-	public short getY() {
+	public int getY() {
 		return y;
 	}
 
-	public Point setY(short y) {
+	public Point setY(int y) {
 		this.y = y;
 		return this;
 	}
@@ -55,6 +55,11 @@ public class Point {
 		if (y != other.y)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "[x=" + x + ", y=" + y + "]";
 	}
 
 	
