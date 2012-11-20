@@ -42,7 +42,7 @@ public class TimeWarperTest {
 		Sample testSample = (Sample)XStream.read(Utils.getFileNameFromUrl(FILE_URL3));
 		double ans = tw.dtw(testSample, testSample);
 		System.out.println("DTW:" + ans);
-		Assert.assertEquals("the two samples didn't return 0", 0, ans);
+		Assert.assertEquals("the two samples didn't return 0.0", 0.0, ans);
 	}
 	
 	//@Test
