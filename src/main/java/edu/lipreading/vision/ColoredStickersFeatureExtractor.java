@@ -1,10 +1,13 @@
 package edu.lipreading.vision;
 
-import java.awt.Canvas;
+//import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JPanel;
 
 import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.FrameGrabber.Exception;
@@ -30,14 +33,14 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static short[] RED_MIN = {0, 0, 130};
 	private final static short[] RED_MAX = {80, 80, 255};
 
-	private final static short[] GREEN_MIN = {0, 40, 0};
+	private final static short[] GREEN_MIN = {0, 40 ,0};
 	private final static short[] GREEN_MAX = {50, 255, 50};
 
-	private final static short[] BLUE_MIN = {150, 0, 0};
+	private final static short[] BLUE_MIN = {40, 0, 0};
 	private final static short[] BLUE_MAX = {255, 150, 150};
 
 	private final static short[] YELLOW_MIN = {0, 120, 120};
-	private final static short[] YELLOW_MAX = {90, 255, 255};
+	private final static short[] YELLOW_MAX = {160, 255, 255};
 
 	private static int[][] summeries;
 	private static int channels = 0;
@@ -51,18 +54,23 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		}
 		IplImage grabbed;
 		CanvasFrame frame = null;
-		if(!Utils.isCI())
+		CanvasFrame painter = new CanvasFrame("Stickers Detection");
+		JPanel changingPanel = null;
+		if(!Utils.isCI()){
 			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
-		frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
+			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
+			changingPanel = new JPanel();
+			painter.setContentPane(changingPanel);
+		}
 
 		while((grabbed = grabber.grab()) != null){
-		    
-		    if(channels == 0)
-		        channels = grabbed.nChannels();
-		    CvMat mat = grabbed.asCvMat();
+
+			if(channels == 0)
+				channels = grabbed.nChannels();
+			CvMat mat = grabbed.asCvMat();
 			cols = mat.cols();
 			double[] colorMatrix = mat.get();
-			summeries = new int[NUM_OF_STICKERS][channels];
+			summeries = new int[NUM_OF_STICKERS][3];
 			for (int i = 0; i < colorMatrix.length; i += channels) {
 				if(isRed(colorMatrix[i], colorMatrix[i + 1], colorMatrix[i + 2])){
 					storePoint(RED_VECTOR_INDEX, i);
@@ -77,15 +85,20 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 					storePoint(YELLOW_VECTOR_INDEX, i);
 				}
 			}
-			if(!Utils.isCI())
+			if(!Utils.isCI()){
 				frame.showImage(grabbed);
+				painter.setSize(frame.getCanvasSize());
+			}
 			for(int i = 0; i < NUM_OF_STICKERS; i++){
 				Point point = new Point(getX(i), getY(i));
 				allColorsVector.get(i).add(point);
+
 				if(!Utils.isCI()){
-					Canvas canvas = frame.getCanvas();
-					Graphics graphics = frame.getGraphics();
-					graphics.drawOval(point.getX(), point.getY(), 5, 5);
+					//Canvas canvas = new Canvas();
+					//frame.add(canvas);
+					//Graphics graphics = canvas.getGraphics();
+					Graphics graphics = changingPanel.getGraphics();
+
 					switch (i){
 					case RED_VECTOR_INDEX:
 						graphics.setColor(Color.RED);
@@ -100,22 +113,35 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 						graphics.setColor(Color.YELLOW);
 						break;
 					}
-					canvas.doLayout();
+					graphics.drawOval(point.getX(), point.getY(), 10, 10);
+					//canvas.doLayout();
 				}
 			}
+			TimeUnit.MILLISECONDS.sleep(500);
 		}
-
-		frame.dispose();
+		if(!Utils.isCI()){
+			frame.dispose();
+		}
 		return allColorsVector;
 	}
 
 
-	private short getX(int i) {
-		return (short)(summeries[i][X_VECTOR_INDEX] / summeries[i][COUNT_VECTOR_INDEX]);
+	private short getCoordinate(int i, int coordinate) {
+		try{
+			return (short)(summeries[i][coordinate] / summeries[i][COUNT_VECTOR_INDEX]);
+		}
+		catch(RuntimeException e){
+			return 0;
+		}
+
 	}
 
 	private short getY(int i) {
-		return (short)(summeries[i][Y_VECTOR_INDEX] / summeries[i][COUNT_VECTOR_INDEX]);
+		return getCoordinate(i, Y_VECTOR_INDEX);
+	}
+
+	private short getX(int i) {
+		return getCoordinate(i, X_VECTOR_INDEX);
 	}
 
 	private boolean isYellow(double r, double g, double b) {
@@ -138,6 +164,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 			short[] max) {
 		return isHigher(r, g, b, min) && isLower(r, g, b, max);
 	}
+
 
 	private boolean isLower(double r, double g, double b, short[] max) {
 		return (r <= max[RED_VECTOR_INDEX]) && (g <= max[GREEN_VECTOR_INDEX])
