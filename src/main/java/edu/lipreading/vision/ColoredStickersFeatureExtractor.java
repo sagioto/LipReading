@@ -54,9 +54,11 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
-		CanvasFrame painter = new CanvasFrame("Stickers Detection - " + sampleName);
+		CanvasFrame painter = null;
 		JPanel pointsPanel = null;
 		if(!Utils.isCI()){
+			painter = new CanvasFrame("Stickers Detection - " + sampleName);
+			painter.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			pointsPanel = new JPanel();
