@@ -5,7 +5,6 @@ package edu.lipreading.classification;
 
 import java.util.List;
 
-import edu.lipreading.Point;
 import edu.lipreading.Sample;
 
 /**
@@ -26,12 +25,12 @@ public class TimeWarper {
 		double[][] dtwMatrix = new double[training.getMatrix().size()][test.getMatrix().size()];
 
 		// Initialize first row & first column:
-		for( int i = 0; i < dtwMatrix.length; i++ ) 
+		for( int i = 0; i < dtwMatrix[0].length; i++ ) 
 		{
 			dtwMatrix[0][i] = Double.POSITIVE_INFINITY;
 		}
 
-		for( int i = 0; i < dtwMatrix[0].length; i++ ) 
+		for( int i = 0; i < dtwMatrix.length; i++ ) 
 		{
 			dtwMatrix[i][0] = Double.POSITIVE_INFINITY;
 		}
@@ -58,13 +57,13 @@ public class TimeWarper {
 	}
 	
 	
-	private double dist2(List<Point> u, List<Point> v) {
+	private double dist2(List<Integer> u, List<Integer> v) {
 
 	  double outcome = 0.0;
 	  
-	  for (int i=0; i< NUM_OF_STICKERS; i++){
-		  if ((u.get(i).getX() !=0 && u.get(i).getY()!=0)){ // Ignore points that weren't recognized
-			  outcome += Math.pow((u.get(i).getX() - v.get(i).getX()), 2) + Math.pow((u.get(i).getY() - v.get(i).getY()), 2);
+	  for (int i=0; i< (NUM_OF_STICKERS*2); i++){
+		  if ((u.get(i) !=0 && u.get(i) !=0)){ // Ignore points that weren't recognized
+			  outcome += Math.pow((u.get(i) - v.get(i)), 2);
 		  }
 	  }
 	  
