@@ -13,11 +13,13 @@ import org.junit.Test;
 
 import com.googlecode.javacv.FrameGrabber.Exception;
 
+import edu.lipreading.Sample;
 import edu.lipreading.Utils;
+import edu.lipreading.classification.TimeWarper;
 
 public class FeatureExtractorTest {
 
-	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/yes%20%2810%29.MOV";
+	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/no-%281%29.MOV";
 
 	@Before
 	public void setUp() throws UnsupportedEncodingException {
@@ -47,6 +49,16 @@ public class FeatureExtractorTest {
 	@Test
 	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException{
 		new ColoredStickersFeatureExtractor().extract(FILE_URL);
+	}
+	
+	@Test
+	public void getDTW() throws MalformedURLException, IOException, Exception, InterruptedException{
+		ColoredStickersFeatureExtractor extractor = new ColoredStickersFeatureExtractor();
+		TimeWarper tw = new TimeWarper();
+		Sample testSample = extractor.extract(FILE_URL);
+		Sample trainingSample = extractor.extract(FILE_URL);
+		tw.dtw(testSample, trainingSample);
+		
 	}
 
 	@AfterClass
