@@ -5,16 +5,16 @@ import java.util.Vector;
 
 public class Sample {
 	private final static short NUM_OF_STICKERS = 4;
-	private int id;
+	private String id;
 	private List<List<Point>> matrix;
 	
-	public Sample(int id, List<List<Point>> matrix) {
+	public Sample(String id, List<List<Point>> matrix) {
 		super();
 		this.id = id;
 		this.matrix = matrix;
 	}
 
-	public Sample(int id) {
+	public Sample(String id) {
 		super();
 		this.id = id;
 		this.matrix = new Vector<List<Point>>();
@@ -23,11 +23,11 @@ public class Sample {
 		}
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public Sample setId(int id) {
+	public Sample setId(String id) {
 		this.id = id;
 		return this;
 	}
