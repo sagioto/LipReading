@@ -26,7 +26,7 @@ public class TimeWarperTest {
 	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/no-%281%29.MOV";
 	protected static final String FILE_URL2 = "https://dl.dropbox.com/u/8720454/no-%281%29SpeedX2.avi";
 	protected static final String FILE_URL3 = "https://dl.dropbox.com/u/8720454/no-%2813%29.xml";
-	protected static final String XMLS_DIR = "C:\\Users\\Sagi\\Dropbox\\Public\\xmls";
+	protected static final String XMLS_DIR = System.getProperty("user.home") + "/Dropbox/Public/xmls";
 	
 	@Test
 	public void DTWTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
@@ -50,14 +50,14 @@ public class TimeWarperTest {
 	
 	//@Test
 	public void DTWOnTrainingSetYesTest() throws java.lang.Exception{
-		double[] results = DTWOnTrainingSetTest("C:\\Users\\Sagi\\Dropbox\\Public\\yes-(17).xml");
+		double[] results = DTWOnTrainingSetTest(System.getProperty("user.home") + "/Dropbox/Public/yes-(17).xml");
 		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
 		Assert.assertTrue("test returned false result", results[0] > results[1]);
 	}
 
 	//@Test
 	public void DTWOnTrainingSetNoTest() throws java.lang.Exception{
-		double[] results = DTWOnTrainingSetTest("C:\\Users\\Sagi\\Dropbox\\Public\\no-(17).xml");
+		double[] results = DTWOnTrainingSetTest(System.getProperty("user.home") + "/Dropbox/Public/no-(17).xml");
 		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
 		Assert.assertTrue("test returned false result", results[0] < results[1]);
 	}
