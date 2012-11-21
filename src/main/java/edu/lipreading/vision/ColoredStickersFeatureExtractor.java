@@ -1,6 +1,7 @@
 package edu.lipreading.vision;
 
 //import java.awt.Canvas;
+import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
@@ -11,8 +12,6 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -21,10 +20,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.swing.JPanel;
-
 import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.FrameGrabber.Exception;
+import com.googlecode.javacv.cpp.opencv_core.CvArr;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
@@ -60,54 +59,44 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
-		CanvasFrame painter = null;
-		JPanel pointsPanel = null;
 		if(!Utils.isCI()){
-			painter = new CanvasFrame("Stickers Detection - " + sampleName);
-			painter.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
-			pointsPanel = new JPanel();
-			painter.setContentPane(pointsPanel);
 		}
 
 		while((grabbed = grabber.grab()) != null){
 			List<Integer> frameCoordinates = new Vector<Integer>();
 			List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
-			
+
 			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, RED_MIN, RED_MAX)));
 			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, GREEN_MIN, GREEN_MAX)));
 			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, BLUE_MIN, BLUE_MAX)));
 			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, YELLOW_MIN, YELLOW_MAX)));
-			
+
 			for (Future<List<Integer>> future : futuresList) {
 				frameCoordinates.addAll(future.get());
 			}
-			
+
 			sample.getMatrix().add(frameCoordinates);
 			if(!Utils.isCI()){
-				frame.showImage(grabbed);
-				painter.setSize(frame.getCanvasSize());
-			}
-			for(int i = 0; i < NUM_OF_STICKERS; i++){
-
-				if(!Utils.isCI()){
-					Graphics graphics = pointsPanel.getGraphics();
+				for(int i = 0; i < NUM_OF_STICKERS; i++){
+					CvScalar color = null;
 					switch (i){
 					case RED_VECTOR_INDEX:
-						graphics.setColor(Color.RED);
+						color = cvScalar(0, 0, 255, 0);
 						break;
 					case GREEN_VECTOR_INDEX:
-						graphics.setColor(Color.GREEN);
+						color = cvScalar(0, 255, 0, 0);
 						break;
 					case BLUE_VECTOR_INDEX:
-						graphics.setColor(Color.BLUE);
+						color = cvScalar(255, 0, 0, 0);
 						break;
 					case YELLOW_VECTOR_INDEX:
-						graphics.setColor(Color.YELLOW);
+						color = cvScalar(0, 242, 255, 0);
 						break;
 					}
-					graphics.drawOval(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1), 10, 10);
+					cvCircle((CvArr)grabbed, new CvPoint(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1)), 25, color, 3, 0, 0);
+					frame.showImage(grabbed);
 				}
 			}
 		}

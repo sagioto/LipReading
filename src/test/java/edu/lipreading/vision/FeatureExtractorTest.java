@@ -32,13 +32,13 @@ public class FeatureExtractorTest {
 			Assert.assertTrue("file was not deleted", file.delete());
     }
 
-	//@Test
+	@Test
 	public void downloadTest() throws MalformedURLException, IOException{
 		Utils.get(FILE_URL);
 		Assert.assertTrue("file was not downloaded", new File(Utils.getFileNameFromUrl(FILE_URL)).exists());
 	}
 
-	//@Test
+	@Test
 	public void readFromFileTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
 		Utils.get(FILE_URL);
 		File file = new File(Utils.getFileNameFromUrl(FILE_URL));
