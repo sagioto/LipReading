@@ -2,6 +2,7 @@ package edu.lipreading.vision;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Vector;
@@ -9,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import weka.core.xml.XStream;
@@ -89,5 +91,11 @@ public class TimeWarperTest {
 		return new double[]{no / noSamples.size(), yes / yesSamples.size()}; 
 	}
 	
+	@AfterClass
+	public static void deleteFile() throws UnsupportedEncodingException{
+		Assert.assertTrue(new File(Utils.getFileNameFromUrl(FILE_URL)).delete());
+		Assert.assertTrue(new File(Utils.getFileNameFromUrl(FILE_URL2)).delete());
+		Assert.assertTrue(new File(Utils.getFileNameFromUrl(FILE_URL3)).delete());
+	}
 
 }
