@@ -17,6 +17,10 @@
 **/*.MOV
 **/*.log
 
+# output files #
+*yes*.xml
+*no*.xml
+
 # Maven #
 target/
 
