@@ -26,7 +26,7 @@ public class TimeWarperTest {
 	protected static final String FILE_URL3 = "https://dl.dropbox.com/u/8720454/no-%2813%29.xml";
 	protected static final String XMLS_DIR = "C:\\Users\\Sagi\\Dropbox\\Public\\xmls";
 	
-	//@Test
+	@Test
 	public void DTWTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
 		ColoredStickersFeatureExtractor extractor = new ColoredStickersFeatureExtractor();
 		TimeWarper tw = new TimeWarper();
@@ -36,7 +36,7 @@ public class TimeWarperTest {
 		System.out.println("DTW:" + ans);
 	}
 	
-	//@Test
+	@Test
 	public void DTWIdentityTest() throws java.lang.Exception{
 		Utils.get(FILE_URL3);
 		TimeWarper tw = new TimeWarper();
@@ -46,14 +46,14 @@ public class TimeWarperTest {
 		Assert.assertEquals("the two samples didn't return 0.0", 0.0, ans);
 	}
 	
-	@Test
+	//@Test
 	public void DTWOnTrainingSetYesTest() throws java.lang.Exception{
 		double[] results = DTWOnTrainingSetTest("C:\\Users\\Sagi\\Dropbox\\Public\\yes-(17).xml");
 		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
 		Assert.assertTrue("test returned false result", results[0] > results[1]);
 	}
 
-	@Test
+	//@Test
 	public void DTWOnTrainingSetNoTest() throws java.lang.Exception{
 		double[] results = DTWOnTrainingSetTest("C:\\Users\\Sagi\\Dropbox\\Public\\no-(17).xml");
 		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
