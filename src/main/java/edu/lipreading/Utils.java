@@ -14,72 +14,73 @@ import java.text.DecimalFormat;
 public class Utils {
 
 
-    /**
-     * this function will download the file from the url into the filename specified
-     * in the current directory
-     * 
-     * @param urlToDownload
-     * @param filename
-     * @throws MalformedURLException
-     * @throws IOException
-     */
-    public static void get(String urlToDownload) throws MalformedURLException, IOException{
-        URL url = new URL(urlToDownload);
-        InputStream in = url.openStream();
-        String filename = getFileNameFromUrl(urlToDownload);
-        int size = tryGetFileSize(url);
-        OutputStream out = new FileOutputStream(filename);
-        byte[] buf = new byte[4096];
-        int len;
-        DecimalFormat formatter = new DecimalFormat("###,###,###,###");
-        System.out.println("downloading " + filename + " (" + formatter.format(size) +" Bytes) from " + url + ":");
-        int i = 0;
-        int totalLen = 0;
-        while ((len = in.read(buf)) >= 0) {
-            out.write(buf, 0, len);
-            totalLen += len;
-            i = (100 * totalLen) / size;
-            String print = "\r[                                                  ]" + i + "%";
-            for (int j = 0; j < i; j += 2) {
-                print = print.replaceFirst(" ", "*");                
-            }
-            System.out.print(print);
-        }
+	/**
+	 * this function will download the file from the url into the filename specified
+	 * in the current directory
+	 * 
+	 * @param urlToDownload
+	 * @param filename
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public static void get(String urlToDownload) throws MalformedURLException, IOException{
+		URL url = new URL(urlToDownload);
+		InputStream in = url.openStream();
+		String filename = getFileNameFromUrl(urlToDownload);
+		int size = tryGetFileSize(url);
+		OutputStream out = new FileOutputStream(filename);
+		byte[] buf = new byte[4096];
+		int len;
+		DecimalFormat formatter = new DecimalFormat("###,###,###,###");
+		System.out.println("downloading " + filename + " (" + formatter.format(size) +" Bytes) from " + url + ":");
+		int i = 0;
+		int totalLen = 0;
+		while ((len = in.read(buf)) >= 0) {
+			out.write(buf, 0, len);
+			totalLen += len;
+			i = (100 * totalLen) / size;
+			String print = "\r[                                                  ]" + i + "%";
+			for (int j = 0; j < i; j += 2) {
+				print = print.replaceFirst(" ", "*");                
+			}
+			System.out.print(print);
+		}
 
-        System.out.println();
-        in.close();
-        out.close();
-    }
+		System.out.println();
+		in.close();
+		out.close();
+	}
 
-    public static boolean isCI() {
-        return System.getProperty("user.name").equals("travis");
-    }
+	public static boolean isCI() {
+		return System.getProperty("user.name").equals("travis");
+	}
 
-    public static String getFileNameFromUrl(String urlToDownload) throws UnsupportedEncodingException {
-        String[] split = urlToDownload.split("/");
-        String fileName = split[split.length - 1];
-        return URLDecoder.decode(fileName, "ISO-8859-1");
-    }
+	public static String getFileNameFromUrl(String urlToDownload) throws UnsupportedEncodingException {
+		String[] split = urlToDownload.split("/");
+		String fileName = split[split.length - 1];
+		return URLDecoder.decode(fileName, "ISO-8859-1");
+	}
 
-    private static int tryGetFileSize(URL url) {
-        HttpURLConnection conn = null;
-        try {
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("HEAD");
-            conn.getInputStream();
-            return conn.getContentLength();
-        } catch (IOException e) {
-            return -1;
-        } finally {
-            conn.disconnect();
-        }
-    }
+	private static int tryGetFileSize(URL url) {
+		HttpURLConnection conn = null;
+		try {
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("HEAD");
+			conn.getInputStream();
+			return conn.getContentLength();
+		} catch (IOException e) {
+			return -1;
+		} finally {
+			conn.disconnect();
+		}
+	}
 
-    public static String getFileName(String source) {
-        String s = System.getProperty("file.separator");
-        if(!s.equals("/"))
-            s = "\\\\";
-        String[] split = source.split(s);
-        return split[split.length - 1];
-    }
+	public static String getFileName(String source) {
+		String s = System.getProperty("file.separator");
+		if(!s.equals("/"))
+			s = "\\\\";
+		String[] split = source.split(s);
+		return split[split.length - 1];
+	}
+
 }

@@ -32,6 +32,8 @@ public class TimeWarperTest {
 	protected static final String XMLS_URL = "https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
 	protected static final String TEST_YES = "https://dl.dropbox.com/u/8720454/xmls/yes-%2817%29.xml";
 	protected static final String TEST_NO = "https://dl.dropbox.com/u/8720454/xmls/no-%2817%29.xml";
+	protected static final int YES_INDEX = 0;
+	protected static final int NO_INDEX = 1;
 
 	@Test
 	public void DTWTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
@@ -56,51 +58,96 @@ public class TimeWarperTest {
 	@Test
 	public void DTWOnTrainingSetYesTest() throws java.lang.Exception{
 		double[] results = DTWOnTrainingSetTest(TEST_YES);
-		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
-		Assert.assertTrue("test returned false result", results[0] > results[1]);
+		System.out.println("got yes avg: " + results[YES_INDEX] + " got no avg: " + results[NO_INDEX]);
+		Assert.assertTrue("test returned false result", results[YES_INDEX] < results[NO_INDEX]);
 	}
 
 	@Test
 	public void DTWOnTrainingSetNoTest() throws java.lang.Exception{
 		double[] results = DTWOnTrainingSetTest(TEST_NO);
-		System.out.println("got yes avg: " + results[1] + " got no avg: " + results[0]);
-		Assert.assertTrue("test returned false result", results[0] < results[1]);
+		System.out.println("got yes avg: " + results[YES_INDEX] + " got no avg: " + results[NO_INDEX]);
+		Assert.assertTrue("test returned false result", results[YES_INDEX] > results[NO_INDEX]);
+	}
+
+	@Test
+	public void massiveProofTest() throws java.lang.Exception{
+		List<List<Sample>> trainingSet = getTrainingSetFromZip(XMLS_URL);
+		TimeWarper tw = new TimeWarper();
+		int index = 0, success = 0, failed = 0;
+		for (List<Sample> list : trainingSet) {
+
+			for (Sample sample : list) {
+				double yes = 0, no = 0;
+				for (Sample trainingSample : trainingSet.get(YES_INDEX)) {
+					if(!trainingSample.equals(sample))
+						yes += tw.dtw(sample, trainingSample);
+				}
+				for (Sample trainingSample : trainingSet.get(NO_INDEX)) {
+					if(!trainingSample.equals(sample))
+						no += tw.dtw(sample, trainingSample);
+				}
+				switch(index){
+				case YES_INDEX:
+					if(yes / trainingSet.get(YES_INDEX).size() < no / trainingSet.get(NO_INDEX).size())
+						success++;
+					else if(no / trainingSet.get(NO_INDEX).size() < yes / trainingSet.get(YES_INDEX).size())
+						failed++;
+					break;
+				case NO_INDEX:
+					if(yes / trainingSet.get(YES_INDEX).size() > no / trainingSet.get(NO_INDEX).size())
+						success++;
+					else if(no / trainingSet.get(NO_INDEX).size() > yes / trainingSet.get(YES_INDEX).size())
+						failed++;
+					break;
+				}
+			}
+			index++;
+		}
+		System.out.println("success:" + success + " failed:" + failed);
+		System.out.println("success rate is " + ((100 * success) / (success + failed)) + "%");
+		Assert.assertTrue(success > failed);
 	}
 
 
 	public double[] DTWOnTrainingSetTest(String testFile) throws java.lang.Exception{
 		Utils.get(testFile);
-		Utils.get(XMLS_URL);
-		ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(XMLS_URL));
 		TimeWarper tw = new TimeWarper();
-		List<Sample> yesSamples = new Vector<Sample>();
-		List<Sample> noSamples = new Vector<Sample>();
+		List<List<Sample>> trainingSet = getTrainingSetFromZip(XMLS_URL);
+		Sample testSample = (Sample) XStream.read(Utils.getFileNameFromUrl(testFile));
+		double yes = 0, no = 0;
+		for (Sample trainingSample : trainingSet.get(YES_INDEX)) {
+			if(!trainingSample.equals(testSample))
+				yes += tw.dtw(testSample, trainingSample);
+		}
+		for (Sample trainingSample : trainingSet.get(NO_INDEX)) {
+			if(!trainingSample.equals(testSample))
+				no += tw.dtw(testSample, trainingSample);
+		}
+		return new double[]{yes / trainingSet.get(YES_INDEX).size(), no / trainingSet.get(NO_INDEX).size()};
+	}
+
+	public static List<List<Sample>> getTrainingSetFromZip(String zipUrl) throws MalformedURLException,
+	IOException, UnsupportedEncodingException, java.lang.Exception {
+		Utils.get(zipUrl);
+		ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
+		List<List<Sample>> trainingSet = new Vector<List<Sample>>();
+		trainingSet.add(new Vector<Sample>());
+		trainingSet.add(new Vector<Sample>());
 		Enumeration<? extends ZipEntry> entries = samplesZip.entries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
 
 			Sample read = (Sample) XStream.read(samplesZip.getInputStream(entry));
 			if(entry.getName().contains("yes"))
-				yesSamples.add(read);
+				trainingSet.get(YES_INDEX).add(read);
 			else{
-				noSamples.add(read);
+				trainingSet.get(NO_INDEX).add(read);
 			}
 		}
-		samplesZip.close();				
-	
-		Sample testSample = (Sample) XStream.read(Utils.getFileNameFromUrl(testFile));
-		double yes = 0;
-		double no = 0;
-		for (Sample trainingSample : noSamples) {
-			if(!trainingSample.equals(testSample))
-				no += tw.dtw(testSample, trainingSample);
-		}
-		for (Sample trainingSample : yesSamples) {
-			if(!trainingSample.equals(testSample))
-				yes += tw.dtw(testSample, trainingSample);
-		}
-		return new double[]{no / noSamples.size(), yes / yesSamples.size()};
+		samplesZip.close();
+		return trainingSet;
 	}
+
 
 	@AfterClass
 	public static void deleteFile() throws UnsupportedEncodingException{
