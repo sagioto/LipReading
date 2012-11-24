@@ -17,7 +17,7 @@ import com.googlecode.javacv.FrameGrabber.Exception;
 import edu.lipreading.Utils;
 
 
-public class FeatureExtractorTest {
+public class GetFileTest {
 
 	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/no-%281%29.MOV";
 
@@ -48,7 +48,7 @@ public class FeatureExtractorTest {
 
 	@Test
 	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
-		new ColoredStickersFeatureExtractor().extract(FILE_URL);
+		new NullFeatureExtrcator().extract(FILE_URL);
 	}
 	
 
