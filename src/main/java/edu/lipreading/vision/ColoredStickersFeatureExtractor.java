@@ -1,6 +1,5 @@
 package edu.lipreading.vision;
 
-//import java.awt.Canvas;
 import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
@@ -54,13 +53,13 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 
 	@Override
-	protected Sample getPoints() throws Exception, InterruptedException, ExecutionException {
+	protected Sample getPoints() throws Exception, InterruptedException, ExecutionException{
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		if(!Utils.isCI()){
-			frame = new CanvasFrame("output", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+			frame = new CanvasFrame(sampleName, CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 		}
 

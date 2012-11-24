@@ -1,10 +1,6 @@
 package edu.lipreading.vision;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.util.concurrent.ExecutionException;
 
 import junit.framework.Assert;
 
@@ -12,7 +8,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.javacv.FrameGrabber.Exception;
 
 import edu.lipreading.Utils;
 
@@ -22,39 +17,39 @@ public class GetFileTest {
 	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/no-%281%29.MOV";
 
 	@Before
-	public void setUp() throws UnsupportedEncodingException {
+	public void setUp() throws Exception {
 		cleanFile();
 	}
 	
-    private static void cleanFile() throws UnsupportedEncodingException {
+    private static void cleanFile() throws Exception {
         File file = new File(Utils.getFileNameFromUrl(FILE_URL));
 		if(file.exists())
 			Assert.assertTrue("file was not deleted", file.delete());
     }
 
 	@Test
-	public void downloadTest() throws MalformedURLException, IOException{
+	public void downloadTest() throws Exception{
 		Utils.get(FILE_URL);
 		Assert.assertTrue("file was not downloaded", new File(Utils.getFileNameFromUrl(FILE_URL)).exists());
 	}
 
 	@Test
-	public void readFromFileTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
+	public void readFromFileTest() throws Exception  {
 		Utils.get(FILE_URL);
 		File file = new File(Utils.getFileNameFromUrl(FILE_URL));
 		Assert.assertTrue("file was not downloaded", file.exists());
-		new NullFeatureExtrcator().extract(file.getName());
+		new ColoredStickersFeatureExtractor().extract(file.getName());
 	}
 
 	@Test
-	public void readFromUrlTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
+	public void readFromUrlTest() throws Exception{
 		new NullFeatureExtrcator().extract(FILE_URL);
 	}
 	
 
 
 	@AfterClass
-	public static void teardown() throws UnsupportedEncodingException {
+	public static void teardown() throws Exception {
 	    cleanFile();
 	}
 	

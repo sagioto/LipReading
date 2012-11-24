@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.VideoInputFrameGrabber;
 
 import edu.lipreading.Sample;
@@ -17,7 +16,7 @@ public abstract class AbstractFeatureExtractor {
 	protected FrameGrabber grabber;
 	protected static String sampleName;
 	
-	public Sample extract(String source) throws Exception, MalformedURLException, IOException, InterruptedException, ExecutionException{
+	public Sample extract(String source) throws Exception {
 		grabber = getGrabber(source);
 		grabber.start();
 		

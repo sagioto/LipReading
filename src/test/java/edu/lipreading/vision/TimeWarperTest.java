@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -17,9 +16,6 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import weka.core.xml.XStream;
-
-import com.googlecode.javacv.FrameGrabber.Exception;
-
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 import edu.lipreading.classification.TimeWarper;
@@ -36,7 +32,7 @@ public class TimeWarperTest {
 	protected static final int NO_INDEX = 1;
 
 	@Test
-	public void DTWTest() throws MalformedURLException, IOException, Exception, InterruptedException, ExecutionException{
+	public void DTWTest() throws Exception{
 		ColoredStickersFeatureExtractor extractor = new ColoredStickersFeatureExtractor();
 		TimeWarper tw = new TimeWarper();
 		Sample testSample = extractor.extract(FILE_URL);
@@ -46,7 +42,7 @@ public class TimeWarperTest {
 	}
 
 	@Test
-	public void DTWIdentityTest() throws java.lang.Exception{
+	public void DTWIdentityTest() throws Exception{
 		Utils.get(FILE_URL3);
 		TimeWarper tw = new TimeWarper();
 		Sample testSample = (Sample)XStream.read(Utils.getFileNameFromUrl(FILE_URL3));
@@ -56,21 +52,21 @@ public class TimeWarperTest {
 	}
 
 	@Test
-	public void DTWOnTrainingSetYesTest() throws java.lang.Exception{
+	public void DTWOnTrainingSetYesTest() throws Exception{
 		double[] results = DTWOnTrainingSetTest(TEST_YES);
 		System.out.println("got yes avg: " + results[YES_INDEX] + " got no avg: " + results[NO_INDEX]);
 		Assert.assertTrue("test returned false result", results[YES_INDEX] < results[NO_INDEX]);
 	}
 
 	@Test
-	public void DTWOnTrainingSetNoTest() throws java.lang.Exception{
+	public void DTWOnTrainingSetNoTest() throws Exception{
 		double[] results = DTWOnTrainingSetTest(TEST_NO);
 		System.out.println("got yes avg: " + results[YES_INDEX] + " got no avg: " + results[NO_INDEX]);
 		Assert.assertTrue("test returned false result", results[YES_INDEX] > results[NO_INDEX]);
 	}
 
 	@Test
-	public void massiveProofTest() throws java.lang.Exception{
+	public void massiveProofTest() throws Exception{
 		List<List<Sample>> trainingSet = getTrainingSetFromZip(XMLS_URL);
 		TimeWarper tw = new TimeWarper();
 		int index = 0, success = 0, failed = 0;
