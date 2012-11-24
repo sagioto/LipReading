@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.lipreading.Sample;
 
-public class StretchNormelizer extends CenterNormelizer {
+public class StretchNormalizer extends CenterNormalizer {
 	
 	public static final double STRECH_COEFFICIENT = 1000;
 	

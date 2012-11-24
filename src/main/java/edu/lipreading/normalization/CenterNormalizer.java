@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.lipreading.Sample;
 
-public class CenterNormelizer implements Normelizer{
+public class CenterNormalizer implements Normalizer{
 
 	protected static final int X_INDEX = 0;
 	protected static final int Y_INDEX = 1;
