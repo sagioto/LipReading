@@ -235,7 +235,7 @@
 
 	<ciManagement>
 		<system>Travis</system>
-		<url>http://travis-ci.org/#!/sagioto/LipReading</url>
+		<url>http://travis-ci.org/sagioto/LipReading</url>
 	</ciManagement>
 
 </project>
