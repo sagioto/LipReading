@@ -7,7 +7,7 @@ import edu.lipreading.Sample;
 public class NullClassifier implements Classifier {
 
 	@Override
-	public String classify(List<Sample> training, Sample test) {
+	public String classify(List<Sample> trainingSet, Sample test) {
 		return null;
 	}
 

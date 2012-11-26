@@ -10,6 +10,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import weka.core.xml.XStream;
 
 public class Utils {
 
@@ -81,6 +88,20 @@ public class Utils {
 			s = "\\\\";
 		String[] split = source.split(s);
 		return split[split.length - 1];
+	}
+	
+	public static List<Sample> getTrainingSetFromZip(String zipUrl) throws Exception {
+		Utils.get(zipUrl);
+		ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
+		List<Sample> trainingSet = new Vector<Sample>();
+		Enumeration<? extends ZipEntry> entries = samplesZip.entries();
+		while (entries.hasMoreElements()) {
+			ZipEntry entry = entries.nextElement();
+			Sample read = (Sample) XStream.read(samplesZip.getInputStream(entry));
+			trainingSet.add(read);
+		}
+		samplesZip.close();
+		return trainingSet;
 	}
 
 }

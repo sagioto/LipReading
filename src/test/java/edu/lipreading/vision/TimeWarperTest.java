@@ -1,14 +1,8 @@
 package edu.lipreading.vision;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import junit.framework.Assert;
 
@@ -67,81 +61,69 @@ public class TimeWarperTest {
 
 	@Test
 	public void massiveProofTest() throws Exception{
-		List<List<Sample>> trainingSet = getTrainingSetFromZip(XMLS_URL);
+		List<Sample> trainingSet = Utils.getTrainingSetFromZip(XMLS_URL);
 		TimeWarper tw = new TimeWarper();
-		int index = 0, success = 0, failed = 0;
-		for (List<Sample> list : trainingSet) {
-
-			for (Sample sample : list) {
-				double yes = 0, no = 0;
-				for (Sample trainingSample : trainingSet.get(YES_INDEX)) {
-					if(!trainingSample.equals(sample))
-						yes += tw.dtw(sample, trainingSample);
-				}
-				for (Sample trainingSample : trainingSet.get(NO_INDEX)) {
-					if(!trainingSample.equals(sample))
-						no += tw.dtw(sample, trainingSample);
-				}
-				switch(index){
-				case YES_INDEX:
-					if(yes / trainingSet.get(YES_INDEX).size() < no / trainingSet.get(NO_INDEX).size())
-						success++;
-					else if(no / trainingSet.get(NO_INDEX).size() < yes / trainingSet.get(YES_INDEX).size())
-						failed++;
-					break;
-				case NO_INDEX:
-					if(yes / trainingSet.get(YES_INDEX).size() > no / trainingSet.get(NO_INDEX).size())
-						success++;
-					else if(no / trainingSet.get(NO_INDEX).size() > yes / trainingSet.get(YES_INDEX).size())
-						failed++;
-					break;
+		int success = 0, failed = 0;
+		for (Sample test : trainingSet) {
+			double yes = 0, no = 0;
+			int yesCount = 0, noCount = 0;
+			for (Sample training : trainingSet) {
+				if(!test.equals(training)){
+					if(training.getId().contains("yes")){
+						yes += tw.dtw(test, training);
+						yesCount++;
+					}
+					else{
+						no += tw.dtw(test, training);
+						noCount++;
+					}
 				}
 			}
-			index++;
+
+			if(yes / yesCount < no / noCount){
+				if(test.getId().contains("yes")){
+					success++;
+				}
+				else{
+					System.out.println(test.getId() + " has failed");
+					failed++;
+				}					
+			}
+			else{
+				if(test.getId().contains("yes")){
+					System.out.println(test.getId() + " has failed");
+					failed++;
+				}
+				else{
+					success++;
+				}
+			}
 		}
 		System.out.println("success:" + success + " failed:" + failed);
 		System.out.println("success rate is " + ((100 * success) / (success + failed)) + "%");
 		Assert.assertTrue(success > failed);
 	}
 
-
-	public double[] DTWOnTrainingSetTest(String testFile) throws java.lang.Exception{
+	public double[] DTWOnTrainingSetTest(String testFile) throws Exception{
 		Utils.get(testFile);
 		TimeWarper tw = new TimeWarper();
-		List<List<Sample>> trainingSet = getTrainingSetFromZip(XMLS_URL);
+		List<Sample> trainingSet = Utils.getTrainingSetFromZip(XMLS_URL);
 		Sample testSample = (Sample) XStream.read(Utils.getFileNameFromUrl(testFile));
 		double yes = 0, no = 0;
-		for (Sample trainingSample : trainingSet.get(YES_INDEX)) {
-			if(!trainingSample.equals(testSample))
-				yes += tw.dtw(testSample, trainingSample);
-		}
-		for (Sample trainingSample : trainingSet.get(NO_INDEX)) {
-			if(!trainingSample.equals(testSample))
-				no += tw.dtw(testSample, trainingSample);
-		}
-		return new double[]{yes / trainingSet.get(YES_INDEX).size(), no / trainingSet.get(NO_INDEX).size()};
-	}
-
-	public static List<List<Sample>> getTrainingSetFromZip(String zipUrl) throws MalformedURLException,
-	IOException, UnsupportedEncodingException, java.lang.Exception {
-		Utils.get(zipUrl);
-		ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
-		List<List<Sample>> trainingSet = new Vector<List<Sample>>();
-		trainingSet.add(new Vector<Sample>());
-		trainingSet.add(new Vector<Sample>());
-		Enumeration<? extends ZipEntry> entries = samplesZip.entries();
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
-
-			Sample read = (Sample) XStream.read(samplesZip.getInputStream(entry));
-			if(entry.getName().contains("yes"))
-				trainingSet.get(YES_INDEX).add(read);
-			else{
-				trainingSet.get(NO_INDEX).add(read);
+		int yesCount = 0, noCount = 0;
+		for (Sample trainingSample : trainingSet) {
+			if(!trainingSample.equals(testSample)){
+				if(trainingSample.getId().contains("yes")){
+					yes += tw.dtw(testSample, trainingSample);
+					yesCount++;
+				}
+				else{
+					no += tw.dtw(testSample, trainingSample);
+					noCount++;
+				}
 			}
 		}
-		samplesZip.close();
-		return trainingSet;
+		return new double[]{yes / yesCount, no / noCount};
 	}
 
 

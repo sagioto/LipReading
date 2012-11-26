@@ -14,13 +14,13 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.googlecode.javacv.CanvasFrame;
-import com.googlecode.javacv.FrameGrabber.Exception;
+import com.googlecode.javacv.FFmpegFrameRecorder;
+import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.cpp.opencv_core.CvArr;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -53,11 +53,14 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 
 	@Override
-	protected Sample getPoints() throws Exception, InterruptedException, ExecutionException{
+	protected Sample getPoints() throws Exception {
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
+		FrameRecorder recorder = null;
+		recorder = FFmpegFrameRecorder.createDefault(sampleName.split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
+		recorder.start();
 		if(!Utils.isCI()){
 			frame = new CanvasFrame(sampleName, CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
@@ -96,11 +99,13 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 					}
 					cvCircle((CvArr)grabbed, new CvPoint(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1)), 25, color, 3, 0, 0);
 					frame.showImage(grabbed);
+					recorder.record(grabbed);
 				}
 			}
 		}
 		if(!Utils.isCI()){
 			frame.dispose();
+			recorder.stop();
 		}
 		return sample;
 	}
