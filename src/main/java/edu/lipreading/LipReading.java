@@ -1,12 +1,10 @@
 package edu.lipreading;
 
-import java.io.File;
 import java.util.Arrays;
 
-import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.NullClassifier;
-import edu.lipreading.normalization.EmptyNomelizer;
+import edu.lipreading.classification.TimeWarperClassifier;
+import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
@@ -30,19 +28,22 @@ public class LipReading {
 			System.exit(0);
 		}
 
-		File samplesDir = new File(args[0]);
-		Normalizer normalizer = new EmptyNomelizer();
+		Normalizer normalizer = new CenterNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
-
+		
+		//TODO: use in -dataset function
+		/*File samplesDir = new File(args[0]);
 		for (String sampleName : samplesDir.list()) {
 			File sample = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
 			if(sample.isFile() && sample.getName().contains("MOV"))
 				XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normelize(fe.extract(sample.getAbsolutePath())));
-		}
-		Classifier classifier = new NullClassifier(); 
+		}*/
+		
+		//TODO: use with test function
+		Classifier classifier = new TimeWarperClassifier(); 
 
 		System.out.println("got the word: " +
-				classifier.classify(null,
+				classifier.classify(Utils.getTrainingSetFromZip("https://dl.dropbox.com/u/8720454/xmls/xmls.zip"),
 						normalizer.normelize(
 								fe.extract(args[0]))));
 		System.exit(0);
