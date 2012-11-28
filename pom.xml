@@ -104,7 +104,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>edu.lipsreading.vision.LipReading</Main-Class>
+							<Main-Class>edu.lipsreading.LipReading</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
