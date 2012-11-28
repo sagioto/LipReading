@@ -15,6 +15,7 @@ public abstract class AbstractFeatureExtractor {
 
 	protected FrameGrabber grabber;
 	protected static String sampleName;
+	private boolean utput = false;
 	
 	public Sample extract(String source) throws Exception {
 		grabber = getGrabber(source);
@@ -54,5 +55,13 @@ public abstract class AbstractFeatureExtractor {
 
 	private boolean isSourceUrl(String source) {
 		return null != source && source.contains("://");
+	}
+
+	public boolean isOutput() {
+		return utput;
+	}
+
+	public void setOutput(boolean shouldOutput) {
+		this.utput = shouldOutput;
 	}
 }

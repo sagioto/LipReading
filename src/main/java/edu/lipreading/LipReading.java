@@ -1,7 +1,10 @@
 package edu.lipreading;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
+import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
@@ -15,7 +18,8 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 public class LipReading {
 
 	public static void main(String...args) throws Exception{
-		if(args.length == 0 || Arrays.asList(args).contains("-help")){
+		List<String> argsAsList = Arrays.asList(args);
+		if(args.length == 0 || argsAsList.contains("-help")){
 			System.out.println("usage:");
 			System.out.println("\t-help : prints this message");
 			System.out.println("\t-extract <video file url, name or 0 for webcam> : extracts Sample object from the file into an xml");
@@ -30,23 +34,43 @@ public class LipReading {
 
 		Normalizer normalizer = new CenterNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
-		
-		//TODO: use in -dataset function
-		/*File samplesDir = new File(args[0]);
+
+		if(argsAsList.contains("-extract")){
+			String sampleName = args[argsAsList.lastIndexOf("-extract") + 1];
+			fe.setOutput(argsAsList.contains("-output"));
+			XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normelize(fe.extract(sampleName)));
+		}
+		else if(argsAsList.contains("-database")){
+			dataset(normalizer, fe, args[argsAsList.lastIndexOf("-database") + 1]);
+		}
+		else if(argsAsList.contains("-test") && argsAsList.size() >= argsAsList.lastIndexOf("-test") + 2){
+			test(normalizer, fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2]);
+		}
+		else if(argsAsList.contains("-test")){
+			test(normalizer, fe, args[argsAsList.lastIndexOf("-test") + 1], "https://dl.dropbox.com/u/8720454/xmls/xmls.zip");
+		}
+
+		System.exit(0);
+	}
+
+	private static void test(Normalizer normalizer,
+			AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile) throws Exception {
+		Classifier classifier = new TimeWarperClassifier(); 
+
+		System.out.println("got the word: " +
+				classifier.classify(Utils.getTrainingSetFromZip(trainigSetZipFile),
+						normalizer.normelize(
+								fe.extract(testFile))));
+	}
+
+	private static void dataset(Normalizer normalizer,
+			AbstractFeatureExtractor fe, String folderPath) throws Exception {
+		File samplesDir = new File(folderPath);
 		for (String sampleName : samplesDir.list()) {
 			File sample = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
 			if(sample.isFile() && sample.getName().contains("MOV"))
 				XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normelize(fe.extract(sample.getAbsolutePath())));
-		}*/
-		
-		//TODO: use with test function
-		Classifier classifier = new TimeWarperClassifier(); 
-
-		System.out.println("got the word: " +
-				classifier.classify(Utils.getTrainingSetFromZip("https://dl.dropbox.com/u/8720454/xmls/xmls.zip"),
-						normalizer.normelize(
-								fe.extract(args[0]))));
-		System.exit(0);
+		}
 	}
 
 

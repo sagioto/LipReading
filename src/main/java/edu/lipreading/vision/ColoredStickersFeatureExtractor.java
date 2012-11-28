@@ -59,11 +59,14 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
-		recorder = FFmpegFrameRecorder.createDefault(sampleName.split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
-		recorder.start();
+
 		if(!Utils.isCI()){
 			frame = new CanvasFrame(sampleName, CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
+			if(isOutput()){
+				recorder = FFmpegFrameRecorder.createDefault(sampleName.split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
+				recorder.start();
+			}
 		}
 
 		while((grabbed = grabber.grab()) != null){
@@ -99,13 +102,17 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 					}
 					cvCircle((CvArr)grabbed, new CvPoint(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1)), 25, color, 3, 0, 0);
 					frame.showImage(grabbed);
-					recorder.record(grabbed);
+					if(isOutput()){
+						recorder.record(grabbed);
+					}
 				}
 			}
 		}
 		if(!Utils.isCI()){
 			frame.dispose();
-			recorder.stop();
+			if(isOutput()){
+				recorder.stop();
+			}
 		}
 		return sample;
 	}
