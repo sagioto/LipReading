@@ -17,6 +17,8 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class LipReading {
 
+	private static final String DEFAULT_TRAINING_SET_ZIP_URL = "https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
+
 	public static void main(String...args) throws Exception{
 		List<String> argsAsList = Arrays.asList(args);
 		if(args.length == 0 || argsAsList.contains("-help")){
@@ -47,7 +49,7 @@ public class LipReading {
 			test(normalizer, fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2]);
 		}
 		else if(argsAsList.contains("-test")){
-			test(normalizer, fe, args[argsAsList.lastIndexOf("-test") + 1], "https://dl.dropbox.com/u/8720454/xmls/xmls.zip");
+			test(normalizer, fe, args[argsAsList.lastIndexOf("-test") + 1], DEFAULT_TRAINING_SET_ZIP_URL);
 		}
 
 		System.exit(0);
