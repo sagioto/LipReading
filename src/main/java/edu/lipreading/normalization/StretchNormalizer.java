@@ -9,7 +9,7 @@ public class StretchNormalizer extends CenterNormalizer {
 	public static final double STRECH_COEFFICIENT = 1000;
 	
 	@Override
-	public Sample normelize(Sample sample) {
+	public Sample normalize(Sample sample) {
 		for (List<Integer> vector : sample.getMatrix()) {
 			int[] center = getCenter(vector);
 			double factor = STRECH_COEFFICIENT / center[X_INDEX];

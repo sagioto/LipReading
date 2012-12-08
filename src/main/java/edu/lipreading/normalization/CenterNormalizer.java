@@ -10,7 +10,7 @@ public class CenterNormalizer implements Normalizer{
 	protected static final int Y_INDEX = 1;
 	
 	@Override
-	public Sample normelize(Sample sample) {
+	public Sample normalize(Sample sample) {
 		for (List<Integer> vector : sample.getMatrix()) {
 			int[] center = getCenter(vector);
 			for (int i = 0; i < vector.size(); i++) {

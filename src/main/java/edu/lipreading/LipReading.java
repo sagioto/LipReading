@@ -40,7 +40,7 @@ public class LipReading {
 		if(argsAsList.contains("-extract")){
 			String sampleName = args[argsAsList.lastIndexOf("-extract") + 1];
 			fe.setOutput(argsAsList.contains("-output"));
-			XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normelize(fe.extract(sampleName)));
+			XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normalize(fe.extract(sampleName)));
 		}
 		else if(argsAsList.contains("-database")){
 			dataset(normalizer, fe, args[argsAsList.lastIndexOf("-database") + 1]);
@@ -61,7 +61,7 @@ public class LipReading {
 
 		System.out.println("got the word: " +
 				classifier.classify(Utils.getTrainingSetFromZip(trainigSetZipFile),
-						normalizer.normelize(
+						normalizer.normalize(
 								fe.extract(testFile))));
 	}
 
@@ -71,7 +71,7 @@ public class LipReading {
 		for (String sampleName : samplesDir.list()) {
 			File sample = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
 			if(sample.isFile() && sample.getName().contains("MOV"))
-				XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normelize(fe.extract(sample.getAbsolutePath())));
+				XStream.write(sampleName.split("\\.")[0] + ".xml", normalizer.normalize(fe.extract(sample.getAbsolutePath())));
 		}
 	}
 
