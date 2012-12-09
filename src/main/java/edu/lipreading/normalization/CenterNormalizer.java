@@ -32,8 +32,8 @@ public class CenterNormalizer implements Normalizer{
 			else
 				center[Y_INDEX] += vector.get(i);
 		}
-		center[X_INDEX] /= (vector.size() / 2);
-		center[Y_INDEX] /= (vector.size() / 2);
+		center[X_INDEX] = (int)Math.round(((double)center[X_INDEX]) / (vector.size() / 2));
+		center[Y_INDEX] = (int)Math.round(((double)center[Y_INDEX]) / (vector.size() / 2));
 		return center;
 	}
 
