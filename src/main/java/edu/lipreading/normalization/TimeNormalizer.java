@@ -18,15 +18,16 @@ public class TimeNormalizer implements Normalizer{
 	@Override
 	public Sample normalize(Sample sample) {
 		Sample stretchedSample = new Sample(sample.getId());
-		int subframes = MAX_FRAMES / sample.getMatrix().size();
-		for (int i = 0; i < sample.getMatrix().size(); i++) {
+		int originalSize = sample.getMatrix().size();
+		int subframes = MAX_FRAMES / originalSize;
+		for (int i = 0; i < originalSize; i++) {
 			for (int j = 0; j < subframes; j++) {
 				stretchedSample.getMatrix().add(sample.getMatrix().get(i));
 			}
 		}
 		int diff = MAX_FRAMES - stretchedSample.getMatrix().size(); 
 		for (int i = 0; i < diff; i++) {
-			stretchedSample.getMatrix().add(sample.getMatrix().get(sample.getMatrix().size() - 1));
+			stretchedSample.getMatrix().add(sample.getMatrix().get(originalSize - 1));
 		}
 		return stretchedSample;
 	}
