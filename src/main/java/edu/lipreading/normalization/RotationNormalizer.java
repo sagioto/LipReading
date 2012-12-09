@@ -49,6 +49,7 @@ public class RotationNormalizer implements Normalizer {
 		double dy = rightY - leftY;
 		double dx = rightX - leftX;
 		
+		//estimate the center point to perform rotation around.
 		double centerX = leftX+(dx/2);
 		double centerY = leftY+(dy/2);
 
@@ -57,8 +58,8 @@ public class RotationNormalizer implements Normalizer {
 		if (Math.abs(angle) > ROTATION_THRESHOLD) {
 			for (List<Integer> vector : sample.getMatrix()) {
 				for (int i = 0; i < vector.size(); i += 2) {
-					double x = vector.get(i)-centerX;
-					double y = vector.get(i + 1)-centerY;
+					double x = vector.get(i)-centerX; //rotation around (0,0)
+					double y = vector.get(i + 1)-centerY; //rotation around (0,0)
 					// x' = x*cos(a) - y*sin(a)
 					// y' = x*sin(a) + y*cos(a)
 					vector.set(i,
