@@ -1,6 +1,7 @@
 package edu.lipreading;
 
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -17,6 +19,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import weka.core.xml.XStream;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class Utils {
 
@@ -102,6 +105,18 @@ public class Utils {
 		}
 		samplesZip.close();
 		return trainingSet;
+	}
+	
+	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
+		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
+		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
+		
+		List<String[]> samplesStrings = new ArrayList<String[]>();
+		for (Sample sample : trainingSetFromZip) {
+			samplesStrings.add(sample.toCSV());
+		}
+		writer.writeAll(samplesStrings);
+		writer.close();
 	}
 
 }

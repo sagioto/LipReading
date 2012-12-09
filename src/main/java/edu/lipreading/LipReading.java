@@ -31,6 +31,7 @@ public class LipReading {
 			System.out.println("\t-test <video file url, name, 0 for webcam or xml> : uses the input file as test against a default data set");
 			System.out.println("\t-test <video file url, name, 0 for webcam or xml>  <zip file url> : uses the input file as test against " +
 					"\n\t the data set in the given zip file url");
+			System.out.println("\t-csv <input zip file, output file> : converts zip data set into csv one");
 			System.exit(0);
 		}
 
@@ -51,9 +52,14 @@ public class LipReading {
 		else if(argsAsList.contains("-test")){
 			test(normalizer, fe, args[argsAsList.lastIndexOf("-test") + 1], DEFAULT_TRAINING_SET_ZIP_URL);
 		}
+		else if(argsAsList.contains("-csv")){
+			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);
+		}
 
 		System.exit(0);
 	}
+
+	
 
 	private static void test(Normalizer normalizer,
 			AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile) throws Exception {
