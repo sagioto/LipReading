@@ -74,11 +74,11 @@ public class Sample {
 			int size = this.getMatrix().size() * this.getMatrix().get(0).size() + 1;
 			String[] ans = new String[size];
 			if(this.getId().contains("yes"))
-				ans[0] = String.valueOf(0);
+				ans[0] = "yes";
 			else if(this.getId().contains("no"))
-				ans[0] = String.valueOf(1);
+				ans[0] = "no";
 			if(this.getId().contains("hello"))
-				ans[0] = String.valueOf(2);
+				ans[0] = "hello";
 			for (int i = 0; i < this.getMatrix().size(); i++) {
 				for (int j = 0; j < this.getMatrix().get(0).size(); j++) {
 					ans[1 + (i * this.getMatrix().get(0).size()) + j] = String.valueOf(this.getMatrix().get(i).get(j));

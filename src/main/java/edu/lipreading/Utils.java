@@ -110,8 +110,13 @@ public class Utils {
 	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
 		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
-		
+		String[] title = new String[801];
+		title[0] = "word";
+		for (int i = 1; i < 801; i++) {
+			title[i] = String.valueOf(i);
+		}
 		List<String[]> samplesStrings = new ArrayList<String[]>();
+		
 		for (Sample sample : trainingSetFromZip) {
 			samplesStrings.add(sample.toCSV());
 		}
