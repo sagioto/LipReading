@@ -43,9 +43,9 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static CvScalar RED_MAX = cvScalar(40, 80, 255, 0);
 
 	private final static CvScalar GREEN_MIN = cvScalar(0, 30, 0, 0);
-	private final static CvScalar GREEN_MAX = cvScalar(70, 255, 70, 0);
+	private final static CvScalar GREEN_MAX = cvScalar(70, 255, 90, 0);
 
-	private final static CvScalar BLUE_MIN = cvScalar(70, 0, 10, 0);
+	private final static CvScalar BLUE_MIN = cvScalar(30, 0, 10, 0);
 	private final static CvScalar BLUE_MAX = cvScalar(170, 60, 70, 0);
 
 	private final static CvScalar YELLOW_MIN = cvScalar(20, 100, 100, 0);
