@@ -57,6 +57,9 @@ public class LipReading {
 		else if(argsAsList.contains("-csv")){
 			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);
 		}
+		else if(argsAsList.contains("-arff")){
+			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-arff") + 1], args[argsAsList.lastIndexOf("-arff") + 2]);
+		}
 
 		System.exit(0);
 	}

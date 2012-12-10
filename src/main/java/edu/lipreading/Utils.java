@@ -1,5 +1,6 @@
 package edu.lipreading;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -108,20 +110,34 @@ public class Utils {
 	}
 	
 	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
-		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
+		CSVWriter writer = new CSVWriter(new FileWriter(outputFile + ".csv"));
 		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
 		String[] title = new String[801];
 		title[0] = "word";
 		for (int i = 1; i < 801; i++) {
 			title[i] = String.valueOf(i);
 		}
+		List<String[]> samplesStrings = getCSVData(trainingSetFromZip);
+		writer.writeAll(samplesStrings);
+		writer.close();
+	}
+	
+	
+	public static void dataSetToARFF(String zipFileInput, String outputFile) throws IOException, Exception {
+		dataSetToCSV(zipFileInput, outputFile);
+		CSVLoader.main((outputFile + ".csv > " + outputFile + ".arff").split(" "));
+		new File(outputFile + ".csv").delete();
+		
+	}
+
+
+	private static List<String[]> getCSVData(List<Sample> trainingSetFromZip) {
 		List<String[]> samplesStrings = new ArrayList<String[]>();
 		
 		for (Sample sample : trainingSetFromZip) {
 			samplesStrings.add(sample.toCSV());
 		}
-		writer.writeAll(samplesStrings);
-		writer.close();
+		return samplesStrings;
 	}
 
 }
