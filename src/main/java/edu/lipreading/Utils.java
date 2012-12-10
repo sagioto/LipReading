@@ -19,6 +19,9 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.TimeNormalizer;
+
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -94,7 +97,7 @@ public class Utils {
 		String[] split = source.split(s);
 		return split[split.length - 1];
 	}
-	
+
 	public static List<Sample> getTrainingSetFromZip(String zipUrl) throws Exception {
 		Utils.get(zipUrl);
 		ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
@@ -108,7 +111,7 @@ public class Utils {
 		samplesZip.close();
 		return trainingSet;
 	}
-	
+
 	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFile + ".csv"));
 		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
@@ -117,27 +120,23 @@ public class Utils {
 		for (int i = 1; i < 801; i++) {
 			title[i] = String.valueOf(i);
 		}
-		List<String[]> samplesStrings = getCSVData(trainingSetFromZip);
+		List<String[]> samplesStrings = new ArrayList<String[]>();
+		samplesStrings.add(title);
+		for (Sample sample : trainingSetFromZip) {
+			sample = LipReading.normelize(sample, new CenterNormalizer(), new TimeNormalizer());
+			samplesStrings.add(sample.toCSV());
+		}
 		writer.writeAll(samplesStrings);
 		writer.close();
 	}
-	
-	
+
+
 	public static void dataSetToARFF(String zipFileInput, String outputFile) throws IOException, Exception {
 		dataSetToCSV(zipFileInput, outputFile);
 		CSVLoader.main((outputFile + ".csv > " + outputFile + ".arff").split(" "));
 		new File(outputFile + ".csv").delete();
-		
+
 	}
 
-
-	private static List<String[]> getCSVData(List<Sample> trainingSetFromZip) {
-		List<String[]> samplesStrings = new ArrayList<String[]>();
-		
-		for (Sample sample : trainingSetFromZip) {
-			samplesStrings.add(sample.toCSV());
-		}
-		return samplesStrings;
-	}
 
 }

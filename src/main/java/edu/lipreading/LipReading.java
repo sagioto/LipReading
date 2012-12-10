@@ -58,7 +58,7 @@ public class LipReading {
 			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);
 		}
 		else if(argsAsList.contains("-arff")){
-			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-arff") + 1], args[argsAsList.lastIndexOf("-arff") + 2]);
+			Utils.dataSetToARFF(args[argsAsList.lastIndexOf("-arff") + 1], args[argsAsList.lastIndexOf("-arff") + 2]);
 		}
 
 		System.exit(0);
@@ -69,9 +69,7 @@ public class LipReading {
 	private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile, Normalizer... normalizers) throws Exception {
 		Classifier classifier = new TimeWarperClassifier(); 
 		Sample sample = fe.extract(testFile);
-		for (Normalizer normalizer : normalizers) {
-			sample = normalizer.normalize(sample);
-		}
+		sample = normelize(sample, normalizers);
 		System.out.println("got the word: " +
 				classifier.classify(Utils.getTrainingSetFromZip(trainigSetZipFile),
 								sample));
@@ -83,12 +81,19 @@ public class LipReading {
 			File sampleFile = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
 			if(sampleFile.isFile() && sampleFile.getName().contains("MOV")) {
 				Sample sample = fe.extract(sampleFile.getAbsolutePath());
-				for (Normalizer normalizer : normalizers) {
-					sample = normalizer.normalize(sample);
-				}
+				sample = normelize(sample, normalizers);
 				XStream.write(sampleName.split("\\.")[0] + ".xml", sample);
 			}
 		}
+	}
+
+
+
+	public static Sample normelize(Sample sample, Normalizer... normalizers) {
+		for (Normalizer normalizer : normalizers) {
+			sample = normalizer.normalize(sample);
+		}
+		return sample;
 	}
 
 
