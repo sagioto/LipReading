@@ -114,7 +114,7 @@ public class Utils {
 	}
 
 	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
-		CSVWriter writer = new CSVWriter(new FileWriter(outputFile + ".csv"));
+		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
 		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
 		String[] title = new String[801];
 		title[0] = "word";
@@ -133,18 +133,18 @@ public class Utils {
 
 
 	public static void dataSetToARFF(String zipFileInput, String outputFile) throws IOException, Exception {
-		dataSetToCSV(zipFileInput, outputFile);
+		String csvFileName = outputFile.split("\\.")[0] + ".csv";
+		dataSetToCSV(zipFileInput, csvFileName);
 		CSVLoader csvLoader = new CSVLoader();
 		ArffSaver arffSaver = new ArffSaver();
-		File csvFile = new File(outputFile + ".csv");
-		File arffFile = new File(outputFile + ".arff");
+		File csvFile = new File(csvFileName);
+		File arffFile = new File(outputFile);
 		csvLoader.setFile(csvFile);
 		arffSaver.setFile(arffFile);
 		arffSaver.setStructure(csvLoader.getStructure());
 		arffSaver.setInstances(csvLoader.getDataSet());
 		arffSaver.writeBatch();
 		csvFile.delete();
-
 	}
 
 
