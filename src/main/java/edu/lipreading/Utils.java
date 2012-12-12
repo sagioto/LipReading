@@ -22,6 +22,7 @@ import java.util.zip.ZipFile;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.SimpleTimeNormalizer;
 
+import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -133,8 +134,16 @@ public class Utils {
 
 	public static void dataSetToARFF(String zipFileInput, String outputFile) throws IOException, Exception {
 		dataSetToCSV(zipFileInput, outputFile);
-		CSVLoader.main((outputFile + ".csv > " + outputFile + ".arff").split(" "));
-		new File(outputFile + ".csv").delete();
+		CSVLoader csvLoader = new CSVLoader();
+		ArffSaver arffSaver = new ArffSaver();
+		File csvFile = new File(outputFile + ".csv");
+		File arffFile = new File(outputFile + ".arff");
+		csvLoader.setFile(csvFile);
+		arffSaver.setFile(arffFile);
+		arffSaver.setStructure(csvLoader.getStructure());
+		arffSaver.setInstances(csvLoader.getDataSet());
+		arffSaver.writeBatch();
+		csvFile.delete();
 
 	}
 
