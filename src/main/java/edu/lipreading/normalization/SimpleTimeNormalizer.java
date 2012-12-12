@@ -11,7 +11,7 @@ import edu.lipreading.Sample;
  * @author Sagi Bernstein
  *
  */
-public class TimeNormalizer implements Normalizer{
+public class SimpleTimeNormalizer implements Normalizer{
 
 	private static final int MAX_FRAMES = 100;
 

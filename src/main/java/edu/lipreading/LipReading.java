@@ -9,7 +9,7 @@ import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.TimeNormalizer;
+import edu.lipreading.normalization.SimpleTimeNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
@@ -37,7 +37,7 @@ public class LipReading {
 		}
 
 		Normalizer cn = new CenterNormalizer();
-		Normalizer tn = new TimeNormalizer();
+		Normalizer tn = new SimpleTimeNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 
 		if(argsAsList.contains("-extract")){

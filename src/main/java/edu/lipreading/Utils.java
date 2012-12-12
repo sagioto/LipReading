@@ -20,7 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.TimeNormalizer;
+import edu.lipreading.normalization.SimpleTimeNormalizer;
 
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
@@ -123,7 +123,7 @@ public class Utils {
 		List<String[]> samplesStrings = new ArrayList<String[]>();
 		samplesStrings.add(title);
 		for (Sample sample : trainingSetFromZip) {
-			sample = LipReading.normelize(sample, new CenterNormalizer(), new TimeNormalizer());
+			sample = LipReading.normelize(sample, new CenterNormalizer(), new SimpleTimeNormalizer());
 			samplesStrings.add(sample.toCSV());
 		}
 		writer.writeAll(samplesStrings);
