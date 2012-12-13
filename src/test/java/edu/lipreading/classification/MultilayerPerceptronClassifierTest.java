@@ -43,7 +43,8 @@ public class MultilayerPerceptronClassifierTest {
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), cn, stn);
 		Classifier mpClassifier = new MultilayerPerceptronClassifier();
-		Assert.assertEquals(expected, mpClassifier.classify(null, sample));
+		String ans = mpClassifier.classify(null, sample);
+		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();
 	}
 	
