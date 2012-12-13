@@ -6,7 +6,7 @@ import java.util.List;
 
 import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.TimeWarperClassifier;
+import edu.lipreading.classification.MultilayerPerceptronClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
 import edu.lipreading.normalization.SimpleTimeNormalizer;
@@ -37,7 +37,7 @@ public class LipReading {
 		}
 
 		Normalizer cn = new CenterNormalizer();
-		Normalizer tn = new SimpleTimeNormalizer();
+		Normalizer stn = new SimpleTimeNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 
 		if(argsAsList.contains("-extract")){
@@ -46,13 +46,13 @@ public class LipReading {
 			XStream.write(sampleName.split("\\.")[0] + ".xml", cn.normalize(fe.extract(sampleName)));
 		}
 		else if(argsAsList.contains("-dataset")){
-			dataset(fe, args[argsAsList.lastIndexOf("-dataset") + 1], cn, tn);
+			dataset(fe, args[argsAsList.lastIndexOf("-dataset") + 1], cn, stn);
 		}
-		else if(argsAsList.contains("-test") && argsAsList.size() >= argsAsList.lastIndexOf("-test") + 2){
-			test(fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2], cn, tn);
+		else if(argsAsList.contains("-test") && argsAsList.size() > argsAsList.lastIndexOf("-test") + 2){
+			test(fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2], cn, stn);
 		}
 		else if(argsAsList.contains("-test")){
-			test(fe, args[argsAsList.lastIndexOf("-test") + 1], DEFAULT_TRAINING_SET_ZIP_URL, cn, tn);
+			test(fe, args[argsAsList.lastIndexOf("-test") + 1], DEFAULT_TRAINING_SET_ZIP_URL, cn, stn);
 		}
 		else if(argsAsList.contains("-csv")){
 			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);
@@ -67,11 +67,11 @@ public class LipReading {
 	
 
 	private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile, Normalizer... normalizers) throws Exception {
-		Classifier classifier = new TimeWarperClassifier(); 
+		Classifier classifier = new MultilayerPerceptronClassifier(); 
 		Sample sample = fe.extract(testFile);
 		sample = normelize(sample, normalizers);
 		System.out.println("got the word: " +
-				classifier.classify(Utils.getTrainingSetFromZip(trainigSetZipFile),
+				classifier.classify(null,
 								sample));
 	}
 
