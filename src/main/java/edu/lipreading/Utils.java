@@ -19,13 +19,12 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.SimpleTimeNormalizer;
-
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
 import au.com.bytecode.opencsv.CSVWriter;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.SimpleTimeNormalizer;
 
 public class Utils {
 
@@ -35,7 +34,6 @@ public class Utils {
 	 * in the current directory
 	 * 
 	 * @param urlToDownload
-	 * @param filename
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
