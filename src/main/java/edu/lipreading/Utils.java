@@ -46,7 +46,7 @@ public class Utils {
 		byte[] buf = new byte[4096];
 		int len;
 		DecimalFormat formatter = new DecimalFormat("###,###,###,###");
-		System.out.println("downloading " + filename + " (" + formatter.format(size) +" Bytes) from " + url + ":");
+		System.out.println("downloading " + filename + " (" + formatter.format(size / 1024) +" kB) from " + url + ":");
 		int i = 0;
 		int totalLen = 0;
 		while ((len = in.read(buf)) >= 0) {
