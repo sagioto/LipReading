@@ -130,12 +130,12 @@ public class TimeWarperTest {
 
 	@AfterClass
 	public static void deleteFile() throws UnsupportedEncodingException{
-		Assert.assertTrue(new File(Utils.getFileNameFromUrl(FILE_URL)).delete());
-		Assert.assertTrue(new File(Utils.getFileNameFromUrl(FILE_URL2)).delete());
-		Assert.assertTrue(new File(Utils.getFileNameFromUrl(FILE_URL3)).delete());
-		Assert.assertTrue(new File(Utils.getFileNameFromUrl(XMLS_URL)).delete());
-		Assert.assertTrue(new File(Utils.getFileNameFromUrl(TEST_NO)).delete());
-		Assert.assertTrue(new File(Utils.getFileNameFromUrl(TEST_YES)).delete());
+		new File(Utils.getFileNameFromUrl(FILE_URL)).delete();
+		new File(Utils.getFileNameFromUrl(FILE_URL2)).delete();
+		new File(Utils.getFileNameFromUrl(FILE_URL3)).delete();
+		new File(Utils.getFileNameFromUrl(XMLS_URL)).delete();
+		new File(Utils.getFileNameFromUrl(TEST_NO)).delete();
+		new File(Utils.getFileNameFromUrl(TEST_YES)).delete();
 	}
 
 }

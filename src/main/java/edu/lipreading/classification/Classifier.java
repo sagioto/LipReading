@@ -5,5 +5,9 @@ import java.util.List;
 import edu.lipreading.Sample;
 
 public interface Classifier {
-	public String classify(List<Sample> trainingSet, Sample test);
+	public String test(Sample test);
+	
+	public void train(List<Sample> trainingSet);
+	
+	public void update(Sample train);
 }

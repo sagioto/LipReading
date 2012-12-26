@@ -17,7 +17,7 @@ import edu.lipreading.normalization.SimpleTimeNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
-public class MultilayerPerceptronClassifierTest {
+public class WekaModelClassifierTest {
 	
 	@Test
 	public void testHello() throws Exception{
@@ -42,14 +42,14 @@ public class MultilayerPerceptronClassifierTest {
 		Normalizer stn = new SimpleTimeNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), cn, stn);
-		Classifier mpClassifier = new MultilayerPerceptronClassifier();
-		String ans = mpClassifier.classify(null, sample);
+		Classifier mpClassifier = new WekaModelClassifier();
+		String ans = mpClassifier.test(sample);
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();
 	}
 	
 	@AfterClass
 	public static void deleteModelFile() throws UnsupportedEncodingException{
-		new File(Utils.getFileNameFromUrl(MultilayerPerceptronClassifier.MPC_MODEL_URL)).delete();
+		new File(Utils.getFileNameFromUrl(WekaModelClassifier.MPC_MODEL_URL)).delete();
 	}
 }

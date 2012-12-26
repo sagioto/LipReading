@@ -60,7 +60,8 @@ public class LipReaderPanel extends VideoCapturePanel {
 					try {
 						trainingSet = Utils.getTrainingSetFromZip(VideoConfiguration.XMLS_URL);
 						TimeWarperClassifier twc = new TimeWarperClassifier();
-						String outputText = twc.classify(trainingSet, recordedSample);
+						twc.train(trainingSet);
+						String outputText = twc.test(recordedSample);
 						lblOutput.setText(outputText);
 					} 
 					catch (Exception e) {

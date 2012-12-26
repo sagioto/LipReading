@@ -5,9 +5,11 @@ import java.util.List;
 import edu.lipreading.Sample;
 
 public class TimeWarperClassifier implements Classifier{
-
+	private List<Sample> trainingSet;
+	
+	
 	@Override
-	public String classify(List<Sample> trainingSet, Sample test) {
+	public String test(Sample test) {
 		TimeWarper tw = new TimeWarper();
 		double yes = 0, no = 0;
 		int yesCount= 0, noCount = 0;
@@ -27,6 +29,19 @@ public class TimeWarperClassifier implements Classifier{
 			return "yes";
 		else
 			return "no";
+	}
+
+
+	@Override
+	public void train(List<Sample> trainingSet) {
+		this.trainingSet = trainingSet;
+		
+	}
+
+
+	@Override
+	public void update(Sample train) {
+		this.trainingSet.add(train);
 	}
 
 }

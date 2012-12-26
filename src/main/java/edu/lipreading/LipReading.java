@@ -6,7 +6,7 @@ import java.util.List;
 
 import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.MultilayerPerceptronClassifier;
+import edu.lipreading.classification.WekaModelClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
 import edu.lipreading.normalization.SimpleTimeNormalizer;
@@ -67,12 +67,11 @@ public class LipReading {
 	
 
 	private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile, Normalizer... normalizers) throws Exception {
-		Classifier classifier = new MultilayerPerceptronClassifier(); 
+		Classifier classifier = new WekaModelClassifier(); 
 		Sample sample = fe.extract(testFile);
 		sample = normelize(sample, normalizers);
 		System.out.println("got the word: " +
-				classifier.classify(null,
-								sample));
+				classifier.test(sample));
 	}
 
 	private static void dataset(AbstractFeatureExtractor fe, String folderPath, Normalizer... normalizers) throws Exception {
