@@ -40,4 +40,9 @@ local.properties
 .settings/
 .loadpath
 
+# IDEA #
+.idea/
+*.ipr
+*.iml
+*.iws
 output*
