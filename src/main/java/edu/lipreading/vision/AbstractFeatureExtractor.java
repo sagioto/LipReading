@@ -15,7 +15,7 @@ public abstract class AbstractFeatureExtractor {
 
 	protected FrameGrabber grabber;
 	protected static String sampleName;
-	private boolean utput = false;
+	private boolean output = false;
 	
 	public Sample extract(String source) throws Exception {
 		grabber = getGrabber(source);
@@ -58,10 +58,10 @@ public abstract class AbstractFeatureExtractor {
 	}
 
 	public boolean isOutput() {
-		return utput;
+		return output;
 	}
 
 	public void setOutput(boolean shouldOutput) {
-		this.utput = shouldOutput;
+		this.output = shouldOutput;
 	}
 }
