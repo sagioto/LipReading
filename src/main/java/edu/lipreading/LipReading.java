@@ -18,8 +18,6 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class LipReading {
 
-	private static final String DEFAULT_TRAINING_SET_ZIP_URL = "https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
-
 	public static void main(String...args) throws Exception{
 		List<String> argsAsList = Arrays.asList(args);
 		if(args.length == 0 || argsAsList.contains("-help")){
@@ -52,7 +50,7 @@ public class LipReading {
 			test(fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2], cn, stn);
 		}
 		else if(argsAsList.contains("-test")){
-			test(fe, args[argsAsList.lastIndexOf("-test") + 1], DEFAULT_TRAINING_SET_ZIP_URL, cn, stn);
+			test(fe, args[argsAsList.lastIndexOf("-test") + 1], Constants.DEFAULT_TRAINING_SET_ZIP_URL, cn, stn);
 		}
 		else if(argsAsList.contains("-csv")){
 			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);
@@ -67,7 +65,7 @@ public class LipReading {
 	
 
 	private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile, Normalizer... normalizers) throws Exception {
-		Classifier classifier = new WekaModelClassifier(); 
+		Classifier classifier = new WekaModelClassifier(Constants.MPC_MODEL_URL); 
 		Sample sample = fe.extract(testFile);
 		sample = normelize(sample, normalizers);
 		System.out.println("got the word: " +

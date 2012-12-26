@@ -10,22 +10,26 @@ import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
 public class WekaModelClassifier implements Classifier{
-	public final static  String MPC_MODEL_URL = "https://dl.dropbox.com/u/8720454/weka/mp-10folds.model";
 	private final static String[] ANS = {"hello", "no", "yes"};
-	private final static SerializedClassifier serializedClassifier = new SerializedClassifier();
+	private final SerializedClassifier serializedClassifier = new SerializedClassifier();
 
-
+	public WekaModelClassifier(String modelFilePath) throws Exception {
+		File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
+		if(!modelFile.exists())
+			Utils.get(modelFilePath);
+		this.serializedClassifier.setModelFile(modelFile);
+	}
 
 	@Override
 	public String test(Sample test) {
 		double ans = -1;
 		try {
-			File modelFile = new File(Utils.getFileNameFromUrl(MPC_MODEL_URL));
-			if(!modelFile.exists())
-				Utils.get(MPC_MODEL_URL);
-			serializedClassifier.setModelFile(modelFile);
+			System.out.println("get current model");
 			weka.classifiers.Classifier currentModel = serializedClassifier.getCurrentModel();
-			ans = currentModel.classifyInstance(sampleToInstance(test));
+			System.out.println("turn sample to instance");
+			Instance sampleToInstance = sampleToInstance(test);
+			System.out.println("classify");
+			ans = currentModel.classifyInstance(sampleToInstance);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
