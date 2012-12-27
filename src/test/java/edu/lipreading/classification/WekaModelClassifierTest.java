@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import junit.framework.Assert;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.lipreading.Constants;
@@ -19,7 +20,7 @@ import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class WekaModelClassifierTest {
-	
+	static private Classifier mpClassifier;
 	
 	@Test
 	public void testHello() throws Exception{
@@ -44,10 +45,14 @@ public class WekaModelClassifierTest {
 		Normalizer stn = new SimpleTimeNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), cn, stn);
-		Classifier mpClassifier = new WekaModelClassifier(Constants.MPC_MODEL_URL);
 		String ans = mpClassifier.test(sample);
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();
+	}
+	
+	@BeforeClass
+	public static void loadClassifierModel() throws Exception{
+		mpClassifier = new WekaModelClassifier(Constants.MPC_MODEL_URL);
 	}
 	
 	@AfterClass

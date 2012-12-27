@@ -15,8 +15,10 @@ public class WekaModelClassifier implements Classifier{
 
 	public WekaModelClassifier(String modelFilePath) throws Exception {
 		File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
+		System.out.println("get the file");
 		if(!modelFile.exists())
 			Utils.get(modelFilePath);
+		System.out.println("set the model file");
 		this.serializedClassifier.setModelFile(modelFile);
 	}
 
