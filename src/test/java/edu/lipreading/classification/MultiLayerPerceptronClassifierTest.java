@@ -19,7 +19,7 @@ import edu.lipreading.normalization.SimpleTimeNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
-public class WekaModelClassifierTest {
+public class MultiLayerPerceptronClassifierTest {
 
 	static private Classifier mpClassifier;
 	
@@ -53,7 +53,7 @@ public class WekaModelClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
-		mpClassifier = new WekaModelClassifier(Constants.MPC_MODEL_URL);
+		mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
 	}
 	
 	@AfterClass
