@@ -20,6 +20,7 @@ import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class WekaModelClassifierTest {
+
 	static private Classifier mpClassifier;
 	
 	@Test
