@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import junit.framework.Assert;
 
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -53,6 +54,7 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
+		Assume.assumeTrue(System.getProperty("os.name").toLowerCase().contains("windows"));
 		mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
 	}
 	
