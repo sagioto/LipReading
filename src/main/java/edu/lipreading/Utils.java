@@ -13,8 +13,10 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -143,6 +145,20 @@ public class Utils {
 		arffSaver.setInstances(csvLoader.getDataSet());
 		arffSaver.writeBatch();
 		csvFile.delete();
+	}
+	
+	public static List<String> readFile(String resource){
+		String string = convertStreamToString(ClassLoader.getSystemResourceAsStream(resource));
+		return Arrays.asList(string.split("\r\n"));
+	}
+	
+	public static String convertStreamToString(InputStream is) {
+	    String ans = "";	
+		Scanner s = new Scanner(is);
+		s.useDelimiter("\\A");
+		ans = s.hasNext() ? s.next() : "";
+		s.close();
+	    return ans;	
 	}
 
 

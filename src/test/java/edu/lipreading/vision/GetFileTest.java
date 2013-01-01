@@ -1,6 +1,7 @@
 package edu.lipreading.vision;
 
 import java.io.File;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -25,6 +26,12 @@ public class GetFileTest {
         File file = new File(Utils.getFileNameFromUrl(FILE_URL));
 		if(file.exists())
 			Assert.assertTrue("file was not deleted", file.delete());
+    }
+
+    @Test
+    public void readWordsFileTest() throws Exception {
+    	List<String> readFile = Utils.readFile("words.txt");
+    	Assert.assertEquals("Job", readFile.get(0));
     }
 
 	@Test

@@ -15,9 +15,10 @@ import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
 public class MultiLayerPerceptronClassifier implements Classifier{
-	private final static String[] ANS = {"hello", "no", "yes"};
+	private final static List<String> ANS = Constants.VOCABULARY;
 	private MultilayerPerceptron classifier;
-
+	private List<Sample> samples;
+	
 	public MultiLayerPerceptronClassifier(String modelFilePath) throws Exception {
 		File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
 		if(!modelFile.exists())
@@ -25,11 +26,7 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 		this.classifier  = (MultilayerPerceptron)weka.core.SerializationHelper.read(new FileInputStream(modelFile));
 	}
 
-	public MultiLayerPerceptronClassifier() {
-        // TODO Auto-generated constructor stub
-    }
-
-    @Override
+	@Override
 	public String test(Sample test) {
 		double ans = -1;
 		try {
@@ -38,7 +35,7 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return ANS[(int)ans];
+		return ANS.get((int)ans);
 	}
 
 	private Instance sampleToInstance(Sample sample) {
@@ -51,28 +48,39 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 	}
 
 
-	@Override
-	public void train(List<Sample> trainingSet) {
-	    ArffLoader loader = new ArffLoader();
-	    try {
-            loader.setSource(new URL(Constants.DEFAULT_ARFF_FILE));
-            Instances dataSet = loader.getDataSet();
-            dataSet.setClassIndex(0);
-            this.classifier = new MultilayerPerceptron();
-            classifier.buildClassifier(dataSet);
-            weka.core.SerializationHelper.write("mp-classifier.model", classifier);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	public void trainFromFile() {
+		ArffLoader loader = new ArffLoader();
+		try {
+			loader.setSource(new URL(Constants.DEFAULT_ARFF_FILE));
+			Instances dataSet = loader.getDataSet();
+			dataSet.setClassIndex(0);
+			this.classifier = new MultilayerPerceptron();
+			classifier.buildClassifier(dataSet);
+			weka.core.SerializationHelper.write("mp-classifier.model", classifier);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void update(Sample train) {
-		// TODO Auto-generated method stub
+		this.samples.add(train);
+		this.train(samples);
 	}
-	
-	public static void main(String ...args) throws Exception {
-	    new MultiLayerPerceptronClassifier().train(null);
+
+	@Override
+	public void train(List<Sample> trainingSet) {
+		this.samples = trainingSet;
+		Instances instances = new Instances("dataset", null, trainingSet.size());
+		for (Sample sample : trainingSet) {
+			instances.add(sampleToInstance(sample));
+		}
+		this.classifier = new MultilayerPerceptron();
+		try {
+			classifier.buildClassifier(instances);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
