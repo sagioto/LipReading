@@ -27,6 +27,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
@@ -39,17 +40,17 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final static short YELLOW_VECTOR_INDEX = 3;
 
 
-	private final static CvScalar RED_MIN = cvScalar(20, 40, 220, 0); 
-	private final static CvScalar RED_MAX = cvScalar(60, 90, 255, 0);
+	private final static CvScalar RED_MIN = Constants.UPPER_STICKER_MIN; 
+	private final static CvScalar RED_MAX = Constants.UPPER_STICKER_MAX;
 
-	private final static CvScalar GREEN_MIN = cvScalar(50, 80, 0, 0);
-	private final static CvScalar GREEN_MAX = cvScalar(110, 180, 90, 0);
+	private final static CvScalar GREEN_MIN = Constants.LOWER_STICKER_MIN;
+	private final static CvScalar GREEN_MAX = Constants.LOWER_STICKER_MAX;
 
-	private final static CvScalar BLUE_MIN = cvScalar(30, 0, 10, 0);
-	private final static CvScalar BLUE_MAX = cvScalar(170, 60, 70, 0);
+	private final static CvScalar BLUE_MIN = Constants.LEFT_STICKER_MIN;
+	private final static CvScalar BLUE_MAX = Constants.LEFT_STICKER_MAX;
 
-	private final static CvScalar YELLOW_MIN = cvScalar(5, 120, 100, 0);
-	private final static CvScalar YELLOW_MAX = cvScalar(50, 200, 255, 0);
+	private final static CvScalar YELLOW_MIN = Constants.RIGHT_STICKER_MIN;
+	private final static CvScalar YELLOW_MAX = Constants.RIGHT_STICKER_MAX;
 
 
 	@Override

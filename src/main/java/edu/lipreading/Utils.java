@@ -21,6 +21,8 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
@@ -160,6 +162,17 @@ public class Utils {
 		s.close();
 	    return ans;	
 	}
-
+	
+	public static boolean isWindows() {
+	    return System.getProperty("os.name").toLowerCase().contains("win");
+	}
+	
+	public static CvScalar getCvScalar(String property) {
+	    String[] split = property.split(",");
+	    return new CvScalar(Double.valueOf(split[0]),
+	            Double.valueOf(split[1]),
+	            Double.valueOf(split[2]),
+	            Double.valueOf(split[3]));
+	}
 
 }
