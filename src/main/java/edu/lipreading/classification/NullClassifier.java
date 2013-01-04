@@ -12,15 +12,9 @@ public class NullClassifier implements Classifier {
 	}
 
 	@Override
-	public void train(List<Sample> trainingSet) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void train(List<Sample> trainingSet) {}
 
 	@Override
-	public void update(Sample train) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void update(Sample train) {}
 
 }
