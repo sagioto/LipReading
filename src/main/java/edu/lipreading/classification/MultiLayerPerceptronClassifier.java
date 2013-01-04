@@ -9,6 +9,7 @@ import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.SerializationHelper;
 import weka.core.converters.ArffLoader;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
@@ -23,7 +24,7 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 		File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
 		if(!modelFile.exists())
 			Utils.get(modelFilePath);
-		this.classifier  = (MultilayerPerceptron)weka.core.SerializationHelper.read(new FileInputStream(modelFile));
+		this.classifier  = (MultilayerPerceptron)SerializationHelper.read(new FileInputStream(modelFile));
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 			Instance sampleToInstance = sampleToInstance(test);
 			ans = classifier.classifyInstance(sampleToInstance);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return ANS.get((int)ans);
 	}
@@ -48,18 +49,14 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 	}
 
 
-	public void trainFromFile() {
+	public void trainFromFile() throws Exception {
 		ArffLoader loader = new ArffLoader();
-		try {
 			loader.setSource(new URL(Constants.DEFAULT_ARFF_FILE));
 			Instances dataSet = loader.getDataSet();
 			dataSet.setClassIndex(0);
 			this.classifier = new MultilayerPerceptron();
 			classifier.buildClassifier(dataSet);
 			weka.core.SerializationHelper.write("mp-classifier.model", classifier);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -79,7 +76,7 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 		try {
 			classifier.buildClassifier(instances);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

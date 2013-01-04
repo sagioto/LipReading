@@ -10,13 +10,14 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 public class Constants {
     public static final Properties LIP_READING_PROPS = new Properties();
     static {
+    	InputStream is = ClassLoader.getSystemResourceAsStream("lr.properties");
         try {
-            InputStream is = ClassLoader.getSystemResourceAsStream("lr.properties");
             LIP_READING_PROPS.load(is);
             is.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+        
     }
 
     public static final String MPC_MODEL_URL = Utils.isWindows() ? 
@@ -28,6 +29,8 @@ public class Constants {
     public static final String DEFAULT_ARFF_FILE = LIP_READING_PROPS.getProperty("DEFAULT_ARFF_FILE");
 
     public static final List<String> VOCABULARY = Utils.readFile(LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
+    
+    
     
     public static final CvScalar UPPER_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MIN"));
     public static final CvScalar UPPER_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MAX"));
