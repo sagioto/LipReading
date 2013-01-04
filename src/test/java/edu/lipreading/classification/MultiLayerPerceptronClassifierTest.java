@@ -54,7 +54,7 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
-		Assume.assumeTrue(Utils.isWindows());
+		//Assume.assumeTrue(Utils.isWindows());
 		mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
 	}
 	
