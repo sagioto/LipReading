@@ -6,9 +6,12 @@ package edu.lipreading.vision;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
+import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_MEDIAN;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 
 import java.util.List;
 import java.util.Vector;
@@ -64,6 +67,7 @@ public class ColoredStickersVideoExtractor extends AbstractVideoExtractor{
 		
 		List<Integer> frameCoordinates = new Vector<Integer>();
 		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
+		
 		if (VideoConfiguration.UPPER_STICKER_MIN != null && VideoConfiguration.UPPER_STICKER_MAX != null)
 			futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.UPPER_STICKER_MIN, VideoConfiguration.UPPER_STICKER_MAX)));
 		else
@@ -80,7 +84,7 @@ public class ColoredStickersVideoExtractor extends AbstractVideoExtractor{
 			futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.RIGHT_STICKER_MIN, VideoConfiguration.RIGHT_STICKER_MAX)));
 		else
 			futuresList.add(null);
-
+		
 		for (Future<List<Integer>> future : futuresList) {
 			if (future == null)
 				frameCoordinates.addAll((Vector<Integer>)emptyList.clone()); //Adds 0,0 if sticker color wasnt found
@@ -133,5 +137,4 @@ public class ColoredStickersVideoExtractor extends AbstractVideoExtractor{
 		ans.add(posY);
 		return ans;
 	}
-
 }

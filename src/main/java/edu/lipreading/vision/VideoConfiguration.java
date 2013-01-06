@@ -13,18 +13,18 @@ public class VideoConfiguration {
 	public static final short RIGHT_VECTOR_INDEX = 3;
 
 
-	public static CvScalar UPPER_STICKER_MIN = cvScalar(20, 40, 220, 0); 
-	public static CvScalar UPPER_STICKER_MAX = cvScalar(60, 90, 255, 0);
+	public static CvScalar UPPER_STICKER_MIN = cvScalar(20,40,220,0);//cvScalar(20, 40, 220, 0); 
+	public static CvScalar UPPER_STICKER_MAX = cvScalar(60,90,255,0);//cvScalar(60, 90, 255, 0);
 
-	public static CvScalar LOWER_STICKER_MIN = cvScalar(50, 80, 0, 0);
-	public static CvScalar LOWER_STICKER_MAX = cvScalar(110, 180, 90, 0);
+	public static CvScalar LOWER_STICKER_MIN = cvScalar(50,80,0,0);//cvScalar(50, 80, 0, 0);
+	public static CvScalar LOWER_STICKER_MAX = cvScalar(110, 180, 90, 0);//cvScalar(110, 180, 90, 0);
 
-	public static CvScalar LEFT_STICKER_MIN = cvScalar(30, 0, 10, 0);
-	public static CvScalar LEFT_STICKER_MAX = cvScalar(170, 60, 70, 0);
+	public static CvScalar LEFT_STICKER_MIN = cvScalar(30, 0, 10, 0);//cvScalar(30, 0, 10, 0);
+	public static CvScalar LEFT_STICKER_MAX = cvScalar(170, 60, 70, 0);//cvScalar(170, 60, 70, 0);
 
-	public static CvScalar RIGHT_STICKER_MIN = cvScalar(5, 120, 100, 0);
-	public static CvScalar RIGHT_STICKER_MAX = cvScalar(50, 200, 255, 0);
+	public static CvScalar RIGHT_STICKER_MIN = cvScalar(5,120,100,0); //cvScalar(5, 120, 100, 0);
+	public static CvScalar RIGHT_STICKER_MAX = cvScalar(50,200,255,0);//cvScalar(50, 200, 255, 0);
 	
-	public static final String XMLS_URL = "https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
+	public static final String XMLS_URL = "C:\\Users\\Dor\\Documents\\GitHub\\LipReading\\training.zip";//"https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
 
 }

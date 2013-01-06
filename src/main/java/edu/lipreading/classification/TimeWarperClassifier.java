@@ -14,7 +14,7 @@ public class TimeWarperClassifier implements Classifier{
 		double yes = 0, no = 0;
 		int yesCount= 0, noCount = 0;
 		for (Sample training : trainingSet) {
-			if(training.equals(test)){
+			if(!training.equals(test)){
 				if(training.getId().contains("yes")){
 					yes += tw.dtw(test, training);
 					yesCount++;

@@ -19,6 +19,7 @@ import edu.lipreading.vision.VideoConfiguration;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 public class VideoConfigPanel extends VideoCapturePanel {
 	/**
@@ -32,6 +33,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 	 */
 	public VideoConfigPanel() {
 		super();
+		canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -173,7 +175,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		  }
 
 		  @Override
-		  protected void getVideoFromCamera() throws com.googlecode.javacv.FrameGrabber.Exception {
+		  protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 				try {
 					
 					IplImage grabbed;
