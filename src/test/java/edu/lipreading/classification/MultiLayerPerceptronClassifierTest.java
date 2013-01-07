@@ -53,7 +53,7 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
-		mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
+	    mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
 	}
 	
 	@AfterClass

@@ -16,7 +16,9 @@ import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
 public class MultiLayerPerceptronClassifier implements Classifier{
-	private final static List<String> ANS = Constants.VOCABULARY;
+	private static final int INSTANCE_SIZE = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + 1;
+	
+    private final static List<String> ANS = Constants.VOCABULARY;
 	private MultilayerPerceptron classifier;
 	private List<Sample> samples;
 	
@@ -40,9 +42,9 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 	}
 
 	private Instance sampleToInstance(Sample sample) {
-		Instance instance = new DenseInstance(801);
+		Instance instance = new DenseInstance(INSTANCE_SIZE);
 		instance.setMissing(0);
-		for (int i = 0; i < 800; i++) {
+		for (int i = 0; i < INSTANCE_SIZE - 1; i++) {
 			instance.setValue(i + 1, sample.getMatrix().get(i / 8).get(i % 8));
 		}
 		return instance;

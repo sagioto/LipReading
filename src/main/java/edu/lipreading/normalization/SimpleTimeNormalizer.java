@@ -1,5 +1,6 @@
 package edu.lipreading.normalization;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 
 /**
@@ -13,7 +14,7 @@ import edu.lipreading.Sample;
  */
 public class SimpleTimeNormalizer implements Normalizer{
 
-	private static final int MAX_FRAMES = 100;
+	private static final int MAX_FRAMES = Constants.FRAMES_COUNT;
 
 	@Override
 	public Sample normalize(Sample sample) {

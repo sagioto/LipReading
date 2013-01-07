@@ -28,7 +28,9 @@ public class Constants {
 
     public static final List<String> VOCABULARY = Utils.readFile(LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
     
+    public static final int FRAMES_COUNT = Integer.valueOf(LIP_READING_PROPS.getProperty("FRAMES_COUNT"));
     
+    public static final int POINT_COUNT = Integer.valueOf(LIP_READING_PROPS.getProperty("POINT_COUNT"));
     
     public static final CvScalar UPPER_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MIN"));
     public static final CvScalar UPPER_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MAX"));
@@ -38,4 +40,6 @@ public class Constants {
     public static final CvScalar LEFT_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("LEFT_STICKER_MAX"));
     public static final CvScalar RIGHT_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("RIGHT_STICKER_MIN"));
     public static final CvScalar RIGHT_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("RIGHT_STICKER_MAX"));
+
+
 }
