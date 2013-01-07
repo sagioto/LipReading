@@ -33,7 +33,6 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JLabel lblOutput;
-	private boolean recording;
 	private JButton btnRecord;
 	private TimeWarperClassifier classifier;
 	private List<Sample> trainingSet;
@@ -50,7 +49,6 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		setBackground(Color.WHITE);
 		setLayout(null);
 		
-		recording = false;
 		
 		lblOutput = new JLabel("");
 		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);

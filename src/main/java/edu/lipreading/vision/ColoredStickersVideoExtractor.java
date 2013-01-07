@@ -6,12 +6,9 @@ package edu.lipreading.vision;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
-import static com.googlecode.javacv.cpp.opencv_highgui.cvSaveImage;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_MEDIAN;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 
 import java.util.List;
 import java.util.Vector;
