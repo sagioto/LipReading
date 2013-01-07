@@ -78,23 +78,28 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 				btnRecord.setEnabled(false);
 				btnRecord.setText("Downloading File...");
 				lblOutput.setText("");
-				setVideoInput(txtFilePath.getText());
-				try {
-					initGrabber();
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				stickersExt.initSample(txtFilePath.getText());
-				startVideo();
-				
-				
+				Thread videoGrabberThread = new Thread(new Runnable()
+				{
+					public void run()
+				    {
+						setVideoInput(txtFilePath.getText());
+						try {
+							initGrabber();
+						} catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						stickersExt.initSample(txtFilePath.getText());
+						startVideo();
+				    }
+				});
+				videoGrabberThread.start();
 			}
 		});
 		btnRecord.setBackground(Color.WHITE);
