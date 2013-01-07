@@ -8,4 +8,4 @@ before_install:
   - src/main/scripts/opencv-install-ubuntu.sh
 
 script:
-  - mvn test -Xss2m
+  - mvn test -DjvmArgs="-Xss2m"
