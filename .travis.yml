@@ -8,4 +8,4 @@ before_install:
   - src/main/scripts/opencv-install-ubuntu.sh
 
 script:
-  - MAVEN_OPTS="-Xss2m" mvn test
+  - MAVEN_OPTS="-Xss4m" mvn test
