@@ -10,6 +10,7 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
+import static com.googlecode.javacv.cpp.opencv_highgui.*;
 
 import java.util.List;
 import java.util.Vector;
@@ -141,7 +142,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		IplImage imgThreshold = cvCreateImage(cvGetSize(orgImg), 8, 1);
 		cvInRangeS(orgImg, minScalar, maxScalar, imgThreshold);
 		cvSmooth(imgThreshold, imgThreshold, CV_MEDIAN, 15);
-		//cvSaveImage("dsmthreshold.jpg", imgThreshold);
+		cvSaveImage("dsmthreshold.jpg", imgThreshold);
 		return imgThreshold;
 	}
 

@@ -27,10 +27,11 @@ public class MainFrame extends JFrame {
 	protected static String sampleName;
 	private LipReaderPanel lipReaderPanel;
 	private VideoConfigPanel videoConfigPanel;
+	private FileLipReaderPanel fileLipReaderPanel;
 	private JLabel lblLipReaderMenu;
 	private JLabel lblVideoConfigMenu;
 	private ScreenType currentScreen;
-	
+	private JLabel lblFileLipReaderMenu;
 	
 	/**
 	 * Launch the application.
@@ -69,6 +70,7 @@ public class MainFrame extends JFrame {
 		contentPane.setLayout(null);
 		lipReaderPanel = new LipReaderPanel();
 		videoConfigPanel = new VideoConfigPanel();
+		fileLipReaderPanel = new FileLipReaderPanel();
 		
 		
 		Panel titlePanel = new Panel();
@@ -80,7 +82,7 @@ public class MainFrame extends JFrame {
 		JLabel lblLipReader = new JLabel("Lip Reader");
 		lblLipReader.setForeground(Color.WHITE);
 		lblLipReader.setFont(new Font("Tahoma", Font.PLAIN, 47));
-		lblLipReader.setBounds(38, 25, 234, 68);
+		lblLipReader.setBounds(38, 11, 234, 68);
 		titlePanel.add(lblLipReader);
 		
 		lblVideoConfigMenu = new JLabel("Video Configuration");
@@ -93,6 +95,7 @@ public class MainFrame extends JFrame {
 				}
 				lblLipReaderMenu.setForeground(Color.WHITE);
 				lblVideoConfigMenu.setForeground(Color.LIGHT_GRAY);
+				lblFileLipReaderMenu.setForeground(Color.WHITE);
 			}
 
 			
@@ -121,24 +124,51 @@ public class MainFrame extends JFrame {
 				}
 				lblVideoConfigMenu.setForeground(Color.WHITE);
 				lblLipReaderMenu.setForeground(Color.LIGHT_GRAY);
+				lblFileLipReaderMenu.setForeground(Color.WHITE);
 			}
 		});
 		lblLipReaderMenu.setHorizontalAlignment(SwingConstants.CENTER);
-		lblLipReaderMenu.setForeground(Color.LIGHT_GRAY);
+		lblLipReaderMenu.setForeground(Color.WHITE);
 		lblLipReaderMenu.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblLipReaderMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblLipReaderMenu.setBounds(437, 90, 81, 14);
 		titlePanel.add(lblLipReaderMenu);
 		
-		currentScreen = ScreenType.LipReader;
+		lblFileLipReaderMenu = new JLabel("Lip Reader From File");
+		lblFileLipReaderMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if (currentScreen != ScreenType.FileLipReader)
+				{
+					changeScreen(ScreenType.FileLipReader);
+				}
+				lblVideoConfigMenu.setForeground(Color.WHITE);
+				lblLipReaderMenu.setForeground(Color.WHITE);
+				lblFileLipReaderMenu.setForeground(Color.LIGHT_GRAY);
+			}
+		});
+		lblFileLipReaderMenu.setHorizontalAlignment(SwingConstants.CENTER);
+		lblFileLipReaderMenu.setForeground(Color.LIGHT_GRAY);
+		lblFileLipReaderMenu.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblFileLipReaderMenu.setBounds(279, 90, 148, 14);
+		lblFileLipReaderMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		titlePanel.add(lblFileLipReaderMenu);
+		
+		//currentScreen = ScreenType.LipReader;
 		lipReaderPanel.setBounds(0, 105, 716, 520);
 		contentPane.add(lipReaderPanel);
-		lipReaderPanel.setVisible(true);
-		lipReaderPanel.startVideo();
+		lipReaderPanel.setVisible(false);
+		//lipReaderPanel.setVisible(true);
+		//lipReaderPanel.startVideo();
 		
 		videoConfigPanel.setBounds(0, 105, 716, 520);
 		contentPane.add(videoConfigPanel);
 		videoConfigPanel.setVisible(false);
+		
+		currentScreen = ScreenType.FileLipReader;
+		fileLipReaderPanel.setBounds(0, 105, 716, 520);
+		contentPane.add(fileLipReaderPanel);
+		fileLipReaderPanel.setVisible(true);
 		
 		
 		
@@ -152,15 +182,26 @@ public class MainFrame extends JFrame {
 		switch (screenType) {
 		case LipReader:
 			lipReaderPanel.setVisible(true);
+			fileLipReaderPanel.setVisible(false);
+			fileLipReaderPanel.stopVideo();
 			videoConfigPanel.setVisible(false);
 			videoConfigPanel.stopVideo();
 			lipReaderPanel.startVideo();
 			break;
 		case ConfigurationVideo:
 			videoConfigPanel.setVisible(true);
+			fileLipReaderPanel.setVisible(false);
+			fileLipReaderPanel.stopVideo();
 			lipReaderPanel.setVisible(false);
 			lipReaderPanel.stopVideo();
 			videoConfigPanel.startVideo();
+			break;
+		case FileLipReader:
+			fileLipReaderPanel.setVisible(true);
+			videoConfigPanel.setVisible(false);
+			videoConfigPanel.stopVideo();
+			lipReaderPanel.setVisible(false);
+			lipReaderPanel.stopVideo();
 			break;
 
 		default:

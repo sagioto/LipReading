@@ -42,7 +42,8 @@ public class VideoCapturePanel extends JPanel {
 		this.add(canvas);
         canvas.setVisible(true);
         canvas.createBufferStrategy(1);
-
+        
+        threadStop = new Boolean(true);
 	}
 
 	public void startVideo() {
@@ -72,7 +73,7 @@ public class VideoCapturePanel extends JPanel {
 			public void run()
 		    {
 		    	try {
-					getVideoFromCamera();
+					getVideoFromSource();
 				} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -88,7 +89,9 @@ public class VideoCapturePanel extends JPanel {
 		synchronized (threadStop) {
 			threadStop = true;
 			try {
-				grabber.stop();
+				if (grabber != null){
+					grabber.stop();
+				}
 			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -98,7 +101,7 @@ public class VideoCapturePanel extends JPanel {
 		
 	}
 	
-	protected void getVideoFromCamera() throws com.googlecode.javacv.FrameGrabber.Exception {
+	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 			
 			IplImage grabbed;		
@@ -116,7 +119,9 @@ public class VideoCapturePanel extends JPanel {
 		}
 	}
 
-	
+	public void initGrabber() throws MalformedURLException, IOException, Exception{
+		grabber = getGrabber(videoInput);
+	}
 	
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
@@ -147,7 +152,9 @@ public class VideoCapturePanel extends JPanel {
 	}
 
 	
-	
+	public void setVideoInput(String videoInput){
+		this.videoInput = videoInput;
+	}
 	
 	
 }

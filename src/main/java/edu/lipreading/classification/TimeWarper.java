@@ -14,9 +14,7 @@ import edu.lipreading.Sample;
 public class TimeWarper {
 	private final static short NUM_OF_STICKERS = 4;
 
-	public TimeWarper() {
-		// TODO Auto-generated constructor stub
-	}
+	public TimeWarper() {}
 	
 	
 	public double dtw(Sample test, Sample training) {

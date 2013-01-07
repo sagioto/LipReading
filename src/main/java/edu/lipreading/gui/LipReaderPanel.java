@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.UIManager;
 
 public class LipReaderPanel extends VideoCapturePanel {
 
@@ -34,6 +35,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 	 */
 	public LipReaderPanel() {
 		super();
+		canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
 		setBackground(Color.WHITE);
 		setLayout(null);
 		
@@ -89,7 +91,8 @@ public class LipReaderPanel extends VideoCapturePanel {
 		
 	}
 
-	protected void getVideoFromCamera() throws com.googlecode.javacv.FrameGrabber.Exception {
+	@Override
+	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 			IplImage grabbed;
 			while(!threadStop){
