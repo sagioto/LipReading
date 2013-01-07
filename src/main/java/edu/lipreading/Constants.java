@@ -20,9 +20,7 @@ public class Constants {
         
     }
 
-    public static final String MPC_MODEL_URL = Utils.isWindows() ? 
-            LIP_READING_PROPS.getProperty("WINDOWS_MPC_MODEL") :
-            LIP_READING_PROPS.getProperty("LINUX_MPC_MODEL");
+    public static final String MPC_MODEL_URL = LIP_READING_PROPS.getProperty("MPC_MODEL");
 
     public static final String DEFAULT_TRAINING_SET_ZIP_URL = LIP_READING_PROPS.getProperty("DEFAULT_TRAINING_SET_ZIP_URL");
 

@@ -6,3 +6,6 @@ before_install:
   - src/main/scripts/prerequisites-install-ubuntu.sh
   - src/main/scripts/opencv-download-ubuntu.sh
   - src/main/scripts/opencv-install-ubuntu.sh
+
+script:
+  - mvn test -Xss2m
