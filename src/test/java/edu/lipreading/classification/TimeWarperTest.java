@@ -17,7 +17,7 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class TimeWarperTest {
 
-	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/yes-%2815%29.MOV";//"https://dl.dropbox.com/u/8720454/no-%281%29.MOV";
+	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/no-%281%29.MOV";
 	protected static final String FILE_URL2 = "https://dl.dropbox.com/u/8720454/no-%281%29SpeedX2.avi";
 	protected static final String FILE_URL3 = "https://dl.dropbox.com/u/8720454/xmls/no-%2813%29.xml";
 	protected static final String XMLS_URL = "https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
