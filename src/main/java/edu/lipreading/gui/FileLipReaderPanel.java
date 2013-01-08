@@ -15,8 +15,8 @@ import javax.swing.SwingConstants;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.lipreading.Sample;
+import edu.lipreading.TrainingSet;
 import edu.lipreading.classification.TimeWarperClassifier;
-import edu.lipreading.library.TrainingSet;
 import javax.swing.JTextPane;
 import java.awt.SystemColor;
 import javax.swing.UIManager;

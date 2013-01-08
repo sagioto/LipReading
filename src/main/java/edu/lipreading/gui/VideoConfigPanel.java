@@ -5,16 +5,18 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
-import static com.googlecode.javacv.cpp.opencv_core.cvScalar;
 
 import com.googlecode.javacv.cpp.opencv_core.CvArr;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
+import edu.lipreading.Utils;
 import edu.lipreading.vision.VideoConfiguration;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -59,7 +61,9 @@ public class VideoConfigPanel extends VideoCapturePanel {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				Point mousePoint = arg0.getPoint();
-				int stickerRGB = image.getRGB((int)mousePoint.getX(), (int)mousePoint.getY());
+				BufferedImage scaledImg = Utils.resizeImage(image, canvas.getWidth(), canvas.getHeight());
+				int stickerRGB = scaledImg.getRGB((int)mousePoint.getX(), (int)mousePoint.getY());
+				
 				Color c = new Color(stickerRGB);
 
 				if (canvas.stickerListener !=null){
@@ -79,6 +83,10 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		lblNewLabel.setBounds(10, 389, 696, 59);
 		add(lblNewLabel);
 		
+		//JLabel lipsPic = new JLabel("");
+		//lipsPic.setIcon(new ImageIcon(getClass().getResource(Constants.LIP_IMAGE_FILE_PATH)));
+		//lipsPic.setBounds(64, 107, 168, 104);
+		//add(lipsPic);
 		
 	}
 		
@@ -97,10 +105,10 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		  private void initStickers()
 		  {
 		    stickers = new Vector<Sticker>();
-		    stickers.add(new Sticker(136, 64, 20, Color.red, StickerLocation.UPPER));
-		    stickers.add(new Sticker(80, 116, 20, Color.green, StickerLocation.LEFT));
-		    stickers.add(new Sticker(192, 116, 20, Color.blue, StickerLocation.RIGHT));
-		    stickers.add(new Sticker(136, 168, 20, Color.yellow, StickerLocation.LOWER));	   
+		    stickers.add(new Sticker(136, 102, 20, Color.red, StickerLocation.UPPER));
+		    stickers.add(new Sticker(64, 147, 20, Color.green, StickerLocation.LEFT));
+		    stickers.add(new Sticker(220, 147, 20, Color.blue, StickerLocation.RIGHT));
+		    stickers.add(new Sticker(136, 203, 20, Color.yellow, StickerLocation.LOWER));	   
 		    
 		  }
 		
@@ -190,8 +198,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 									CvScalar color = null;
 									switch (i){
 									case VideoConfiguration.UPPER_VECTOR_INDEX:
-										color = cvScalar(0, 0, 255, 0);
-										//color = VideoConfiguration.UPPER_STICKER_MAX;//TODO - Make an average of max & min
+										color = VideoConfiguration.UPPER_STICKER_MAX;
 										break;
 									case VideoConfiguration.LOWER_VECTOR_INDEX:
 										color = VideoConfiguration.LOWER_STICKER_MAX;

@@ -1,4 +1,4 @@
-package edu.lipreading.library;
+package edu.lipreading;
 
 import java.util.List;
 
