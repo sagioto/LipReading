@@ -12,7 +12,7 @@ import com.googlecode.javacv.VideoInputFrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.lipreading.Utils;
-import edu.lipreading.vision.ColoredStickersVideoExtractor;
+import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class VideoCapturePanel extends JPanel {
 
@@ -25,7 +25,7 @@ public class VideoCapturePanel extends JPanel {
 	protected VideoCanvas canvas;
 	protected FrameGrabber grabber = null;
 	protected String sampleName;
-	protected ColoredStickersVideoExtractor stickersExtractor;
+	protected ColoredStickersFeatureExtractor stickersExtractor;
 	protected Thread videoGrabber;
 	protected Boolean threadStop;
 	
@@ -34,7 +34,7 @@ public class VideoCapturePanel extends JPanel {
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
 	public VideoCapturePanel() {
-		stickersExtractor = new ColoredStickersVideoExtractor();
+		stickersExtractor = new ColoredStickersFeatureExtractor();
 		canvas = new VideoCanvas();
 		canvas.setBackground(Color.LIGHT_GRAY);
         

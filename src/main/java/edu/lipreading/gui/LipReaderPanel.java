@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -14,9 +15,8 @@ import javax.swing.UIManager;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-import edu.lipreading.Constants;
 import edu.lipreading.Sample;
-import edu.lipreading.Utils;
+import edu.lipreading.TrainingSet;
 import edu.lipreading.classification.TimeWarperClassifier;
 
 public class LipReaderPanel extends VideoCapturePanel {
@@ -28,6 +28,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 	private JLabel lblOutput;
 	private boolean recording;
 	private JButton btnRecord;
+	private Sample recordedSample;
 	
 	/**
 	 * Create the panel.
@@ -47,7 +48,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 				if (!recording) // Button should start recording
 				{
 					btnRecord.setText("Stop");
-					stickersExtractor.initSample(Calendar.getInstance().getTime().toString());
+					recordedSample = new Sample("web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date()));
 					lblOutput.setText("");
 					recording = true;
 				}
@@ -55,12 +56,11 @@ public class LipReaderPanel extends VideoCapturePanel {
 				{
 					recording = false;
 					btnRecord.setText("Record");
-					Sample recordedSample = stickersExtractor.getSample();
 					
 					//TODO - Extract to thread:
 					List<Sample> trainingSet;
 					try {
-						trainingSet = Utils.getTrainingSetFromZip(Constants.DEFAULT_TRAINING_SET_ZIP_URL);
+						trainingSet = TrainingSet.getTrainingSet();
 						TimeWarperClassifier twc = new TimeWarperClassifier();
 						twc.train(trainingSet);
 						String outputText = twc.test(recordedSample);
@@ -107,7 +107,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 						if (recording)
 						{
 							try {
-								stickersExtractor.savePoints(grabbed);
+								recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

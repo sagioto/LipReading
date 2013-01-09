@@ -39,6 +39,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 	private JTextPane txtFilePath;
 	private Thread classifierThread;
 	private JLabel lblNewLabel;
+	private Sample recordedSample;
+	
 	/**
 	 * Create the panel.
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
@@ -95,7 +97,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						stickersExtractor.initSample(txtFilePath.getText());
+						recordedSample = new Sample(txtFilePath.getText());
 						startVideo();
 				    }
 				});
@@ -123,7 +125,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 					canvas.setImage(image);
 					canvas.paint(null);
 					try {
-						stickersExtractor.savePoints(grabbed);
+						recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -141,7 +143,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 
 				public void run()
 			    {
-		    		String outputText = classifier.test(stickersExtractor.getSample());
+		    		String outputText = classifier.test(recordedSample);
 					lblOutput.setText(outputText);
 					btnRecord.setText("Read Lips From File");
 					btnRecord.setEnabled(true);

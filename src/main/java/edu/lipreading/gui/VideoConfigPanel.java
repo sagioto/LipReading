@@ -17,7 +17,6 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.lipreading.Constants;
-import edu.lipreading.Utils;
 import edu.lipreading.vision.StickerColorConfiguration;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -62,7 +61,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				Point mousePoint = arg0.getPoint();
-				BufferedImage scaledImg = Utils.resizeImage(image, canvas.getWidth(), canvas.getHeight());
+				BufferedImage scaledImg = UIUtils.resizeImage(image, canvas.getWidth(), canvas.getHeight());
 				int stickerRGB = scaledImg.getRGB((int)mousePoint.getX(), (int)mousePoint.getY());
 				
 				Color c = new Color(stickerRGB);
