@@ -11,8 +11,8 @@ public class TimeWarperClassifier implements Classifier{
 	@Override
 	public String test(Sample test) {
 		TimeWarper tw = new TimeWarper();
-		double yes = 0, no = 0;
-		int yesCount= 0, noCount = 0;
+		double yes = 0, no = 0, hello=0;
+		int yesCount= 0, noCount = 0, helloCount =0 ;
 		for (Sample training : trainingSet) {
 			if(!training.equals(test)){
 				if(training.getId().contains("yes")){
@@ -20,15 +20,25 @@ public class TimeWarperClassifier implements Classifier{
 					yesCount++;
 				}
 				else{
-					no += tw.dtw(test, training);
-					noCount++;
+					if(training.getId().contains("no")){
+						no += tw.dtw(test, training);
+						noCount++;
+					}
+					else{
+						hello += tw.dtw(test, training);
+						helloCount++;
+					}
 				}
 			}
 		}
-		if(yes / yesCount < no / noCount)
-			return "yes";
+		if(yes / yesCount < no / noCount && yes / yesCount < hello / helloCount)
+				return "yes";
 		else
-			return "no";
+			if(no / noCount < yes / yesCount && no / noCount < hello / helloCount)
+				return "no";
+			
+			else
+				return "hello";
 	}
 
 

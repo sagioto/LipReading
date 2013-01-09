@@ -21,6 +21,7 @@ public class TimeWarperTest {
 	protected static final String FILE_URL2 = "https://dl.dropbox.com/u/8720454/no-%281%29SpeedX2.avi";
 	protected static final String FILE_URL3 = "https://dl.dropbox.com/u/8720454/xmls/no-%2813%29.xml";
 	protected static final String XMLS_URL = "https://dl.dropbox.com/u/8720454/xmls/xmls.zip";
+	protected static final String DATA_SET2_URL = "https://dl.dropbox.com/u/8720454/set2/dataset.zip";
 	protected static final String TEST_YES = "https://dl.dropbox.com/u/8720454/xmls/yes-%2817%29.xml";
 	protected static final String TEST_NO = "https://dl.dropbox.com/u/8720454/xmls/no-%2817%29.xml";
 	protected static final int YES_INDEX = 0;
@@ -105,6 +106,69 @@ public class TimeWarperTest {
 		Assert.assertTrue(success > failed);
 	}
 
+	
+	@Test
+	public void massiveProofTestSet2() throws Exception{
+		List<Sample> trainingSet = Utils.getTrainingSetFromZip(DATA_SET2_URL);
+		TimeWarper tw = new TimeWarper();
+		int success = 0, failed = 0;
+		for (Sample test : trainingSet) {
+			double yes = 0, no = 0, hello=0;
+			int yesCount = 0, noCount = 0, helloCount=0;
+			for (Sample training : trainingSet) {
+				if(!test.equals(training)){
+					if(training.getId().contains("yes")){
+						yes += tw.dtw(test, training);
+						yesCount++;
+					}
+					else{
+						if(training.getId().contains("no")){
+							no += tw.dtw(test, training);
+							noCount++;
+						}
+						else{
+							hello += tw.dtw(test, training);
+							helloCount++;
+						}
+					}
+				}
+			}
+
+			if(yes / yesCount < no / noCount && yes / yesCount < hello / helloCount){
+				if(test.getId().contains("yes")){
+					success++;
+				}
+				else{
+					System.out.println(test.getId() + " has failed");
+					failed++;
+				}					
+			}
+			else{
+				if(no / noCount < yes / yesCount && no / noCount < hello / helloCount){
+					if(test.getId().contains("no")){
+						success++;
+					}
+					else{
+						System.out.println(test.getId() + " has failed");
+						failed++;
+					}
+				}
+				else{
+					if(test.getId().contains("hello")){
+						success++;
+					}
+					else{
+						System.out.println(test.getId() + " has failed");
+						failed++;
+					}
+				}
+			}
+		}
+		System.out.println("success:" + success + " failed:" + failed);
+		System.out.println("success rate is " + ((100 * success) / (success + failed)) + "%");
+		Assert.assertTrue(success > failed);
+	}
+	
 	public double[] DTWOnTrainingSetTest(String testFile) throws Exception{
 		Utils.get(testFile);
 		TimeWarper tw = new TimeWarper();
