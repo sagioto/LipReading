@@ -14,14 +14,15 @@ import edu.lipreading.Utils;
 
 public class TrainingSet {
 
-	
+	private TrainingSet(){}
+
 	public static List<Sample> trainingSet = null;
-	
+
 	private static Object monitor = new Object();
-	 
-   public static List<Sample> getTrainingSet() {
-      if (trainingSet == null){
-		   synchronized (monitor) {
+
+	public static List<Sample> getTrainingSet() {
+		if (trainingSet == null){
+			synchronized (monitor) {
 				if (trainingSet == null) {
 					try {
 						trainingSet = Utils.getTrainingSetFromZip(Constants.DEFAULT_TRAINING_SET_ZIP_URL);
@@ -31,9 +32,9 @@ public class TrainingSet {
 					}
 				}
 			}
-	   }
+		}
 		return trainingSet;
-   }
-	   
-	   
+	}
+
+
 }
