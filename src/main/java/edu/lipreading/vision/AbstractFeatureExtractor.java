@@ -2,6 +2,8 @@ package edu.lipreading.vision;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
@@ -47,7 +49,7 @@ public abstract class AbstractFeatureExtractor {
 		else{
 			//try open the default camera
 			grabber = VideoInputFrameGrabber.createDefault(0);
-			sampleName = "";
+			sampleName = "web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());;
 		}
 		setSample(new Sample(sampleName));
 		return grabber;
