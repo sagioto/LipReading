@@ -17,7 +17,13 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDifferentiator;
@@ -47,6 +53,7 @@ import edu.lipreading.Utils;
 
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private int channels = 0;
+	private final ExecutorService executor = Executors.newCachedThreadPool();
 
 	@Override
 	protected Sample getPoints() throws Exception, InterruptedException,
@@ -54,7 +61,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
-
+		List<Future<int[]>> points = new Vector<Future<int[]>>();
 		Loader.load(opencv_objdetect.class);
 		String urlToDownload = "https://dl.dropbox.com/u/8720454/haarcascade_mcs_mouth.xml";
 		if(!new File(Utils.getFileNameFromUrl(urlToDownload)).exists())
@@ -63,7 +70,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 		int width = grabber.getImageWidth();
 		int height = grabber.getImageHeight();
-		if(!Utils.isCI()){
+		if(isGui()){
 			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			if(isOutput()){
@@ -84,28 +91,92 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			int x = r.x(), y = r.y(), w = r.width(), h = r.height();
 			cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
 			double[] matrix = grabbedMatrix.get();
-			double[][] roi = new double[h][w * channels];
+			final double[][] roi = new double[h][w * channels];
+
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w * channels; j++) {
 					roi[i][j] = matrix[(x * y * channels) + (i * width) + j];
 				}
 			}
-			
-			
-			//printMatrix(roi, System.out);
-			double[][] l = getL(roi);
-			//printMatrix(l, System.out);
-			double[][] lmini = Lmini(l);
-			//printMatrix(lmini, System.out);
-			int[] left = getLeft(l, lmini);
-			cvCircle((CvArr)grabbed, new CvPoint(left[0] + x, left[1] + y), 10, CvScalar.RED, 3, 0, 0);
-			frame.showImage(grabbed);
-			if(isOutput()){
-				recorder.record(grabbed);
+
+			final Future<double[][]> getH = executor.submit(new Callable<double[][]>() {
+				@Override
+				public double[][] call() throws Exception {
+					return getH(roi);
+				}
+			});
+			final Future<double[][]> getL = executor.submit(new Callable<double[][]>() {
+				@Override
+				public double[][] call() throws Exception {
+					return getL(roi);
+				}
+			});
+			final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
+				@Override
+				public double[][][] call() throws Exception {
+					return getRsup(getH.get(), getL.get());
+				}
+			});
+			final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
+				@Override
+				public double[][] call() throws Exception {
+					return getRinf(getH.get(), getL.get());
+				}
+			});
+			final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
+				@Override
+				public int[] call() throws Exception {
+					return getUpper(getRsup.get(), getRinf.get());
+				}
+			});
+			points.add(getUpper);
+			final Future<double[][]> getLmini = executor.submit(new Callable<double[][]>() {
+				@Override
+				public double[][] call() throws Exception {
+					return Lmini(getL.get());
+				}
+			});
+			final Future<int[]> getRight = executor.submit(new Callable<int[]>() {
+				@Override
+				public int[] call() throws Exception {
+					return getRight(getL.get(), getLmini.get());
+				}
+			});
+			points.add(getRight);
+			final Future<int[]> getLeft = executor.submit(new Callable<int[]>() {
+				@Override
+				public int[] call() throws Exception {
+					return getLeft(getL.get(), getLmini.get());
+				}
+			});
+			points.add(getLeft);
+			final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
+				@Override
+				public int[] call() throws Exception {
+					return getLower(getLeft.get(), getRight.get(), getRinf.get());
+				}
+			});
+			points.add(getLower);
+
+			List<Integer> frameCoordinates = new Vector<Integer>();
+
+			for (Future<int[]> point : points) {
+				int coordinateX = point.get()[0], coordinateY = point.get()[1];
+				frameCoordinates.add(coordinateX);
+				frameCoordinates.add(coordinateY);
+				if(isGui()){
+					cvCircle((CvArr)grabbed, new CvPoint(coordinateX + x, coordinateY + y), 10, CvScalar.RED, 3, 0, 0);
+					frame.showImage(grabbed);
+					if(isOutput()){
+						recorder.record(grabbed);
+					}
+				}
 			}
+
+			getSample().getMatrix().add(frameCoordinates);
 		}
 		storage.release();
-		if(!Utils.isCI()){
+		if(isGui()){
 			frame.dispose();
 			if(isOutput()){
 				recorder.stop();
@@ -172,6 +243,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	 * @return both the Lmini line in 0 index and in [1][0] the mean luminance of Lmini
 	 */
 	private double[][] Lmini(double [][] L){
+		//TODO this implementation is not working
 		RealMatrix l = new Array2DRowRealMatrix(L);
 		double[][] Lmini = new double[2][L[0].length];
 		for (int i = 0; i < L[0].length; i++) {
@@ -204,6 +276,12 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	}
 
 	private int[] getLower(int[] left, int[] right, double[][] Rinf){
+		int[] ans = new int[2];
+		//TODO
+		return ans;
+	}
+
+	private int[] getUpper(double[][][] Rsup, double[][] Rinf){
 		int[] ans = new int[2];
 		//TODO
 		return ans;
