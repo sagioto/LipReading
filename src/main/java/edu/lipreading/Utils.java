@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,15 +22,21 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
 import au.com.bytecode.opencsv.CSVWriter;
+
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.SimpleTimeNormalizer;
 
@@ -118,12 +125,45 @@ public class Utils {
 		return trainingSet;
 	}
 
+	public static Future<List<Sample>> asyncGetTrainingSetFromZip(final String zipUrl) throws Exception {
+		return Executors.newSingleThreadExecutor().submit(new Callable<List<Sample>>(){
+			@Override
+			public List<Sample> call() throws Exception {
+				if(!new File(Utils.getFileNameFromUrl(zipUrl)).exists())
+					Utils.get(zipUrl);
+				ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
+				List<Sample> trainingSet = new Vector<Sample>();
+				Enumeration<? extends ZipEntry> entries = samplesZip.entries();
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					Sample read = (Sample) XStream.read(samplesZip.getInputStream(entry));
+					trainingSet.add(read);
+				}
+				samplesZip.close();
+				return trainingSet;
+			}
+			});	
+	}
+
+	public static Future<MultilayerPerceptron> asyncGetModel(final String modelFilePath) throws Exception {
+		return Executors.newSingleThreadExecutor().submit(new Callable<MultilayerPerceptron>(){
+			@Override
+			public MultilayerPerceptron call() throws Exception {
+				File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
+				if(!modelFile.exists())
+					Utils.get(modelFilePath);
+				return (MultilayerPerceptron)SerializationHelper.read(new FileInputStream(modelFile));
+			}
+		});	
+	}
+
 	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
 		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
-		String[] title = new String[801];
+		int instanceSize = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + 1;
+		String[] title = new String[instanceSize];
 		title[0] = "word";
-		for (int i = 1; i < 801; i++) {
+		for (int i = 1; i < instanceSize; i++) {
 			title[i] = String.valueOf(i);
 		}
 		List<String[]> samplesStrings = new ArrayList<String[]>();
@@ -151,40 +191,40 @@ public class Utils {
 		arffSaver.writeBatch();
 		csvFile.delete();
 	}
-	
+
 	public static List<String> readFile(String resource){
 		String string = convertStreamToString(ClassLoader.getSystemResourceAsStream(resource));
 		return Arrays.asList(string.split("\r\n"));
 	}
-	
+
 	public static String convertStreamToString(InputStream is) {
-	    String ans = "";	
+		String ans = "";	
 		Scanner s = new Scanner(is);
 		s.useDelimiter("\\A");
 		ans = s.hasNext() ? s.next() : "";
 		s.close();
-	    return ans;	
+		return ans;	
 	}
-	
+
 	public static boolean isWindows() {
-	    return System.getProperty("os.name").toLowerCase().contains("win");
+		return System.getProperty("os.name").toLowerCase().contains("win");
 	}
-	
+
 	public static CvScalar getCvScalar(String property) {
-	    String[] split = property.split(",");
-	    return new CvScalar(Double.valueOf(split[0]),
-	            Double.valueOf(split[1]),
-	            Double.valueOf(split[2]),
-	            Double.valueOf(split[3]));
+		String[] split = property.split(",");
+		return new CvScalar(Double.valueOf(split[0]),
+				Double.valueOf(split[1]),
+				Double.valueOf(split[2]),
+				Double.valueOf(split[3]));
 	}
 
 	public static BufferedImage resizeImage(final BufferedImage image, int width, int height) {
 		final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        final Graphics2D graphics2D = bufferedImage.createGraphics();
-        graphics2D.setComposite(AlphaComposite.Src);
-        graphics2D.drawImage(image, 0, 0, width, height, null);
-        graphics2D.dispose();
- 
-        return bufferedImage;
+		final Graphics2D graphics2D = bufferedImage.createGraphics();
+		graphics2D.setComposite(AlphaComposite.Src);
+		graphics2D.drawImage(image, 0, 0, width, height, null);
+		graphics2D.dispose();
+
+		return bufferedImage;
 	}
 }
