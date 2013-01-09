@@ -16,8 +16,9 @@ import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Utils;
-import edu.lipreading.vision.VideoConfiguration;
+import edu.lipreading.vision.StickerColorConfiguration;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
@@ -151,20 +152,20 @@ public class VideoConfigPanel extends VideoCapturePanel {
 				// Update general stickers colors:
 				switch (this.stickerLocation) {
 				case UPPER:
-					VideoConfiguration.UPPER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					VideoConfiguration.UPPER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+					StickerColorConfiguration.UPPER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+					StickerColorConfiguration.UPPER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
 					break;
 				case LOWER:
-					VideoConfiguration.LOWER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					VideoConfiguration.LOWER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+					StickerColorConfiguration.LOWER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+					StickerColorConfiguration.LOWER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
 					break;
 				case LEFT:
-					VideoConfiguration.LEFT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					VideoConfiguration.LEFT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+					StickerColorConfiguration.LEFT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+					StickerColorConfiguration.LEFT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
 					break;
 				case RIGHT:
-					VideoConfiguration.RIGHT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					VideoConfiguration.RIGHT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+					StickerColorConfiguration.RIGHT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+					StickerColorConfiguration.RIGHT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
 					break;
 				default:
 					break;
@@ -193,21 +194,21 @@ public class VideoConfigPanel extends VideoCapturePanel {
 							{
 								if ((grabbed = grabber.grab()) == null)
 									break;
-								List<Integer> frameCoordinates = stickersExt.getPoints(grabbed);
-								for (int i=0; i< VideoConfiguration.NUM_OF_STICKERS; i++){
+								List<Integer> frameCoordinates = stickersExtractor.getPoints(grabbed);
+								for (int i=0; i< Constants.POINT_COUNT; i++){
 									CvScalar color = null;
 									switch (i){
-									case VideoConfiguration.UPPER_VECTOR_INDEX:
-										color = VideoConfiguration.UPPER_STICKER_MAX;
+									case Constants.UPPER_VECTOR_INDEX:
+										color = StickerColorConfiguration.UPPER_STICKER_MAX;
 										break;
-									case VideoConfiguration.LOWER_VECTOR_INDEX:
-										color = VideoConfiguration.LOWER_STICKER_MAX;
+									case Constants.LOWER_VECTOR_INDEX:
+										color = StickerColorConfiguration.LOWER_STICKER_MAX;
 										break;
-									case VideoConfiguration.LEFT_VECTOR_INDEX:
-										color = VideoConfiguration.LEFT_STICKER_MAX;
+									case Constants.LEFT_VECTOR_INDEX:
+										color = StickerColorConfiguration.LEFT_STICKER_MAX;
 										break;
-									case VideoConfiguration.RIGHT_VECTOR_INDEX:
-										color = VideoConfiguration.RIGHT_STICKER_MAX;
+									case Constants.RIGHT_VECTOR_INDEX:
+										color = StickerColorConfiguration.RIGHT_STICKER_MAX;
 										break;
 									}
 									int x = frameCoordinates.get(i * 2);

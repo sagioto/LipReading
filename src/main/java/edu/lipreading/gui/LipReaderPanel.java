@@ -1,23 +1,23 @@
 package edu.lipreading.gui;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 import edu.lipreading.classification.TimeWarperClassifier;
-import edu.lipreading.vision.VideoConfiguration;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.util.Calendar;
-import java.util.List;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.UIManager;
 
 public class LipReaderPanel extends VideoCapturePanel {
 
@@ -47,7 +47,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 				if (!recording) // Button should start recording
 				{
 					btnRecord.setText("Stop");
-					stickersExt.initSample(Calendar.getInstance().getTime().toString());
+					stickersExtractor.initSample(Calendar.getInstance().getTime().toString());
 					lblOutput.setText("");
 					recording = true;
 				}
@@ -55,12 +55,12 @@ public class LipReaderPanel extends VideoCapturePanel {
 				{
 					recording = false;
 					btnRecord.setText("Record");
-					Sample recordedSample = stickersExt.getSample();
+					Sample recordedSample = stickersExtractor.getSample();
 					
 					//TODO - Extract to thread:
 					List<Sample> trainingSet;
 					try {
-						trainingSet = Utils.getTrainingSetFromZip(VideoConfiguration.XMLS_URL);
+						trainingSet = Utils.getTrainingSetFromZip(Constants.DEFAULT_TRAINING_SET_ZIP_URL);
 						TimeWarperClassifier twc = new TimeWarperClassifier();
 						twc.train(trainingSet);
 						String outputText = twc.test(recordedSample);
@@ -107,7 +107,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 						if (recording)
 						{
 							try {
-								stickersExt.savePoints(grabbed);
+								stickersExtractor.savePoints(grabbed);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

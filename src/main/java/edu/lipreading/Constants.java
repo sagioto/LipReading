@@ -34,12 +34,18 @@ public class Constants {
     
     public static final CvScalar UPPER_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MIN"));
     public static final CvScalar UPPER_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MAX"));
+    
     public static final CvScalar LOWER_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("LOWER_STICKER_MIN"));
     public static final CvScalar LOWER_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("LOWER_STICKER_MAX"));
+    
     public static final CvScalar LEFT_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("LEFT_STICKER_MIN"));
     public static final CvScalar LEFT_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("LEFT_STICKER_MAX"));
+    
     public static final CvScalar RIGHT_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("RIGHT_STICKER_MIN"));
     public static final CvScalar RIGHT_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("RIGHT_STICKER_MAX"));
 
-
+	public static final short UPPER_VECTOR_INDEX = 0;
+	public static final short LOWER_VECTOR_INDEX = 1;
+	public static final short LEFT_VECTOR_INDEX = 2;
+	public static final short RIGHT_VECTOR_INDEX = 3;
 }

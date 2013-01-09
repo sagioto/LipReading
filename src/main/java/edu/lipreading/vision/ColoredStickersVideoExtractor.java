@@ -41,10 +41,10 @@ public class ColoredStickersVideoExtractor extends AbstractVideoExtractor{
 		List<Integer> frameCoordinates = new Vector<Integer>();
 		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
 
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.UPPER_STICKER_MIN, VideoConfiguration.UPPER_STICKER_MAX)));
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.LOWER_STICKER_MIN, VideoConfiguration.LOWER_STICKER_MAX)));
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.LEFT_STICKER_MIN, VideoConfiguration.LEFT_STICKER_MAX)));
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.RIGHT_STICKER_MIN, VideoConfiguration.RIGHT_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.UPPER_STICKER_MIN, StickerColorConfiguration.UPPER_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LOWER_STICKER_MIN, StickerColorConfiguration.LOWER_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LEFT_STICKER_MIN, StickerColorConfiguration.LEFT_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.RIGHT_STICKER_MIN, StickerColorConfiguration.RIGHT_STICKER_MAX)));
 
 		for (Future<List<Integer>> future : futuresList) {
 			frameCoordinates.addAll(future.get());
@@ -65,20 +65,20 @@ public class ColoredStickersVideoExtractor extends AbstractVideoExtractor{
 		List<Integer> frameCoordinates = new Vector<Integer>();
 		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
 		
-		if (VideoConfiguration.UPPER_STICKER_MIN != null && VideoConfiguration.UPPER_STICKER_MAX != null)
-			futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.UPPER_STICKER_MIN, VideoConfiguration.UPPER_STICKER_MAX)));
+		if (StickerColorConfiguration.UPPER_STICKER_MIN != null && StickerColorConfiguration.UPPER_STICKER_MAX != null)
+			futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.UPPER_STICKER_MIN, StickerColorConfiguration.UPPER_STICKER_MAX)));
 		else
 			futuresList.add(null);
-		if (VideoConfiguration.LOWER_STICKER_MIN != null && VideoConfiguration.LOWER_STICKER_MAX != null)
-			futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.LOWER_STICKER_MIN, VideoConfiguration.LOWER_STICKER_MAX)));
+		if (StickerColorConfiguration.LOWER_STICKER_MIN != null && StickerColorConfiguration.LOWER_STICKER_MAX != null)
+			futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LOWER_STICKER_MIN, StickerColorConfiguration.LOWER_STICKER_MAX)));
 		else
 			futuresList.add(null);
-		if (VideoConfiguration.LEFT_STICKER_MIN != null && VideoConfiguration.LEFT_STICKER_MAX != null)
-			futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.LEFT_STICKER_MIN, VideoConfiguration.LEFT_STICKER_MAX)));
+		if (StickerColorConfiguration.LEFT_STICKER_MIN != null && StickerColorConfiguration.LEFT_STICKER_MAX != null)
+			futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LEFT_STICKER_MIN, StickerColorConfiguration.LEFT_STICKER_MAX)));
 		else
 			futuresList.add(null);
-		if (VideoConfiguration.RIGHT_STICKER_MIN != null && VideoConfiguration.RIGHT_STICKER_MAX != null)
-			futuresList.add(threadPool.submit(new CoordinateGetter(img, VideoConfiguration.RIGHT_STICKER_MIN, VideoConfiguration.RIGHT_STICKER_MAX)));
+		if (StickerColorConfiguration.RIGHT_STICKER_MIN != null && StickerColorConfiguration.RIGHT_STICKER_MAX != null)
+			futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.RIGHT_STICKER_MIN, StickerColorConfiguration.RIGHT_STICKER_MAX)));
 		else
 			futuresList.add(null);
 		

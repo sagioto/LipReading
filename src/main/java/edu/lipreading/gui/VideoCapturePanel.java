@@ -25,7 +25,7 @@ public class VideoCapturePanel extends JPanel {
 	protected VideoCanvas canvas;
 	protected FrameGrabber grabber = null;
 	protected String sampleName;
-	protected ColoredStickersVideoExtractor stickersExt;
+	protected ColoredStickersVideoExtractor stickersExtractor;
 	protected Thread videoGrabber;
 	protected Boolean threadStop;
 	
@@ -34,7 +34,7 @@ public class VideoCapturePanel extends JPanel {
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
 	public VideoCapturePanel() {
-		stickersExt = new ColoredStickersVideoExtractor();
+		stickersExtractor = new ColoredStickersVideoExtractor();
 		canvas = new VideoCanvas();
 		canvas.setBackground(Color.LIGHT_GRAY);
         

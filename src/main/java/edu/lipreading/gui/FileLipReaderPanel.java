@@ -95,7 +95,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						stickersExt.initSample(txtFilePath.getText());
+						stickersExtractor.initSample(txtFilePath.getText());
 						startVideo();
 				    }
 				});
@@ -123,7 +123,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 					canvas.setImage(image);
 					canvas.paint(null);
 					try {
-						stickersExt.savePoints(grabbed);
+						stickersExtractor.savePoints(grabbed);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -141,7 +141,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 
 				public void run()
 			    {
-		    		String outputText = classifier.test(stickersExt.getSample());
+		    		String outputText = classifier.test(stickersExtractor.getSample());
 					lblOutput.setText(outputText);
 					btnRecord.setText("Read Lips From File");
 					btnRecord.setEnabled(true);

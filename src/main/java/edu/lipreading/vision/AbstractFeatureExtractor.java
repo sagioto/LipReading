@@ -14,8 +14,10 @@ import edu.lipreading.Utils;
 public abstract class AbstractFeatureExtractor {
 
 	protected FrameGrabber grabber;
-	protected static String sampleName;
+	private Sample sample;
 	private boolean output = false;
+	private boolean gui = true;
+	
 	
 	public Sample extract(String source) throws Exception {
 		grabber = getGrabber(source);
@@ -32,6 +34,7 @@ public abstract class AbstractFeatureExtractor {
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
 		FrameGrabber grabber = null;
+		String sampleName;
 		if(isSourceUrl(source)){		
 			Utils.get(source);
 			sampleName = Utils.getFileNameFromUrl(source);
@@ -44,8 +47,9 @@ public abstract class AbstractFeatureExtractor {
 		else{
 			//try open the default camera
 			grabber = VideoInputFrameGrabber.createDefault(0);
-			sampleName = "liveCam";
+			sampleName = "";
 		}
+		setSample(new Sample(sampleName));
 		return grabber;
 	}
 
@@ -56,7 +60,23 @@ public abstract class AbstractFeatureExtractor {
 	private boolean isSourceUrl(String source) {
 		return null != source && source.contains("://");
 	}
+	
+	public Sample getSample() {
+		return sample;
+	}
 
+	public void setSample(Sample sample) {
+		this.sample = sample;
+	}
+
+	public boolean isGui() {
+		return this.gui && !Utils.isCI();
+	}
+
+	public void setGui(boolean gui) {
+		this.gui = gui;
+	}
+	
 	public boolean isOutput() {
 		return output;
 	}
@@ -64,4 +84,5 @@ public abstract class AbstractFeatureExtractor {
 	public void setOutput(boolean shouldOutput) {
 		this.output = shouldOutput;
 	}
+	
 }

@@ -14,6 +14,7 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvSmooth;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,75 +30,44 @@ import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
-import edu.lipreading.Utils;
 
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
+	private final static ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private final static short NUM_OF_STICKERS = (short) Constants.POINT_COUNT;
-
-	private final static short RED_VECTOR_INDEX = 0;
-	private final static short GREEN_VECTOR_INDEX = 1;
-	private final static short BLUE_VECTOR_INDEX = 2;
-	private final static short YELLOW_VECTOR_INDEX = 3;
-
-
-	private final static CvScalar RED_MIN = Constants.UPPER_STICKER_MIN; 
-	private final static CvScalar RED_MAX = Constants.UPPER_STICKER_MAX;
-
-	private final static CvScalar GREEN_MIN = Constants.LOWER_STICKER_MIN;
-	private final static CvScalar GREEN_MAX = Constants.LOWER_STICKER_MAX;
-
-	private final static CvScalar BLUE_MIN = Constants.LEFT_STICKER_MIN;
-	private final static CvScalar BLUE_MAX = Constants.LEFT_STICKER_MAX;
-
-	private final static CvScalar YELLOW_MIN = Constants.RIGHT_STICKER_MIN;
-	private final static CvScalar YELLOW_MAX = Constants.RIGHT_STICKER_MAX;
-
 
 	@Override
 	protected Sample getPoints() throws Exception {
-		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		Sample sample = new Sample(sampleName);
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
 
-		if(!Utils.isCI()){
-			frame = new CanvasFrame(sampleName, CanvasFrame.getDefaultGamma()/grabber.getGamma());
+		if(isGui()){
+			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			if(isOutput()){
-				recorder = FFmpegFrameRecorder.createDefault(sampleName.split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
+				recorder = FFmpegFrameRecorder.createDefault(getSample().getId().split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
 				recorder.start();
 			}
 		}
 
 		while((grabbed = grabber.grab()) != null){
-			List<Integer> frameCoordinates = new Vector<Integer>();
-			List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
+			List<Integer> frameCoordinates = getPoints(grabbed);
 
-			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, RED_MIN, RED_MAX)));
-			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, GREEN_MIN, GREEN_MAX)));
-			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, BLUE_MIN, BLUE_MAX)));
-			futuresList.add(threadPool.submit(new CoordinateGetter(grabbed, YELLOW_MIN, YELLOW_MAX)));
-
-			for (Future<List<Integer>> future : futuresList) {
-				frameCoordinates.addAll(future.get());
-			}
-
-			sample.getMatrix().add(frameCoordinates);
-			if(!Utils.isCI()){
+			getSample().getMatrix().add(frameCoordinates);
+			if(isGui()){
 				for(int i = 0; i < NUM_OF_STICKERS; i++){
 					CvScalar color = null;
 					switch (i){
-					case RED_VECTOR_INDEX:
+					case Constants.UPPER_VECTOR_INDEX:
 						color = cvScalar(0, 0, 255, 0);
 						break;
-					case GREEN_VECTOR_INDEX:
+					case Constants.LOWER_VECTOR_INDEX:
 						color = cvScalar(0, 255, 0, 0);
 						break;
-					case BLUE_VECTOR_INDEX:
+					case Constants.LEFT_VECTOR_INDEX:
 						color = cvScalar(255, 0, 0, 0);
 						break;
-					case YELLOW_VECTOR_INDEX:
+					case Constants.RIGHT_VECTOR_INDEX:
 						color = cvScalar(0, 242, 255, 0);
 						break;
 					}
@@ -109,13 +79,29 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 				}
 			}
 		}
-		if(!Utils.isCI()){
+		if(isGui()){
 			frame.dispose();
 			if(isOutput()){
 				recorder.stop();
 			}
 		}
-		return sample;
+		return getSample();
+	}
+	
+	public List<Integer> getPoints(IplImage img)
+			throws InterruptedException, ExecutionException {
+		List<Integer> frameCoordinates = new Vector<Integer>();
+		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
+
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.UPPER_STICKER_MIN, StickerColorConfiguration.UPPER_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LOWER_STICKER_MIN, StickerColorConfiguration.LOWER_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LEFT_STICKER_MIN, StickerColorConfiguration.LEFT_STICKER_MAX)));
+		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.RIGHT_STICKER_MIN, StickerColorConfiguration.RIGHT_STICKER_MAX)));
+
+		for (Future<List<Integer>> future : futuresList) {
+			frameCoordinates.addAll(future.get());
+		}
+		return frameCoordinates;
 	}
 
 	class CoordinateGetter implements Callable<List<Integer>>{
