@@ -45,7 +45,7 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
-public class NoMoreStickersFeautureExtractor extends AbstractFeatureExtractor{
+public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private int channels = 0;
 
 	@Override
@@ -113,7 +113,6 @@ public class NoMoreStickersFeautureExtractor extends AbstractFeatureExtractor{
 		}
 		return getSample();
 	}
-
 
 	private double[][][] getRsup(double[][] h, double[][] L){
 		double[][][] ans = new double[h.length][h[0].length][3];
@@ -210,8 +209,6 @@ public class NoMoreStickersFeautureExtractor extends AbstractFeatureExtractor{
 		return ans;
 	}
 
-
-
 	private int getMinIndex(double[] ds) {
 		int ans = 0;
 		double min = Double.MAX_VALUE;
@@ -236,7 +233,7 @@ public class NoMoreStickersFeautureExtractor extends AbstractFeatureExtractor{
 	}
 
 	public static void main(String ... args) throws Exception{
-		new NoMoreStickersFeautureExtractor().extract("combo-dist-8.MOV");
+		new NoMoreStickersFeatureExtractor().extract("combo-dist-8.MOV");
 		double x[] = { -1, 0, 1.0, 2.0, 3.0, 5};
 		double y[] = { 1.0, 0, 1.0, 4.0, 9.0, 25};
 		UnivariateInterpolator interpolator = new SplineInterpolator();

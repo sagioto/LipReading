@@ -106,7 +106,7 @@ public class TimeWarperTest {
 		Assert.assertTrue(success > failed);
 	}
 
-	
+
 	@Test
 	public void massiveProofTestSet2() throws Exception{
 		List<Sample> trainingSet = Utils.getTrainingSetFromZip(DATA_SET2_URL);
@@ -168,7 +168,7 @@ public class TimeWarperTest {
 		System.out.println("success rate is " + ((100 * success) / (success + failed)) + "%");
 		Assert.assertTrue(success > failed);
 	}
-	
+
 	public double[] DTWOnTrainingSetTest(String testFile) throws Exception{
 		Utils.get(testFile);
 		TimeWarper tw = new TimeWarper();
