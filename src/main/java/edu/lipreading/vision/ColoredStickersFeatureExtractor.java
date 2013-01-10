@@ -4,7 +4,6 @@ import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
-import static com.googlecode.javacv.cpp.opencv_core.cvScalar;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
@@ -57,16 +56,16 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 					CvScalar color = null;
 					switch (i){
 					case Constants.UPPER_VECTOR_INDEX:
-						color = cvScalar(0, 0, 255, 0);
+						color = StickerColorConfiguration.UPPER_STICKER_MAX;
 						break;
 					case Constants.LOWER_VECTOR_INDEX:
-						color = cvScalar(0, 255, 0, 0);
+						color = StickerColorConfiguration.LOWER_STICKER_MAX;
 						break;
 					case Constants.LEFT_VECTOR_INDEX:
-						color = cvScalar(255, 0, 0, 0);
+						color = StickerColorConfiguration.LEFT_STICKER_MAX;
 						break;
 					case Constants.RIGHT_VECTOR_INDEX:
-						color = cvScalar(0, 242, 255, 0);
+						color = StickerColorConfiguration.RIGHT_STICKER_MAX;
 						break;
 					}
 					cvCircle((CvArr)grabbed, new CvPoint(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1)), 25, color, 3, 0, 0);

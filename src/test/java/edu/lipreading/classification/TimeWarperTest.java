@@ -136,6 +136,7 @@ public class TimeWarperTest {
 		new File(Utils.getFileNameFromUrl(FILE_URL2)).delete();
 		new File(Utils.getFileNameFromUrl(FILE_URL3)).delete();
 		new File(Utils.getFileNameFromUrl(XMLS_URL)).delete();
+		new File(Utils.getFileNameFromUrl(DATA_SET2_URL)).delete();
 		new File(Utils.getFileNameFromUrl(TEST_NO)).delete();
 		new File(Utils.getFileNameFromUrl(TEST_YES)).delete();
 	}
