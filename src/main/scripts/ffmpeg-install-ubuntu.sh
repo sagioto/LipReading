@@ -6,6 +6,7 @@
 # 1.2)install ffmpeg
 echo "installing ffmepg"
 cd ~/src/ffmpeg-1.0
+make
 sudo make install
 
 if [ "$USER" != "travis" ]; then
