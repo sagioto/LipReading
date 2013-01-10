@@ -2,17 +2,21 @@ package edu.lipreading.gui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
@@ -23,13 +27,6 @@ import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
-
-import javax.swing.JTextPane;
-import java.awt.SystemColor;
-import javax.swing.UIManager;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.ImageIcon;
 
 /**
  * @author Dor Leitman
@@ -101,12 +98,6 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 						setVideoInput(txtFilePath.getText());
 						try {
 							initGrabber();
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
