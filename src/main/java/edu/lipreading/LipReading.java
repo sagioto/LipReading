@@ -7,6 +7,7 @@ import java.util.List;
 import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
+import edu.lipreading.gui.MainFrame;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
@@ -25,12 +26,13 @@ public class LipReading {
 			System.out.println("\t-help : prints this message");
 			System.out.println("\t-extract <video file url, name or 0 for webcam> : extracts Sample object from the file into an xml");
 			System.out.println("\t-output : when used with -extract records an output video");
-			System.out.println("\t-dataset <path of folder of video files> - go through all the video files and" +
+			System.out.println("\t-dataset <path of folder of video files> : go through all the video files and" +
 					"\n\t generate Sample xmls for each of them");
 			System.out.println("\t-test <video file url, name, 0 for webcam or xml> : uses the input file as test against a default data set");
 			System.out.println("\t-test <video file url, name, 0 for webcam or xml>  <zip file url> : uses the input file as test against " +
 					"\n\t the data set in the given zip file url");
 			System.out.println("\t-csv <input zip file, output file> : converts zip data set into csv one");
+			System.out.println("\t-gui : start the GUI");
 			System.exit(0);
 		}
 
@@ -58,6 +60,9 @@ public class LipReading {
 		else if(argsAsList.contains("-arff")){
 			Utils.dataSetToARFF(args[argsAsList.lastIndexOf("-arff") + 1], args[argsAsList.lastIndexOf("-arff") + 2]);
 		}
+		else if(argsAsList.contains("-gui")){
+            MainFrame.main(args);
+        }
 
 		System.exit(0);
 	}
