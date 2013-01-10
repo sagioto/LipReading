@@ -12,8 +12,9 @@ mkdir ~/src
 cd ~/src
 
 echo "installing x264 ffmpeg gstreamr gtk v4l and libjpeg go for coffee..."
-# 1.1) Download and install x264
 
+# 1.1) Download and install x264
+echo "installing x264"
 wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/last_stable_x264.tar.bz2
 tar xvf last_stable_x264.tar.bz2
 cd x264*
@@ -22,7 +23,7 @@ make
 sudo make install
 
 # 1.2) Download and install ffmpeg
-
+echo "installing ffmepg"
 cd ~/src
 wget http://ffmpeg.org/releases/ffmpeg-1.0.tar.bz2
 tar xvf ffmpeg-1.0.tar.bz2
