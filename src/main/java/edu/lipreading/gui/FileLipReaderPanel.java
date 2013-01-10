@@ -73,7 +73,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		canvas.setBounds(142, 10, 420, 308);
 		
 		txtFilePath = new JTextPane();
-		txtFilePath.setToolTipText("Please insert a http path or choose a file");
+		txtFilePath.setToolTipText("Please insert a URL or choose a file");
 		txtFilePath.setBackground(SystemColor.info);
 		txtFilePath.setText("https://dl.dropbox.com/u/8720454/set2/no/no-1.MOV"); //TODO - Change default
 		txtFilePath.setBounds(204, 337, 320, 20);
