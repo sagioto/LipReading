@@ -51,7 +51,7 @@ public class Constants {
 	public static final short LEFT_VECTOR_INDEX = 2;
 	public static final short RIGHT_VECTOR_INDEX = 3;
 	
-	//Images:
+
 	public static final String LIP_IMAGE_FILE_PATH = LIP_READING_PROPS.getProperty("LIP_IMAGE_FILE_PATH");
 	public static final String FILE_CHOOSER_IMAGE_FILE_PATH = LIP_READING_PROPS.getProperty("FILE_CHOOSER_IMAGE_FILE_PATH");
 	public static final String RECORD_IMAGE_FILE_PATH = LIP_READING_PROPS.getProperty("RECORD_IMAGE_FILE_PATH");
