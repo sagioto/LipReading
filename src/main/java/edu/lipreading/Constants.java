@@ -22,9 +22,11 @@ public class Constants {
 
     public static final String MPC_MODEL_URL = LIP_READING_PROPS.getProperty("MPC_MODEL");
 
-    public static final String DEFAULT_TRAINING_SET_ZIP_URL = LIP_READING_PROPS.getProperty("DEFAULT_TRAINING_SET_ZIP_URL");
+    public static final String DEFAULT_TRAINING_SET_ZIP = LIP_READING_PROPS.getProperty("DEFAULT_TRAINING_SET_ZIP");
 
     public static final String DEFAULT_ARFF_FILE = LIP_READING_PROPS.getProperty("DEFAULT_ARFF_FILE");
+
+    public static final String HAAR_CASCADE_MOUTH_FILE = LIP_READING_PROPS.getProperty("HAAR_CASCADE_MOUTH_FILE");
 
     public static final List<String> VOCABULARY = Utils.readFile(LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
     

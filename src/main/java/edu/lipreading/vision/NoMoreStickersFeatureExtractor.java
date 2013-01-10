@@ -48,6 +48,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
@@ -62,10 +63,10 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
 		Loader.load(opencv_objdetect.class);
-		String urlToDownload = "https://dl.dropbox.com/u/8720454/haarcascade_mcs_mouth.xml";
-		if(!new File(Utils.getFileNameFromUrl(urlToDownload)).exists())
-			Utils.get(urlToDownload);
-		CvHaarClassifierCascade classifier = new CvHaarClassifierCascade(cvLoad(Utils.getFileNameFromUrl(urlToDownload)));
+		String fileNameFromUrl = Utils.getFileNameFromUrl(Constants.HAAR_CASCADE_MOUTH_FILE);
+		if(!new File(fileNameFromUrl).exists())
+			Utils.get(Constants.HAAR_CASCADE_MOUTH_FILE);
+		CvHaarClassifierCascade classifier = new CvHaarClassifierCascade(cvLoad(Utils.getFileNameFromUrl(fileNameFromUrl)));
 
 		int width = grabber.getImageWidth();
 		int height = grabber.getImageHeight();

@@ -50,7 +50,7 @@ public class LipReading {
 			test(fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2], cn, stn);
 		}
 		else if(argsAsList.contains("-test")){
-			test(fe, args[argsAsList.lastIndexOf("-test") + 1], Constants.DEFAULT_TRAINING_SET_ZIP_URL, cn, stn);
+			test(fe, args[argsAsList.lastIndexOf("-test") + 1], Constants.DEFAULT_TRAINING_SET_ZIP, cn, stn);
 		}
 		else if(argsAsList.contains("-csv")){
 			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);

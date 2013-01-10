@@ -25,7 +25,7 @@ public class TrainingSet {
 			synchronized (monitor) {
 				if (trainingSet == null) {
 					try {
-						trainingSet = Utils.getTrainingSetFromZip(Constants.DEFAULT_TRAINING_SET_ZIP_URL);
+						trainingSet = Utils.getTrainingSetFromZip(Constants.DEFAULT_TRAINING_SET_ZIP);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
