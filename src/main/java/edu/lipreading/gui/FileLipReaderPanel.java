@@ -9,17 +9,26 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
+import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.Normalizer;
+
 import javax.swing.JTextPane;
 import java.awt.SystemColor;
 import javax.swing.UIManager;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
 
 /**
  * @author Dor Leitman
@@ -34,12 +43,14 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 	private static final long serialVersionUID = 1L;
 	private JLabel lblOutput;
 	private JButton btnRecord;
-	private TimeWarperClassifier classifier;
+	private Classifier classifier;
+	private Normalizer normalizer;
 	private List<Sample> trainingSet;
 	private JTextPane txtFilePath;
 	private Thread classifierThread;
 	private JLabel lblNewLabel;
 	private Sample recordedSample;
+	final JFileChooser fileChooser = new JFileChooser(); //TODO - make only for video files
 	
 	/**
 	 * Create the panel.
@@ -56,22 +67,23 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOutput.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblOutput.setForeground(Color.GRAY);
-		lblOutput.setBounds(294, 451, 102, 22);
+		lblOutput.setBounds(244, 447, 204, 22);
 		this.add(lblOutput);
 		
 		canvas.setBounds(142, 10, 420, 308);
 		
 		txtFilePath = new JTextPane();
+		txtFilePath.setToolTipText("Please insert an http path or choose a file");
 		txtFilePath.setBackground(SystemColor.info);
-		txtFilePath.setText("https://dl.dropbox.com/u/8720454/no-%281%29.MOV"); //TODO - Change default
-		txtFilePath.setBounds(204, 337, 358, 20);
+		txtFilePath.setText("https://dl.dropbox.com/u/8720454/set2/no/no-1.MOV"); //TODO - Change default
+		txtFilePath.setBounds(204, 337, 320, 20);
 		add(txtFilePath);
 		
 		trainingSet = TrainingSet.get();
 		
 		classifier = new TimeWarperClassifier();
 		classifier.train(trainingSet);
-		
+		normalizer = new CenterNormalizer();
 		
 		btnRecord = new JButton("Read Lips From File");
 		btnRecord.addActionListener(new ActionListener() {
@@ -105,13 +117,29 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 			}
 		});
 		btnRecord.setBackground(Color.WHITE);
-		btnRecord.setBounds(277, 384, 143, 23);
+		btnRecord.setBounds(275, 387, 143, 23);
 		this.add(btnRecord);
 		
 		lblNewLabel = new JLabel("File Path:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel.setBounds(142, 339, 53, 14);
 		add(lblNewLabel);
+		
+		JButton btnChooseFile = new JButton(new ImageIcon(getClass().getResource(Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
+		btnChooseFile.setBorderPainted(false);
+		btnChooseFile.setBackground(Color.WHITE);
+		btnChooseFile.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int returnVal = fileChooser.showOpenDialog(FileLipReaderPanel.this);
+				 
+	            if (returnVal == JFileChooser.APPROVE_OPTION)
+	            	txtFilePath.setText(fileChooser.getSelectedFile().getPath());
+			}
+		});
+		btnChooseFile.setBounds(530, 333, 32, 32);
+		add(btnChooseFile);
+
 	}
 
 	@Override
@@ -143,6 +171,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 
 				public void run()
 			    {
+					recordedSample = normalizer.normalize(recordedSample);
 		    		String outputText = classifier.test(recordedSample);
 					lblOutput.setText(outputText);
 					btnRecord.setText("Read Lips From File");
@@ -158,6 +187,4 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 			grabber.stop();
 		}
 	}
-	
-	
 }
