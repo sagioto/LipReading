@@ -8,8 +8,8 @@ import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SimpleTimeNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
@@ -35,7 +35,7 @@ public class LipReading {
 		}
 
 		Normalizer cn = new CenterNormalizer();
-		Normalizer stn = new SimpleTimeNormalizer();
+		Normalizer tn = new LinearStretchTimeNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
 
 		if(argsAsList.contains("-extract")){
@@ -44,13 +44,13 @@ public class LipReading {
 			XStream.write(sampleName.split("\\.")[0] + ".xml", cn.normalize(fe.extract(sampleName)));
 		}
 		else if(argsAsList.contains("-dataset")){
-			dataset(fe, args[argsAsList.lastIndexOf("-dataset") + 1], cn, stn);
+			dataset(fe, args[argsAsList.lastIndexOf("-dataset") + 1], cn, tn);
 		}
 		else if(argsAsList.contains("-test") && argsAsList.size() > argsAsList.lastIndexOf("-test") + 2){
-			test(fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2], cn, stn);
+			test(fe, args[argsAsList.lastIndexOf("-test") + 1], args[argsAsList.lastIndexOf("-test") + 2], cn, tn);
 		}
 		else if(argsAsList.contains("-test")){
-			test(fe, args[argsAsList.lastIndexOf("-test") + 1], Constants.DEFAULT_TRAINING_SET_ZIP, cn, stn);
+			test(fe, args[argsAsList.lastIndexOf("-test") + 1], Constants.DEFAULT_TRAINING_SET_ZIP, cn, tn);
 		}
 		else if(argsAsList.contains("-csv")){
 			Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);

@@ -35,7 +35,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 
 import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.SimpleTimeNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 
 public class Utils {
 
@@ -166,7 +166,7 @@ public class Utils {
 		List<String[]> samplesStrings = new ArrayList<String[]>();
 		samplesStrings.add(title);
 		for (Sample sample : trainingSetFromZip) {
-			sample = LipReading.normelize(sample, new CenterNormalizer(), new SimpleTimeNormalizer());
+			sample = LipReading.normelize(sample, new CenterNormalizer(), new LinearStretchTimeNormalizer());
 			samplesStrings.add(sample.toCSV());
 		}
 		writer.writeAll(samplesStrings);

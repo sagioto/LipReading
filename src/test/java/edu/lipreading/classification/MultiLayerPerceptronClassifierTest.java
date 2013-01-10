@@ -14,8 +14,8 @@ import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SimpleTimeNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
@@ -43,9 +43,9 @@ public class MultiLayerPerceptronClassifierTest {
 	public void testClassifier(String url, String expected) throws Exception{
 		Utils.get(url);
 		Normalizer cn = new CenterNormalizer();
-		Normalizer stn = new SimpleTimeNormalizer();
+		Normalizer tn = new LinearStretchTimeNormalizer();
 		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
-		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), cn, stn);
+		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), cn, tn);
 		String ans = mpClassifier.test(sample);
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();

@@ -20,7 +20,7 @@ public class TrainingSet {
 
 	private static Object monitor = new Object();
 
-	public static List<Sample> getTrainingSet() {
+	public static List<Sample> get() {
 		if (trainingSet == null){
 			synchronized (monitor) {
 				if (trainingSet == null) {

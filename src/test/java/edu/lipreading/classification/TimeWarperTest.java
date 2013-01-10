@@ -106,7 +106,6 @@ public class TimeWarperTest {
 		Assert.assertTrue(success > failed);
 	}
 
-
 	public double[] DTWOnTrainingSetTest(String testFile) throws Exception{
 		Utils.get(testFile);
 		TimeWarper tw = new TimeWarper();
@@ -128,7 +127,6 @@ public class TimeWarperTest {
 		}
 		return new double[]{yes / yesCount, no / noCount};
 	}
-
 
 	@AfterClass
 	public static void deleteFile() throws UnsupportedEncodingException{

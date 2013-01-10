@@ -67,7 +67,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		txtFilePath.setBounds(204, 337, 358, 20);
 		add(txtFilePath);
 		
-		trainingSet = TrainingSet.getTrainingSet();
+		trainingSet = TrainingSet.get();
 		
 		classifier = new TimeWarperClassifier();
 		classifier.train(trainingSet);

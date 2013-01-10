@@ -60,7 +60,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 					//TODO - Extract to thread:
 					List<Sample> trainingSet;
 					try {
-						trainingSet = TrainingSet.getTrainingSet();
+						trainingSet = TrainingSet.get();
 						TimeWarperClassifier twc = new TimeWarperClassifier();
 						twc.train(trainingSet);
 						String outputText = twc.test(recordedSample);
