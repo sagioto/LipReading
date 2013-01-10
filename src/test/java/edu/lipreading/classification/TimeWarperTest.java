@@ -2,6 +2,7 @@ package edu.lipreading.classification;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -62,112 +63,49 @@ public class TimeWarperTest {
 	}
 
 	@Test
-	public void massiveProofTest() throws Exception{
-		List<Sample> trainingSet = Utils.getTrainingSetFromZip(XMLS_URL);
-		TimeWarper tw = new TimeWarper();
-		int success = 0, failed = 0;
-		for (Sample test : trainingSet) {
-			double yes = 0, no = 0;
-			int yesCount = 0, noCount = 0;
-			for (Sample training : trainingSet) {
-				if(!test.equals(training)){
-					if(training.getId().contains("yes")){
-						yes += tw.dtw(test, training);
-						yesCount++;
-					}
-					else{
-						no += tw.dtw(test, training);
-						noCount++;
-					}
-				}
-			}
-
-			if(yes / yesCount < no / noCount){
-				if(test.getId().contains("yes")){
-					success++;
-				}
-				else{
-					System.out.println(test.getId() + " has failed");
-					failed++;
-				}					
-			}
-			else{
-				if(test.getId().contains("yes")){
-					System.out.println(test.getId() + " has failed");
-					failed++;
-				}
-				else{
-					success++;
-				}
-			}
-		}
-		System.out.println("success:" + success + " failed:" + failed);
-		System.out.println("success rate is " + ((100 * success) / (success + failed)) + "%");
-		Assert.assertTrue(success > failed);
+	public void massiveProofTest1() throws Exception{
+		massiveProofTest(Arrays.asList(new String[]{"yes","no"}), XMLS_URL);
 	}
-
 
 	@Test
-	public void massiveProofTestSet2() throws Exception{
-		List<Sample> trainingSet = Utils.getTrainingSetFromZip(DATA_SET2_URL);
+	public void massiveProofTest2() throws Exception{
+		massiveProofTest(Arrays.asList(new String[]{"yes","no", "hello"}), DATA_SET2_URL);
+	}
+
+	public void massiveProofTest(List<String> vocabulary, String dataSetUrl) throws Exception{
+		List<Sample> trainingSet = Utils.getTrainingSetFromZip(dataSetUrl);
+		double [][] results = new double[trainingSet.size()][vocabulary.size()];
 		TimeWarper tw = new TimeWarper();
 		int success = 0, failed = 0;
-		for (Sample test : trainingSet) {
-			double yes = 0, no = 0, hello=0;
-			int yesCount = 0, noCount = 0, helloCount=0;
+		for (int i = 0; i < trainingSet.size(); i++) {
+			int [] counts = new int[vocabulary.size()];
 			for (Sample training : trainingSet) {
-				if(!test.equals(training)){
-					if(training.getId().contains("yes")){
-						yes += tw.dtw(test, training);
-						yesCount++;
-					}
-					else{
-						if(training.getId().contains("no")){
-							no += tw.dtw(test, training);
-							noCount++;
-						}
-						else{
-							hello += tw.dtw(test, training);
-							helloCount++;
+				if(!trainingSet.get(i).equals(training)){
+					for (int j = 0; j < vocabulary.size(); j++) {
+						if(training.getId().contains(vocabulary.get(j))){
+							results[i][j] += tw.dtw(trainingSet.get(i), training);
+							counts[j]++;
 						}
 					}
 				}
 			}
-
-			if(yes / yesCount < no / noCount && yes / yesCount < hello / helloCount){
-				if(test.getId().contains("yes")){
-					success++;
-				}
-				else{
-					System.out.println(test.getId() + " has failed");
-					failed++;
-				}					
+			for (int j = 0; j < vocabulary.size(); j++) {
+				results[i][j] /= counts[j];
+			}
+			int minIndex = Utils.getMinIndex(results[i]);
+			if(trainingSet.get(i).getId().contains(vocabulary.get(minIndex))){
+				success++;
 			}
 			else{
-				if(no / noCount < yes / yesCount && no / noCount < hello / helloCount){
-					if(test.getId().contains("no")){
-						success++;
-					}
-					else{
-						System.out.println(test.getId() + " has failed");
-						failed++;
-					}
-				}
-				else{
-					if(test.getId().contains("hello")){
-						success++;
-					}
-					else{
-						System.out.println(test.getId() + " has failed");
-						failed++;
-					}
-				}
+				failed++;
+				System.out.println(trainingSet.get(i).getId() + " has failed");
 			}
 		}
 		System.out.println("success:" + success + " failed:" + failed);
 		System.out.println("success rate is " + ((100 * success) / (success + failed)) + "%");
 		Assert.assertTrue(success > failed);
 	}
+
 
 	public double[] DTWOnTrainingSetTest(String testFile) throws Exception{
 		Utils.get(testFile);

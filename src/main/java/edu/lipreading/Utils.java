@@ -214,5 +214,16 @@ public class Utils {
 				Double.valueOf(split[2]),
 				Double.valueOf(split[3]));
 	}
+	
+	public static int getMinIndex(double[] ds) {
+		int ans = 0;
+		double min = Double.MAX_VALUE;
+		for (int i = 0; i < ds.length; i++) {
+			min = Math.min(min, ds[i]);
+			if(min == ds[i])
+				ans = i;
+		}
+		return ans;
+	}
 
 }

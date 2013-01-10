@@ -249,7 +249,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		double[][] Lmini = new double[2][L[0].length];
 		for (int i = 0; i < L[0].length; i++) {
 			double[] column = l.getColumn(i);
-			int minIndex = getMinIndex(column);
+			int minIndex = Utils.getMinIndex(column);
 			Lmini[0][i] = minIndex; 
 			Lmini[1][0] += column[minIndex];
 		}
@@ -288,16 +288,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		return ans;
 	}
 
-	private int getMinIndex(double[] ds) {
-		int ans = 0;
-		double min = Double.MAX_VALUE;
-		for (int i = 0; i < ds.length; i++) {
-			min = Math.min(min, ds[i]);
-			if(min == ds[i])
-				ans = i;
-		}
-		return ans;
-	}
 
 	public static void printMatrix(double [][] matrix, PrintStream out){
 		out.println(matrix.length + " " + matrix[0].length);
