@@ -12,10 +12,14 @@ import java.awt.Color;
 import javax.swing.JLabel;
 
 import com.googlecode.javacv.FrameGrabber;
+
+import edu.lipreading.Constants;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Toolkit;
 public class MainFrame extends JFrame {
 
 	/**
@@ -60,6 +64,7 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(Constants.LIP_IMAGE_FILE_PATH)));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 732, 663);
 		setResizable(false);

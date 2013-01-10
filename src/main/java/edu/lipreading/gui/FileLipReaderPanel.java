@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -50,8 +51,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 	private Thread classifierThread;
 	private JLabel lblNewLabel;
 	private Sample recordedSample;
-	final JFileChooser fileChooser = new JFileChooser(); //TODO - make only for video files
-	
+	final JFileChooser fileChooser = new JFileChooser();
+
 	/**
 	 * Create the panel.
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
@@ -61,7 +62,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
 		setBackground(Color.WHITE);
 		setLayout(null);
-		
+
+		fileChooser.setFileFilter(new VideoFileFilter());
 		
 		lblOutput = new JLabel("");
 		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
@@ -69,33 +71,33 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		lblOutput.setForeground(Color.GRAY);
 		lblOutput.setBounds(244, 447, 204, 22);
 		this.add(lblOutput);
-		
+
 		canvas.setBounds(142, 10, 420, 308);
-		
+
 		txtFilePath = new JTextPane();
 		txtFilePath.setToolTipText("Please insert a URL or choose a file");
 		txtFilePath.setBackground(SystemColor.info);
 		txtFilePath.setText("https://dl.dropbox.com/u/8720454/set2/no/no-1.MOV"); //TODO - Change default
 		txtFilePath.setBounds(204, 337, 320, 20);
 		add(txtFilePath);
-		
+
 		trainingSet = TrainingSet.get();
-		
+
 		classifier = new TimeWarperClassifier();
 		classifier.train(trainingSet);
 		normalizer = new CenterNormalizer();
-		
+
 		btnRecord = new JButton("Read Lips From File");
 		btnRecord.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				btnRecord.setEnabled(false);
 				btnRecord.setText("Downloading File...");
 				lblOutput.setText("");
 				Thread videoGrabberThread = new Thread(new Runnable()
 				{
 					public void run()
-				    {
+					{
 						setVideoInput(txtFilePath.getText());
 						try {
 							initGrabber();
@@ -111,7 +113,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 						}
 						recordedSample = new Sample(txtFilePath.getText());
 						startVideo();
-				    }
+					}
 				});
 				videoGrabberThread.start();
 			}
@@ -119,12 +121,12 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		btnRecord.setBackground(Color.WHITE);
 		btnRecord.setBounds(275, 387, 143, 23);
 		this.add(btnRecord);
-		
+
 		lblNewLabel = new JLabel("File Path:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel.setBounds(142, 339, 53, 14);
 		add(lblNewLabel);
-		
+
 		JButton btnChooseFile = new JButton(new ImageIcon(getClass().getResource(Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
 		btnChooseFile.setBorderPainted(false);
 		btnChooseFile.setBackground(Color.WHITE);
@@ -132,9 +134,9 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int returnVal = fileChooser.showOpenDialog(FileLipReaderPanel.this);
-				 
-	            if (returnVal == JFileChooser.APPROVE_OPTION)
-	            	txtFilePath.setText(fileChooser.getSelectedFile().getPath());
+
+				if (returnVal == JFileChooser.APPROVE_OPTION)
+					txtFilePath.setText(fileChooser.getSelectedFile().getPath());
 			}
 		});
 		btnChooseFile.setBounds(530, 333, 32, 32);
@@ -146,7 +148,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 			IplImage grabbed;
-			
+
 			while((grabbed = grabber.grab()) != null && !threadStop){
 				synchronized (threadStop) {
 					image = grabbed.getBufferedImage();
@@ -159,25 +161,25 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 						e.printStackTrace();
 					}
 				}
-				
+
 			}
 			stopVideo();
 			canvas.setImage(null);
 			canvas.paint(null);
-			
-			
+
+
 			classifierThread = new Thread(new Runnable()
 			{
 
 				public void run()
-			    {
+				{
 					recordedSample = normalizer.normalize(recordedSample);
-		    		String outputText = classifier.test(recordedSample);
+					String outputText = classifier.test(recordedSample);
 					lblOutput.setText(outputText);
 					btnRecord.setText("Read Lips From File");
 					btnRecord.setEnabled(true);
 
-			    }
+				}
 			});
 			classifierThread.start();
 
@@ -185,6 +187,24 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			grabber.stop();
+		}
+	}
+
+	class VideoFileFilter extends javax.swing.filechooser.FileFilter {
+		public boolean accept(File file) {
+			String filename = file.getName().toLowerCase();
+			return filename.endsWith(".mov") ||
+					filename.endsWith(".mpeg") ||
+					filename.endsWith(".mpg") ||
+					filename.endsWith(".wmv") ||
+					filename.endsWith(".mp4") ||
+					filename.endsWith(".3gp") ||
+					filename.endsWith(".avi") ||
+					filename.endsWith(".mkv") ||
+					file.isDirectory();
+		}
+		public String getDescription() {
+			return "video files";
 		}
 	}
 }
