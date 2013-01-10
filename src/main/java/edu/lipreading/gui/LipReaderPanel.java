@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -15,9 +17,13 @@ import javax.swing.UIManager;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
+import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.Normalizer;
 
 public class LipReaderPanel extends VideoCapturePanel {
 
@@ -36,18 +42,22 @@ public class LipReaderPanel extends VideoCapturePanel {
 	 */
 	public LipReaderPanel() {
 		super();
+		
 		canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
 		setBackground(Color.WHITE);
 		setLayout(null);
 		
 		recording = false;
 		
-		btnRecord = new JButton("Record");
+		btnRecord = new JButton("");
+		btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
+		
 		btnRecord.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!recording) // Button should start recording
 				{
-					btnRecord.setText("Stop");
+					btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.STOP_IMAGE_FILE_PATH)));
+
 					recordedSample = new Sample("web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date()));
 					lblOutput.setText("");
 					recording = true;
@@ -55,15 +65,18 @@ public class LipReaderPanel extends VideoCapturePanel {
 				else // Button should stop recording
 				{
 					recording = false;
-					btnRecord.setText("Record");
+					btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
+					//btnRecord.setText("Record");
 					
 					//TODO - Extract to thread:
 					List<Sample> trainingSet;
 					try {
 						trainingSet = TrainingSet.get();
-						TimeWarperClassifier twc = new TimeWarperClassifier();
-						twc.train(trainingSet);
-						String outputText = twc.test(recordedSample);
+						Normalizer normalizer = new CenterNormalizer();
+						Classifier classifier = new TimeWarperClassifier();
+						classifier.train(trainingSet);
+						String outputText = classifier.test(normalizer.normalize(recordedSample));
+
 						lblOutput.setText(outputText);
 					} 
 					catch (Exception e) {
@@ -73,15 +86,16 @@ public class LipReaderPanel extends VideoCapturePanel {
 				}
 			}
 		});
-		btnRecord.setBackground(Color.WHITE);
-		btnRecord.setBounds(315, 382, 89, 23);
+		btnRecord.setBorder(BorderFactory.createEmptyBorder());
+		btnRecord.setBorderPainted(false);
+		btnRecord.setBounds(332, 382, 50, 48);
 		this.add(btnRecord);
 		
 		lblOutput = new JLabel("Output Label");
 		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOutput.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblOutput.setForeground(Color.GRAY);
-		lblOutput.setBounds(312, 452, 102, 22);
+		lblOutput.setBounds(303, 452, 102, 22);
 		this.add(lblOutput);
 		
 		

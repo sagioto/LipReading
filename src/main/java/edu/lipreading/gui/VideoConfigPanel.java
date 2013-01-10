@@ -20,6 +20,8 @@ import edu.lipreading.Constants;
 import edu.lipreading.vision.StickerColorConfiguration;
 import javax.swing.JLabel;
 import java.awt.Font;
+
+import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
@@ -83,10 +85,10 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		lblNewLabel.setBounds(10, 389, 696, 59);
 		add(lblNewLabel);
 		
-		//JLabel lipsPic = new JLabel("");
-		//lipsPic.setIcon(new ImageIcon(getClass().getResource(Constants.LIP_IMAGE_FILE_PATH)));
-		//lipsPic.setBounds(64, 107, 168, 104);
-		//add(lipsPic);
+		JLabel lipsPic = new JLabel("");
+		lipsPic.setIcon(new ImageIcon(getClass().getResource(Constants.LIP_IMAGE_FILE_PATH)));
+		lipsPic.setBounds(64, 107, 168, 104);
+		add(lipsPic);
 		
 	}
 		
