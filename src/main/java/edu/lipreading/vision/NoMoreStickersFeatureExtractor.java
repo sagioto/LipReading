@@ -61,7 +61,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
-		List<Future<int[]>> points = new Vector<Future<int[]>>();
 		Loader.load(opencv_objdetect.class);
 		String urlToDownload = "https://dl.dropbox.com/u/8720454/haarcascade_mcs_mouth.xml";
 		if(!new File(Utils.getFileNameFromUrl(urlToDownload)).exists())
@@ -99,6 +98,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				}
 			}
 
+			List<Future<int[]>> points = new Vector<Future<int[]>>();
 			final Future<double[][]> getH = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
