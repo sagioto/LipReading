@@ -1,25 +1,25 @@
 package edu.lipreading.gui;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Panel;
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.Panel;
-import javax.swing.UIManager;
-import java.awt.Color;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 import com.googlecode.javacv.FrameGrabber;
 
 import edu.lipreading.Constants;
-
-import java.awt.Font;
-import javax.swing.SwingConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Toolkit;
+import javax.swing.ImageIcon;
 public class MainFrame extends JFrame {
 
 	/**
@@ -64,7 +64,7 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(Constants.LIP_IMAGE_FILE_PATH)));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(Constants.LR_ICON)));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 732, 663);
 		setResizable(false);
@@ -83,12 +83,6 @@ public class MainFrame extends JFrame {
 		titlePanel.setBounds(0, 0, 716, 104);
 		contentPane.add(titlePanel);
 		titlePanel.setLayout(null);
-		
-		JLabel lblLipReader = new JLabel("Lip Reader");
-		lblLipReader.setForeground(Color.WHITE);
-		lblLipReader.setFont(new Font("Tahoma", Font.PLAIN, 47));
-		lblLipReader.setBounds(38, 11, 234, 68);
-		titlePanel.add(lblLipReader);
 		
 		lblVideoConfigMenu = new JLabel("Video Configuration");
 		lblVideoConfigMenu.addMouseListener(new MouseAdapter() {
@@ -158,6 +152,10 @@ public class MainFrame extends JFrame {
 		lblFileLipReaderMenu.setBounds(279, 90, 148, 14);
 		lblFileLipReaderMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		titlePanel.add(lblFileLipReaderMenu);
+		
+		JLabel lblTitle = new JLabel(new ImageIcon(MainFrame.class.getResource(Constants.LIP_READING_TITLE)));
+		lblTitle.setBounds(10, 16, 344, 73);
+		titlePanel.add(lblTitle);
 		
 		//currentScreen = ScreenType.LipReader;
 		lipReaderPanel.setBounds(0, 105, 716, 520);
