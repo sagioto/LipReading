@@ -30,7 +30,7 @@ public class LinearStretchTimeNormalizer implements Normalizer {
 				List<Integer> f1 = stretched.getMatrix().get(indices.get(i));
 				List<Integer> f2 = stretched.getMatrix().get(indices.get(i + 1));
 				for (int k = 0; k < f1.size(); k++) {
-					intermidiate.add(k, (int) (((f1.get(k) * f1Coef) + (f2.get(k) * f2Coef)) / (f1Coef + f2Coef)));
+					intermidiate.add(k, (int) ((f1.get(k) * f1Coef) + (f2.get(k) * f2Coef)));
 				}
 				stretched.getMatrix().set(indices.get(i) + j, intermidiate);	
 			}

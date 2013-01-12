@@ -3,9 +3,8 @@ package edu.lipreading.classification;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

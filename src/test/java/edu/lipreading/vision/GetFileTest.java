@@ -3,12 +3,10 @@ package edu.lipreading.vision;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 
 import edu.lipreading.Utils;
 
@@ -30,7 +28,7 @@ public class GetFileTest {
 
     @Test
     public void readWordsFileTest() throws Exception {
-    	List<String> readFile = Utils.readFile("words.txt");
+    	List<String> readFile = Utils.readFile("vocabularies/words.txt");
     	Assert.assertEquals("Job", readFile.get(0));
     }
 

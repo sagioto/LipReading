@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class TimeWarperTest {
 		Sample testSample = (Sample)XStream.read(Utils.getFileNameFromUrl(FILE_URL3));
 		double ans = tw.dtw(testSample, testSample);
 		System.out.println("DTW:" + ans);
-		Assert.assertEquals("the two samples didn't return 0.0", 0.0, ans);
+		Assert.assertEquals("the two samples didn't return 0.0", 0.0, ans, 0);
 	}
 
 	@Test
