@@ -4,11 +4,15 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Panel;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,7 +23,6 @@ import javax.swing.border.EmptyBorder;
 import com.googlecode.javacv.FrameGrabber;
 
 import edu.lipreading.Constants;
-import javax.swing.ImageIcon;
 public class MainFrame extends JFrame {
 
 	/**
@@ -36,7 +39,7 @@ public class MainFrame extends JFrame {
 	private JLabel lblVideoConfigMenu;
 	private ScreenType currentScreen;
 	private JLabel lblFileLipReaderMenu;
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -56,10 +59,10 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-			
+
 	}
 
-	
+
 	/**
 	 * Create the frame.
 	 */
@@ -76,14 +79,14 @@ public class MainFrame extends JFrame {
 		lipReaderPanel = new LipReaderPanel();
 		videoConfigPanel = new VideoConfigPanel();
 		fileLipReaderPanel = new FileLipReaderPanel();
-		
-		
+
+
 		Panel titlePanel = new Panel();
 		titlePanel.setBackground(new Color(0, 153, 204));
 		titlePanel.setBounds(0, 0, 716, 104);
 		contentPane.add(titlePanel);
 		titlePanel.setLayout(null);
-		
+
 		lblVideoConfigMenu = new JLabel("Video Configuration");
 		lblVideoConfigMenu.addMouseListener(new MouseAdapter() {
 			@Override
@@ -97,7 +100,7 @@ public class MainFrame extends JFrame {
 				lblFileLipReaderMenu.setForeground(Color.WHITE);
 			}
 
-			
+
 		});
 		lblVideoConfigMenu.setForeground(Color.WHITE);
 		lblVideoConfigMenu.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -105,14 +108,14 @@ public class MainFrame extends JFrame {
 		lblVideoConfigMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblVideoConfigMenu.setBounds(528, 90, 119, 14);
 		titlePanel.add(lblVideoConfigMenu);
-		
+
 		JLabel lblTraining = new JLabel("Training");
 		lblTraining.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTraining.setForeground(Color.BLACK);
 		lblTraining.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblTraining.setBounds(644, 90, 72, 14);
 		titlePanel.add(lblTraining);
-		
+
 		lblLipReaderMenu = new JLabel("Lip Reader");
 		lblLipReaderMenu.addMouseListener(new MouseAdapter() {
 			@Override
@@ -132,7 +135,7 @@ public class MainFrame extends JFrame {
 		lblLipReaderMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblLipReaderMenu.setBounds(437, 90, 81, 14);
 		titlePanel.add(lblLipReaderMenu);
-		
+
 		lblFileLipReaderMenu = new JLabel("Lip Reader From File");
 		lblFileLipReaderMenu.addMouseListener(new MouseAdapter() {
 			@Override
@@ -152,34 +155,44 @@ public class MainFrame extends JFrame {
 		lblFileLipReaderMenu.setBounds(279, 90, 148, 14);
 		lblFileLipReaderMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		titlePanel.add(lblFileLipReaderMenu);
-		
-		JLabel lblTitle = new JLabel(new ImageIcon(MainFrame.class.getResource(Constants.LIP_READING_TITLE)));
+
+		JLabel lblTitle;
+		List<String> fonts = Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+		String fontName = "Origin";
+		if(!fonts.contains(fontName))
+			lblTitle = new JLabel(new ImageIcon(MainFrame.class.getResource(Constants.LIP_READING_TITLE)));
+		else{
+			lblTitle = new JLabel("Lip Reading");
+			lblTitle.setForeground(Color.WHITE);
+			Font font = new Font(fontName, Font.PLAIN, 53);
+			lblTitle.setFont(font);
+		}
 		lblTitle.setBounds(10, 16, 344, 73);
 		titlePanel.add(lblTitle);
-		
+
 		//currentScreen = ScreenType.LipReader;
 		lipReaderPanel.setBounds(0, 105, 716, 520);
 		contentPane.add(lipReaderPanel);
 		lipReaderPanel.setVisible(false);
 		//lipReaderPanel.setVisible(true);
 		//lipReaderPanel.startVideo();
-		
+
 		videoConfigPanel.setBounds(0, 105, 716, 520);
 		contentPane.add(videoConfigPanel);
 		videoConfigPanel.setVisible(false);
-		
+
 		currentScreen = ScreenType.FileLipReader;
 		fileLipReaderPanel.setBounds(0, 105, 716, 520);
 		contentPane.add(fileLipReaderPanel);
 		fileLipReaderPanel.setVisible(true);
-		
-		
-		
+
+
+
 	}
 
 
-	
-	
+
+
 	private void changeScreen(ScreenType screenType) {
 		currentScreen = screenType;
 		switch (screenType) {
@@ -210,6 +223,6 @@ public class MainFrame extends JFrame {
 		default:
 			break;
 		}
-		
+
 	}
 }
