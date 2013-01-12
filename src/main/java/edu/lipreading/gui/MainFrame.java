@@ -67,6 +67,7 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		setTitle("Lip Reading");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(Constants.LR_ICON)));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 732, 663);
