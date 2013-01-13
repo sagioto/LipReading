@@ -94,7 +94,7 @@ public class MainFrame extends JFrame {
 		lblTitle.setBounds(180, 16, 344, 73);
 		titlePanel.add(lblTitle);
 
-		
+
 		final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 88, 716, 537);
 		fileLipReaderPanel = new FileLipReaderPanel();
@@ -103,7 +103,7 @@ public class MainFrame extends JFrame {
 		tabbedPane.addTab("Read From File", null, fileLipReaderPanel, "Read from a file in the file system or a URL");
 		tabbedPane.addTab("Live Read", null, lipReaderPanel, "Read from the camera");
 		tabbedPane.addTab("Sticker Configurataion", null, videoConfigPanel, "Adjust the stickers' colors");
-		
+
 		JPanel TrainingPanel = new JPanel();
 		tabbedPane.addTab("Training", null, TrainingPanel, "Train the reader");
 		fileLipReaderPanel.setVisible(true);
@@ -116,53 +116,37 @@ public class MainFrame extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				switch(tabbedPane.getSelectedIndex()){
-				case 0: changeScreen(ScreenType.FileLipReader);
+				case 0: //file
+					fileLipReaderPanel.setVisible(true);
+					videoConfigPanel.setVisible(false);
+					videoConfigPanel.stopVideo();
+					lipReaderPanel.setVisible(false);
+					lipReaderPanel.stopVideo();
 					break;
-				case 1: changeScreen(ScreenType.LipReader);
+				case 1: //camera
+					lipReaderPanel.setVisible(true);
+					fileLipReaderPanel.setVisible(false);
+					fileLipReaderPanel.stopVideo();
+					videoConfigPanel.setVisible(false);
+					videoConfigPanel.stopVideo();
+					lipReaderPanel.startVideo();
 					break;
-				case 2: changeScreen(ScreenType.ConfigurationVideo);
+				case 2: //configuration
+					videoConfigPanel.setVisible(true);
+					fileLipReaderPanel.setVisible(false);
+					fileLipReaderPanel.stopVideo();
+					lipReaderPanel.setVisible(false);
+					lipReaderPanel.stopVideo();
+					videoConfigPanel.startVideo();	
 					break;
-				case 3: changeScreen(ScreenType.Training);
+				case 3:
 					break;
 				}
 			}
-			
+
 		});
 		contentPane.add(tabbedPane);
 	}
 
 
-
-
-	private void changeScreen(ScreenType screenType) {
-		switch (screenType) {
-		case LipReader:
-			lipReaderPanel.setVisible(true);
-			fileLipReaderPanel.setVisible(false);
-			fileLipReaderPanel.stopVideo();
-			videoConfigPanel.setVisible(false);
-			videoConfigPanel.stopVideo();
-			lipReaderPanel.startVideo();
-			break;
-		case ConfigurationVideo:
-			videoConfigPanel.setVisible(true);
-			fileLipReaderPanel.setVisible(false);
-			fileLipReaderPanel.stopVideo();
-			lipReaderPanel.setVisible(false);
-			lipReaderPanel.stopVideo();
-			videoConfigPanel.startVideo();
-			break;
-		case FileLipReader:
-			fileLipReaderPanel.setVisible(true);
-			videoConfigPanel.setVisible(false);
-			videoConfigPanel.stopVideo();
-			lipReaderPanel.setVisible(false);
-			lipReaderPanel.stopVideo();
-			break;
-
-		default:
-			break;
-		}
-
-	}
 }
