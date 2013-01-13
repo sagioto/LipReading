@@ -117,25 +117,16 @@ public class MainFrame extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				switch(tabbedPane.getSelectedIndex()){
 				case 0: //file
-					fileLipReaderPanel.setVisible(true);
-					videoConfigPanel.setVisible(false);
 					videoConfigPanel.stopVideo();
-					lipReaderPanel.setVisible(false);
 					lipReaderPanel.stopVideo();
 					break;
 				case 1: //camera
-					lipReaderPanel.setVisible(true);
-					fileLipReaderPanel.setVisible(false);
 					fileLipReaderPanel.stopVideo();
-					videoConfigPanel.setVisible(false);
 					videoConfigPanel.stopVideo();
 					lipReaderPanel.startVideo();
 					break;
 				case 2: //configuration
-					videoConfigPanel.setVisible(true);
-					fileLipReaderPanel.setVisible(false);
 					fileLipReaderPanel.stopVideo();
-					lipReaderPanel.setVisible(false);
 					lipReaderPanel.stopVideo();
 					videoConfigPanel.startVideo();	
 					break;
