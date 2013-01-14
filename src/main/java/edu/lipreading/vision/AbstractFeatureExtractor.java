@@ -33,7 +33,7 @@ public abstract class AbstractFeatureExtractor {
 
 	abstract protected Sample getPoints() throws Exception, InterruptedException, ExecutionException;
 
-	private FrameGrabber getGrabber(String source)
+	public FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
 		FrameGrabber grabber = null;
 		String sampleName;

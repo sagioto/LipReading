@@ -61,7 +61,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		setLayout(null);
 
 		fileChooser.setFileFilter(new VideoFileFilter());
-		
+
 		lblOutput = new JLabel("");
 		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOutput.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -84,7 +84,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		classifier.train(trainingSet);
 		normalizer = new CenterNormalizer();
 
-		btnRecord = new JButton("Read Lips From File");
+		final String recordButtonText = "Read Lips From File";
+		btnRecord = new JButton(recordButtonText);
 		btnRecord.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -103,7 +104,13 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 							e.printStackTrace();
 						}
 						recordedSample = new Sample(txtFilePath.getText());
-						startVideo();
+
+						try {
+							startVideo();
+						} catch (Exception e) {
+							btnRecord.setEnabled(true);
+							btnRecord.setText(recordButtonText);
+						}
 					}
 				});
 				videoGrabberThread.start();
@@ -140,19 +147,16 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 		try {
 			IplImage grabbed;
 
-			while((grabbed = grabber.grab()) != null && !threadStop){
-				synchronized (threadStop) {
-					image = grabbed.getBufferedImage();
-					canvas.setImage(image);
-					canvas.paint(null);
-					try {
-						recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			while((grabbed = grabber.grab()) != null && !threadStop.get()){
+				image = grabbed.getBufferedImage();
+				canvas.setImage(image);
+				canvas.paint(null);
+				try {
+					recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
 			}
 			stopVideo();
 			canvas.setImage(null);

@@ -35,23 +35,23 @@ public class LipReaderPanel extends VideoCapturePanel {
 	private boolean recording;
 	private JButton btnRecord;
 	private Sample recordedSample;
-	
+
 	/**
 	 * Create the panel.
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
 	 */
 	public LipReaderPanel() {
 		super();
-		
+
 		canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
 		setBackground(Color.WHITE);
 		setLayout(null);
-		
+
 		recording = false;
-		
+
 		btnRecord = new JButton("");
 		btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
-		
+
 		btnRecord.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!recording) // Button should start recording
@@ -67,7 +67,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 					recording = false;
 					btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
 					//btnRecord.setText("Record");
-					
+
 					//TODO - Extract to thread:
 					List<Sample> trainingSet;
 					try {
@@ -90,48 +90,41 @@ public class LipReaderPanel extends VideoCapturePanel {
 		btnRecord.setBorderPainted(false);
 		btnRecord.setBounds(332, 382, 50, 48);
 		this.add(btnRecord);
-		
+
 		lblOutput = new JLabel("Output Label");
 		lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOutput.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblOutput.setForeground(Color.GRAY);
 		lblOutput.setBounds(303, 452, 102, 22);
 		this.add(lblOutput);
-		
-		
+
+
 
 		canvas.setBounds(129, 10, 456, 362);
-		
-		
+
+
 	}
 
 	@Override
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 			IplImage grabbed;
-			while(!threadStop){
-				synchronized (threadStop) {
-					if (!threadStop)
-					{
-						if ((grabbed = grabber.grab()) == null)
-							break;
-						image = grabbed.getBufferedImage();
-						canvas.setImage(image);
-						canvas.paint(null);
-						if (recording)
-						{
-							try {
-								recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+			while(!threadStop.get()){
+				if ((grabbed = grabber.grab()) == null)
+					break;
+				image = grabbed.getBufferedImage();
+				canvas.setImage(image);
+				canvas.paint(null);
+				if (recording)
+				{
+					try {
+						recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
-			
-
 		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,6 +132,6 @@ public class LipReaderPanel extends VideoCapturePanel {
 		}
 	}
 
-	
-	
+
+
 }

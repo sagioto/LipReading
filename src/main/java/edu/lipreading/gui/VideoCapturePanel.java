@@ -4,16 +4,15 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.VideoInputFrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-import edu.lipreading.Utils;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class VideoCapturePanel extends JPanel {
@@ -22,14 +21,14 @@ public class VideoCapturePanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected String videoInput = "";
+	protected String videoInput = null;
 	protected BufferedImage image = null;
 	protected VideoCanvas canvas;
 	protected FrameGrabber grabber = null;
 	protected String sampleName;
 	protected ColoredStickersFeatureExtractor stickersExtractor;
 	protected Thread videoGrabber;
-	protected Boolean threadStop;
+	protected AtomicBoolean threadStop;
 
 	/**
 	 * Create the panel.
@@ -45,23 +44,15 @@ public class VideoCapturePanel extends JPanel {
 		canvas.setVisible(true);
 		canvas.createBufferStrategy(1);
 
-		threadStop = new Boolean(true);
+		threadStop = new AtomicBoolean(true);
 	}
 
-	public void startVideo() {
+	public void startVideo() throws Exception {
 		if (grabber == null)
 		{
 			try{
-				grabber = getGrabber(videoInput);
-				grabber.start();
+				grabber = stickersExtractor.getGrabber(videoInput);
 			}catch (Exception e){
-				if(e.getMessage().contains("Could not setup device"))
-					JOptionPane.showMessageDialog(this,
-							"This panel only works with a Camera",
-							"Inane warning",
-							JOptionPane.WARNING_MESSAGE);
-				else
-					e.printStackTrace();
 				if(grabber != null){
 					try {
 						grabber.stop();
@@ -70,13 +61,28 @@ public class VideoCapturePanel extends JPanel {
 					}
 				}
 				grabber = null;
-				return;
+				if(e instanceof UnknownHostException){
+					JOptionPane.showMessageDialog(this,
+							"Could not reach host " + e.getMessage()
+							+ "\nplease check the URL and your Internet connection",
+							"Inane warning",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				throw e;
 			}
 		}
-
-
-
-		threadStop = false;
+		try{
+			grabber.start();
+		} catch (Exception e){
+			if(e.getMessage().contains("Could not setup device")){
+				JOptionPane.showMessageDialog(this,
+						"This feature only works with a camera",
+						"Inane warning",
+						JOptionPane.WARNING_MESSAGE);
+				throw e;
+			}
+		}
+		threadStop.set(false);
 		videoGrabber = new Thread(new Runnable()
 		{
 
@@ -90,14 +96,12 @@ public class VideoCapturePanel extends JPanel {
 				}
 			}
 		});
-
 		videoGrabber.start();
 	}
 
 
 	public void stopVideo(){
-		synchronized (threadStop) {
-			threadStop = true;
+			threadStop.set(true);
 			try {
 				if (grabber != null){
 					grabber.stop();
@@ -106,16 +110,13 @@ public class VideoCapturePanel extends JPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-
-
 	}
 
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 
 			IplImage grabbed;		
-			while((grabbed = grabber.grab()) != null && !threadStop){
+			while((grabbed = grabber.grab()) != null && !threadStop.get()){
 				synchronized (threadStop) {
 					image = grabbed.getBufferedImage();
 					canvas.setImage(image);
@@ -130,36 +131,9 @@ public class VideoCapturePanel extends JPanel {
 	}
 
 	public void initGrabber() throws MalformedURLException, IOException, Exception{
-		grabber = getGrabber(videoInput);
+		grabber = stickersExtractor.getGrabber(videoInput);
 	}
 
-	private FrameGrabber getGrabber(String source)
-			throws MalformedURLException, IOException, Exception {
-		FrameGrabber grabber = null;
-		if(isSourceUrl(source)){		
-			Utils.get(source);
-			sampleName = Utils.getFileNameFromUrl(source);
-			grabber = FFmpegFrameGrabber.createDefault(sampleName);
-		}
-		else if(isSourceFile(source)){
-			sampleName = Utils.getFileName(source);
-			grabber = FFmpegFrameGrabber.createDefault(source);
-		}
-		else{
-			//try open the default camera
-			grabber = VideoInputFrameGrabber.createDefault(0);
-			sampleName = "liveCam";
-		}
-		return grabber;
-	}
-
-	private boolean isSourceFile(String source) {
-		return null != source && !isSourceUrl(source) && source.contains(".");
-	}
-
-	private boolean isSourceUrl(String source) {
-		return null != source && source.contains("://");
-	}
 
 
 	public void setVideoInput(String videoInput){

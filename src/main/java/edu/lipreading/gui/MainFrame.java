@@ -123,12 +123,16 @@ public class MainFrame extends JFrame {
 				case 1: //camera
 					fileLipReaderPanel.stopVideo();
 					videoConfigPanel.stopVideo();
-					lipReaderPanel.startVideo();
+					try {
+						lipReaderPanel.startVideo();
+					} catch (Exception ex) {}
 					break;
 				case 2: //configuration
 					fileLipReaderPanel.stopVideo();
 					lipReaderPanel.stopVideo();
-					videoConfigPanel.startVideo();	
+					try {
+						videoConfigPanel.startVideo();
+					} catch (Exception ex) {}
 					break;
 				case 3:
 					break;
