@@ -122,6 +122,7 @@
 					<archive>
 						<manifest>
 							<mainClass>edu.lipreading.LipReading</mainClass>
+							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>
 					<descriptorRefs>
