@@ -109,8 +109,9 @@ public class Utils {
 	}
 
 	public static List<Sample> getTrainingSetFromZip(String zipUrl) throws Exception {
-		Utils.get(zipUrl);
-		ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
+		if(!new File(getFileNameFromUrl(zipUrl)).exists())
+			Utils.get(zipUrl);
+		ZipFile samplesZip = new ZipFile(getFileNameFromUrl(zipUrl));
 		List<Sample> trainingSet = new Vector<Sample>();
 		Enumeration<? extends ZipEntry> entries = samplesZip.entries();
 		while (entries.hasMoreElements()) {
