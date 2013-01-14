@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
+
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
@@ -28,7 +30,7 @@ public class VideoCapturePanel extends JPanel {
 	protected ColoredStickersFeatureExtractor stickersExtractor;
 	protected Thread videoGrabber;
 	protected Boolean threadStop;
-	
+
 	/**
 	 * Create the panel.
 	 * @throws com.googlecode.javacv.FrameGrabber.Exception 
@@ -37,54 +39,62 @@ public class VideoCapturePanel extends JPanel {
 		stickersExtractor = new ColoredStickersFeatureExtractor();
 		canvas = new VideoCanvas();
 		canvas.setBackground(Color.LIGHT_GRAY);
-        
+
 		canvas.setBounds(129, 10, 456, 362);
 		this.add(canvas);
-        canvas.setVisible(true);
-        canvas.createBufferStrategy(1);
-        
-        threadStop = new Boolean(true);
+		canvas.setVisible(true);
+		canvas.createBufferStrategy(1);
+
+		threadStop = new Boolean(true);
 	}
 
 	public void startVideo() {
-		try {
-        	if (grabber == null)
-        	{
-        		grabber = getGrabber(videoInput);
-        	}
-    		grabber.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			//TODO Improve
-			try {
-				grabber.stop();
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		if (grabber == null)
+		{
+			try{
+				grabber = getGrabber(videoInput);
+				grabber.start();
+			}catch (Exception e){
+				if(e.getMessage().contains("Could not setup device"))
+					JOptionPane.showMessageDialog(this,
+							"This panel only works with a Camera",
+							"Inane warning",
+							JOptionPane.WARNING_MESSAGE);
+				else
+					e.printStackTrace();
+				if(grabber != null){
+					try {
+						grabber.stop();
+					} catch (com.googlecode.javacv.FrameGrabber.Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+				grabber = null;
+				return;
 			}
 		}
-		
-		
+
+
+
 		threadStop = false;
 		videoGrabber = new Thread(new Runnable()
 		{
 
 			public void run()
-		    {
-		    	try {
+			{
+				try {
 					getVideoFromSource();
 				} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-		    }
+			}
 		});
-		 
+
 		videoGrabber.start();
 	}
-	
-	
+
+
 	public void stopVideo(){
 		synchronized (threadStop) {
 			threadStop = true;
@@ -97,13 +107,13 @@ public class VideoCapturePanel extends JPanel {
 				e.printStackTrace();
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
-			
+
 			IplImage grabbed;		
 			while((grabbed = grabber.grab()) != null && !threadStop){
 				synchronized (threadStop) {
@@ -111,7 +121,7 @@ public class VideoCapturePanel extends JPanel {
 					canvas.setImage(image);
 					canvas.paint(null);
 				}
-				
+
 			}
 		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 			// TODO Auto-generated catch block
@@ -122,7 +132,7 @@ public class VideoCapturePanel extends JPanel {
 	public void initGrabber() throws MalformedURLException, IOException, Exception{
 		grabber = getGrabber(videoInput);
 	}
-	
+
 	private FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
 		FrameGrabber grabber = null;
@@ -151,10 +161,10 @@ public class VideoCapturePanel extends JPanel {
 		return null != source && source.contains("://");
 	}
 
-	
+
 	public void setVideoInput(String videoInput){
 		this.videoInput = videoInput;
 	}
-	
-	
+
+
 }
