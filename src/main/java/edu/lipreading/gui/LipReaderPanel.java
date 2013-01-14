@@ -109,9 +109,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 			IplImage grabbed;
-			while(!threadStop.get()){
-				if ((grabbed = grabber.grab()) == null)
-					break;
+			while(!threadStop.get() && (grabbed = grabber.grab()) != null){
 				image = grabbed.getBufferedImage();
 				canvas.setImage(image);
 				canvas.paint(null);

@@ -101,28 +101,25 @@ public class VideoCapturePanel extends JPanel {
 
 
 	public void stopVideo(){
-			threadStop.set(true);
-			try {
-				if (grabber != null){
-					grabber.stop();
-				}
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		threadStop.set(true);
+		try {
+			if (grabber != null){
+				grabber.stop();
 			}
+		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 		try {
 
 			IplImage grabbed;		
-			while((grabbed = grabber.grab()) != null && !threadStop.get()){
-				synchronized (threadStop) {
-					image = grabbed.getBufferedImage();
-					canvas.setImage(image);
-					canvas.paint(null);
-				}
-
+			while(!threadStop.get() && (grabbed = grabber.grab()) != null){
+				image = grabbed.getBufferedImage();
+				canvas.setImage(image);
+				canvas.paint(null);
 			}
 		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 			// TODO Auto-generated catch block
