@@ -96,6 +96,7 @@ public class MainFrame extends JFrame {
 
 
 		final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setUI(new ModernTabbedPaneUI(700 / 4));
 		tabbedPane.setBounds(0, 88, 716, 537);
 		fileLipReaderPanel = new FileLipReaderPanel();
 		lipReaderPanel = new LipReaderPanel();

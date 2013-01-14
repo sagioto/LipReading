@@ -81,8 +81,8 @@ public class VideoCapturePanel extends JPanel {
 						"This feature only works with a camera",
 						"Inane warning",
 						JOptionPane.WARNING_MESSAGE);
-				throw e;
 			}
+			throw e;
 		}
 		threadStop.set(false);
 		videoGrabber = new Thread(new Runnable()
