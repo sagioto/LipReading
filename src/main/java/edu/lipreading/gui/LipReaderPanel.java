@@ -107,26 +107,24 @@ public class LipReaderPanel extends VideoCapturePanel {
 
 	@Override
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
-		try {
-			IplImage grabbed;
-			while(!threadStop.get() && (grabbed = grabber.grab()) != null){
-				image = grabbed.getBufferedImage();
-				canvas.setImage(image);
-				canvas.paint(null);
-				if (recording)
-				{
-					try {
-						recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		IplImage grabbed;
+		while(!threadStop.get()){
+			synchronized (threadStop) {
+				if((grabbed = grabber.grab()) == null)
+					break;
+			}
+			image = grabbed.getBufferedImage();
+			canvas.setImage(image);
+			canvas.paint(null);
+			if (recording)
+			{
+				try {
+					recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			grabber.stop();
 		}
 	}
 

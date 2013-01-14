@@ -151,30 +151,30 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		public void ClickedOnColor(Color c) {
 
 			// Update general stickers colors:
-				switch (this.stickerLocation) {
-				case UPPER:
-					StickerColorConfiguration.UPPER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					StickerColorConfiguration.UPPER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-					break;
-				case LOWER:
-					StickerColorConfiguration.LOWER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					StickerColorConfiguration.LOWER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-					break;
-				case LEFT:
-					StickerColorConfiguration.LEFT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					StickerColorConfiguration.LEFT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-					break;
-				case RIGHT:
-					StickerColorConfiguration.RIGHT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-					StickerColorConfiguration.RIGHT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-					break;
-				default:
-					break;
-				}
+			switch (this.stickerLocation) {
+			case UPPER:
+				StickerColorConfiguration.UPPER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+				StickerColorConfiguration.UPPER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+				break;
+			case LOWER:
+				StickerColorConfiguration.LOWER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+				StickerColorConfiguration.LOWER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+				break;
+			case LEFT:
+				StickerColorConfiguration.LEFT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+				StickerColorConfiguration.LEFT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+				break;
+			case RIGHT:
+				StickerColorConfiguration.RIGHT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
+				StickerColorConfiguration.RIGHT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
+				break;
+			default:
+				break;
+			}
 
-				setColor(c);
-				repaint();
-				canvas.addStickerEventListener(null);
+			setColor(c);
+			repaint();
+			canvas.addStickerEventListener(null);
 		}
 
 	}
@@ -190,8 +190,10 @@ public class VideoConfigPanel extends VideoCapturePanel {
 
 			IplImage grabbed;
 			while(!threadStop.get()){
-				if ((grabbed = grabber.grab()) == null)
-					break;
+				synchronized (threadStop) {
+					if((grabbed = grabber.grab()) == null)
+						break;
+				}
 				List<Integer> frameCoordinates = stickersExtractor.getPoints(grabbed);
 				for (int i=0; i< Constants.POINT_COUNT; i++){
 					CvScalar color = null;

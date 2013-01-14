@@ -72,7 +72,9 @@ public class VideoCapturePanel extends JPanel {
 			}
 		}
 		try{
-			grabber.start();
+			synchronized (threadStop) {
+				grabber.start();
+			}
 		} catch (Exception e){
 			if(e.getMessage().contains("Could not setup device")){
 				JOptionPane.showMessageDialog(this,
@@ -101,29 +103,26 @@ public class VideoCapturePanel extends JPanel {
 
 
 	public void stopVideo(){
-		threadStop.set(true);
-		try {
-			if (grabber != null){
-				grabber.stop();
+		synchronized (threadStop) {
+			threadStop.set(true);
+			try {
+				if (grabber != null){
+					grabber.stop();
+				}
+			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
-		try {
 
-			IplImage grabbed;		
-			while(!threadStop.get() && (grabbed = grabber.grab()) != null){
-				image = grabbed.getBufferedImage();
-				canvas.setImage(image);
-				canvas.paint(null);
-			}
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		IplImage grabbed;		
+		while(!threadStop.get() && (grabbed = grabber.grab()) != null){
+			image = grabbed.getBufferedImage();
+			canvas.setImage(image);
+			canvas.paint(null);
 		}
 	}
 
