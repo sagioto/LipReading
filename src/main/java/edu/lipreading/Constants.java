@@ -58,5 +58,7 @@ public class Constants {
 	public static final String STOP_IMAGE_FILE_PATH = LIP_READING_PROPS.getProperty("STOP_IMAGE_FILE_PATH");
 	public static final String LIP_READING_TITLE = LIP_READING_PROPS.getProperty("LIP_READING_TITLE");
 	public static final String LR_ICON = LIP_READING_PROPS.getProperty("LR_ICON");
-		
+	
+	
+	
 }

@@ -73,7 +73,6 @@ public class MainFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-
 		Panel titlePanel = new Panel();
 		titlePanel.setBackground(new Color(0, 153, 204));
 		titlePanel.setBounds(0, 0, 716, 90);
