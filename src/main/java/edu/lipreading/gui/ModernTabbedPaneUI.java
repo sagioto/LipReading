@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -24,6 +23,8 @@ import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+
+import edu.lipreading.Constants;
 
 
 public class ModernTabbedPaneUI extends BasicTabbedPaneUI {
@@ -41,42 +42,39 @@ public class ModernTabbedPaneUI extends BasicTabbedPaneUI {
     private static BufferedImage tabRollover;
     private static BufferedImage tabEnd;
     private static BufferedImage tab;
-    private static ResourceBundle bundle;
     private int tabPressed = -1;
     static {
-        ResourceBundle bundle = getResourceBundle();
         try {
             tabSelectedPressedEnd = ImageIO.read(
                     ModernTabbedPaneUI.class.getResource(
-                            bundle.getString("tabUI.tabSelectedPressedEnd")));
+                            Constants.LIP_READING_PROPS.getProperty("tabUI.tabSelectedPressedEnd")));
             tabSelectedPressed = ImageIO.read(
                     ModernTabbedPaneUI.class.getResource(
-                            bundle.getString("tabUI.tabSelectedPressed")));
+                            Constants.LIP_READING_PROPS.getProperty("tabUI.tabSelectedPressed")));
             tabSelectedEnd = ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabSelectedEnd")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabSelectedEnd")));
             tabSelected = ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabSelected")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabSelected")));
             ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabClosePressed")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabClosePressed")));
             ImageIO.read(
                     ModernTabbedPaneUI.class.getResource(
-                            bundle.getString("tabUI.tabCloseRollover")));
+                            Constants.LIP_READING_PROPS.getProperty("tabUI.tabCloseRollover")));
             ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabClose")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabClose")));
             tabRolloverEnd = ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabRolloverEnd")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabRolloverEnd")));
             tabRollover = ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabRollover")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabRollover")));
             tabEnd = ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tabEnd")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tabEnd")));
             tab = ImageIO.read(ModernTabbedPaneUI.class.getResource(
-                    bundle.getString("tabUI.tab")));
+                    Constants.LIP_READING_PROPS.getProperty("tabUI.tab")));
         } catch (IOException e) {
             LOGGER.warning("Could not load SliderUI images");
         }
     }
 
-    // TODO Paint & handle close buttons but on first tab
 
     public ModernTabbedPaneUI(int width) {
     	TAB_WIDTH = width;
@@ -87,7 +85,6 @@ public class ModernTabbedPaneUI extends BasicTabbedPaneUI {
         JTabbedPane tabPane = (JTabbedPane) c;
         tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
-        // TODO Test on Windows, this is a Mac OS X workaround
         Constructor<?> constructor = null;
         try {
             Class<?> aClass = Class.forName(
@@ -302,11 +299,5 @@ public class ModernTabbedPaneUI extends BasicTabbedPaneUI {
 
     private static Logger getLogger() {
         return LOGGER;
-    }
-    public static synchronized ResourceBundle getResourceBundle() {
-        if (bundle == null) {
-            bundle = ResourceBundle.getBundle("lr");
-        }
-        return bundle;
     }
 }
