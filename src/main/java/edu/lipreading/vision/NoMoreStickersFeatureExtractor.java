@@ -183,6 +183,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				recorder.stop();
 			}
 		}
+		executor.shutdownNow();
 		return getSample();
 	}
 
