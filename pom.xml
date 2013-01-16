@@ -118,7 +118,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>edu.lipreading.LipReading</mainClass>
+							<mainClass>edu.lipreading.gui.MainFrame</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>

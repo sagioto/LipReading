@@ -29,7 +29,7 @@ import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
-	private final static ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private final static short NUM_OF_STICKERS = (short) Constants.POINT_COUNT;
 
 	@Override
@@ -82,7 +82,6 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 				recorder.stop();
 			}
 		}
-		threadPool.shutdownNow();
 		return getSample();
 	}
 	

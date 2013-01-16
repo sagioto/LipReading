@@ -62,7 +62,9 @@ public class LipReading {
 		}
 		else if(argsAsList.contains("-gui")){
             MainFrame.main(args);
+            return;
         }
+		System.exit(0);
 	}
 
 	
