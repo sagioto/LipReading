@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class Parallel {
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
@@ -16,12 +15,9 @@ public class Parallel {
     public static <T> void For(final Iterable<T> elements, final Operation<T> operation) {
         try {
             // invokeAll blocks for us until all submitted tasks in the call complete
-            List<Future<Void>> futures = forPool.invokeAll(createCallables(elements, operation));
-            for (Future<Void> future : futures) {
-                future.get();
-            }
+            forPool.invokeAll(createCallables(elements, operation));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
