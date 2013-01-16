@@ -82,6 +82,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 				recorder.stop();
 			}
 		}
+		threadPool.shutdownNow();
 		return getSample();
 	}
 	
