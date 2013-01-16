@@ -64,12 +64,12 @@ public class TimeWarperTest {
 
 	@Test
 	public void massiveProofTest1() throws Exception{
-		massiveProofTest(Arrays.asList(new String[]{"yes","no"}), XMLS_URL);
+		massiveProofTest(Arrays.asList(new String[]{"yes", "no"}), XMLS_URL);
 	}
 
 	@Test
 	public void massiveProofTest2() throws Exception{
-		massiveProofTest(Arrays.asList(new String[]{"yes","no", "hello"}), DATA_SET2_URL);
+		massiveProofTest(Arrays.asList(new String[]{"yes", "no", "hello"}), DATA_SET2_URL);
 	}
 
 	public void massiveProofTest(List<String> vocabulary, String dataSetUrl) throws Exception{
