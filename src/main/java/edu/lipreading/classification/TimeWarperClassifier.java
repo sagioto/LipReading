@@ -3,6 +3,7 @@ package edu.lipreading.classification;
 import java.util.List;
 
 import edu.lipreading.Constants;
+import edu.lipreading.Parallel;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 

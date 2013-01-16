@@ -1,4 +1,4 @@
-package edu.lipreading.classification;
+package edu.lipreading;
 
 import java.util.Collection;
 import java.util.LinkedList;

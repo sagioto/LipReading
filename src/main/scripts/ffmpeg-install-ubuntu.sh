@@ -8,6 +8,7 @@ echo "installing ffmepg"
 cd ~/src/ffmpeg-1.0
 make
 sudo make install
+sudo ldconfig
 
 if [ "$USER" != "travis" ]; then
 	# 2) Download and install gstreamer.
