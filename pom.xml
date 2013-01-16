@@ -109,7 +109,6 @@
 				<configuration>
 					<useFile>false</useFile>
 					<argLine>-Xss2m</argLine>
-					<parallel>both</parallel>
 				</configuration>
 			</plugin>
 			<plugin>
