@@ -9,6 +9,8 @@ import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
 import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
+import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
 import static com.googlecode.javacv.cpp.opencv_core.cvSize;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2GRAY;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
@@ -25,11 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDifferentiator;
-import org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction;
-import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
-import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
@@ -37,7 +34,6 @@ import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameRecorder;
-import com.googlecode.javacv.cpp.opencv_core.CvArr;
 import com.googlecode.javacv.cpp.opencv_core.CvMat;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
@@ -53,7 +49,6 @@ import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
-	private int channels = 0;
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 
 	@Override
@@ -83,33 +78,25 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 		while((grabbed = grabber.grab()) != null){
 			cvClearMemStorage(storage);
-			CvMat grabbedMatrix = grabbed.asCvMat();
 			cvCvtColor(grabbed, manipulated, CV_RGB2GRAY);
 			CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 1, CV_HAAR_FIND_BIGGEST_OBJECT);
 			CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
-			channels = grabbed.nChannels();
-			int x = r.x(), y = r.y(), w = r.width(), h = r.height();
-			cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
-			double[] matrix = grabbedMatrix.get();
-			final double[][] roi = new double[h][w * channels];
-
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w * channels; j++) {
-					roi[i][j] = matrix[(x * y * channels) + (i * width) + j];
-				}
-			}
-
+			r.y(r.y() - 20);
+			final int x = r.x(), y = r.y(), w = r.width(), h = r.height();
+			cvSetImageROI(grabbed, r);
+			final CvMat mat = grabbed.asCvMat();
+			
 			List<Future<int[]>> points = new Vector<Future<int[]>>();
 			final Future<double[][]> getH = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
-					return getH(roi);
+					return getH(mat);
 				}
 			});
 			final Future<double[][]> getL = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
-					return getL(roi);
+					return getL(mat);
 				}
 			});
 			final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
@@ -165,15 +152,22 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				int coordinateX = point.get()[0], coordinateY = point.get()[1];
 				frameCoordinates.add(coordinateX);
 				frameCoordinates.add(coordinateY);
-				if(isGui()){
-					cvCircle((CvArr)grabbed, new CvPoint(coordinateX + x, coordinateY + y), 10, CvScalar.RED, 3, 0, 0);
-					frame.showImage(grabbed);
-					if(isOutput()){
-						recorder.record(grabbed);
-					}
+			}
+			cvResetImageROI(grabbed);
+			if(isGui()){
+				for (int i = 0; i < frameCoordinates.size(); i += 2) {
+					cvCircle(grabbed, 
+							new CvPoint(frameCoordinates.get(i) + x,
+									frameCoordinates.get(i + 1) + y), 
+									10, CvScalar.RED, 3, 0, 0);
+				}
+				cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
+				frame.showImage(grabbed);
+				if(isOutput()){
+					recorder.record(grabbed);
 				}
 			}
-
+			
 			getSample().getMatrix().add(frameCoordinates);
 		}
 		storage.release();
@@ -184,6 +178,46 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			}
 		}
 		return getSample();
+	}
+
+	/**
+	 * @param roi a matrix of the roi pixels arranged as BGR
+	 * @return the Hue matrix
+	 */
+	private double[][] getH(CvMat roi){
+		double[][] h = new double[roi.rows()][roi.cols()];
+		for (int i = 0; i < roi.rows(); i++) {
+			for (int j = 0; j < roi.cols(); j++) {
+				double R = roi.get(i, j , 2), G = roi.get(i, j , 1);
+				//h = R / (G + R)
+				h[i][j] = R / (G + R);  
+			}
+		}
+		return h;
+	}
+	
+	/**
+	 * @param roi a matrix of the roi pixels arranged as BGR
+	 * @return the luminance matrix
+	 */
+	private double[][] getL(CvMat roi){
+		double[][] L = new double[roi.rows()][roi.cols()];
+		double max = Double.MIN_VALUE;
+		for (int i = 0; i < roi.rows(); i++) {
+			for (int j = 0; j < roi.cols(); j++) {
+				//L = (R + R + B + G + G + G) / 6
+				double R = roi.get(i, j , 2), G = roi.get(i, j , 1), B = roi.get(i, j , 0);
+				L[i][j] = (R + R + B + G + G + G) / 6;
+				max = Math.max(max, L[i][j]);
+			}
+		}
+		//scale values to be between 0 - 1
+		for (int i = 0; i < roi.rows(); i++) {
+			for (int j = 0; j < roi.cols(); j++) {
+				L[i][j] /= max; 
+			}
+		}
+		return L;
 	}
 
 	private double[][][] getRsup(double[][] h, double[][] L){
@@ -210,34 +244,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		return ans;
 	}
 
-	/**
-	 * @param roi a matrix of doubles of the roi pixels arranged as BGR
-	 * @return the Hue matrix
-	 */
-	private double[][] getH(double [][] roi){
-		double[][] h = new double[roi.length][roi[0].length / channels];
-		for (int i = 0; i < h.length; i++) {
-			for (int j = 0; j < h[0].length; j++) {
-				h[i][j] = roi[i][(j * channels) + 2] / (roi[i][(j * channels) + 1] + roi[i][(j * channels) + 2]);  
-			}
-		}
-		return h;
-	}
-
-	/**
-	 * @param roi a matrix of doubles of the roi pixels arranged as BGR
-	 * @return the luminance matrix
-	 */
-	private double[][] getL(double [][] roi){
-		double[][] L = new double[roi.length][roi[0].length / channels];
-		for (int i = 0; i < L.length; i++) {
-			for (int j = 0; j < L[0].length; j++) {
-				//V = (0.439 * R) - (0.368 * G) - (0.071 * B) + 128
-				L[i][j] = (0.439 * roi[i][(j * channels) + 2])  - (0.368 * roi[i][(j * channels) + 1]) - (0.071 * roi[i][(j * channels)]) + 128;  
-			}
-		}
-		return L;
-	}
 
 	/**
 	 * @param L the luminance matrix
@@ -267,7 +273,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		int[] ans = new int[2];
 		for (int i = 0; i < Lmini[0].length; i++) {
 			boolean found = true;
-			for (int j = i; j < Math.min(i + 20, Lmini[0].length); j++) {
+			for (int j = i; j < Math.min(i + 5, Lmini[0].length); j++) {
 				found &= Lmini[0][j] < Lmini[1][0];
 			}
 			if(found)
@@ -300,10 +306,16 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			out.println();
 		}
 	}
+	
+	public void shutdown(){
+		this.executor.shutdownNow();
+	}
 
 	public static void main(String ... args) throws Exception{
-		new NoMoreStickersFeatureExtractor().extract("combo-dist-8.MOV");
-		double x[] = { -1, 0, 1.0, 2.0, 3.0, 5};
+		NoMoreStickersFeatureExtractor noMoreStickersFeatureExtractor = new NoMoreStickersFeatureExtractor();
+		noMoreStickersFeatureExtractor.extract("yes.3gp");
+		noMoreStickersFeatureExtractor.shutdown();
+		/*double x[] = { -1, 0, 1.0, 2.0, 3.0, 5};
 		double y[] = { 1.0, 0, 1.0, 4.0, 9.0, 25};
 		UnivariateInterpolator interpolator = new SplineInterpolator();
 		UnivariateFunction function = interpolator.interpolate(x, y);
@@ -314,7 +326,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		UnivariateDifferentiableFunction differentiate = d.differentiate(function);
 		double x2 = 0.13;
 		double value2 = differentiate.value(x2);
-		System.out.println("f'(" + x2 + ") = " + value2);
+		System.out.println("f'(" + x2 + ") = " + value2);*/
 	}
 
 }

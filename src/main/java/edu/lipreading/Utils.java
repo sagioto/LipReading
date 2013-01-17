@@ -140,7 +140,7 @@ public class Utils {
 				samplesZip.close();
 				return trainingSet;
 			}
-			});	
+		});	
 	}
 
 	public static Future<MultilayerPerceptron> asyncGetModel(final String modelFilePath) throws Exception {
@@ -155,7 +155,7 @@ public class Utils {
 		});	
 	}
 
-	public static void dataSetToCSV(String zipFileInput, String outputFile) throws IOException, Exception {
+	public static void dataSetToCSV(String zipFileInput, String outputFile) throws Exception {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
 		List<Sample> trainingSetFromZip = Utils.getTrainingSetFromZip(zipFileInput);
 		int instanceSize = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + 1;
@@ -174,8 +174,21 @@ public class Utils {
 		writer.close();
 	}
 
+	public static void matrixtToCSV(double[][] matrix, String outputFile) throws Exception {
+		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
+		List<String[]> rows = new ArrayList<String[]>();
+		for (double[] ds : matrix) {
+			String[] row = new String[ds.length];
+			for (int i = 0; i < ds.length; i++) {
+				row[i] = String.valueOf(ds[i]);
+			}
+			rows.add(row);
+		}
+		writer.writeAll(rows);
+		writer.close();
+	}
 
-	public static void dataSetToARFF(String zipFileInput, String outputFile) throws IOException, Exception {
+	public static void dataSetToARFF(String zipFileInput, String outputFile) throws Exception {
 		String csvFileName = outputFile.split("\\.")[0] + ".csv";
 		dataSetToCSV(zipFileInput, csvFileName);
 		CSVLoader csvLoader = new CSVLoader();
@@ -215,7 +228,7 @@ public class Utils {
 				Double.valueOf(split[2]),
 				Double.valueOf(split[3]));
 	}
-	
+
 	public static int getMinIndex(double[] ds) {
 		int ans = 0;
 		double min = Double.MAX_VALUE;
