@@ -165,6 +165,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<!-- Used to determine property <platform.name>${os.name}-${os.arch}</platform.name> -->
 	<profiles>
 		<profile>
@@ -267,6 +268,55 @@
 			<properties>
 				<os.arch>x86_64</os.arch>
 			</properties>
+		</profile>
+		<profile>
+			<id>ci</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>2.4</version>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<archive>
+								<manifest>
+									<mainClass>edu.lipreading.LipReading</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>assembly</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>2.4</version>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>edu.lipreading.LipReading</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<activation>
+				<property>
+					<name>user.name</name>
+					<value>travis</value>
+				</property>
+			</activation>
 		</profile>
 	</profiles>
 
