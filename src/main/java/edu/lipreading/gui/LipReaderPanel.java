@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,6 +21,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
+import edu.lipreading.Utils;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
@@ -75,8 +77,17 @@ public class LipReaderPanel extends VideoCapturePanel {
 						Normalizer normalizer = new CenterNormalizer();
 						Classifier classifier = new TimeWarperClassifier();
 						classifier.train(trainingSet);
-						String outputText = classifier.test(normalizer.normalize(recordedSample));
-
+						final String outputText = classifier.test(normalizer.normalize(recordedSample));
+							Executors.newSingleThreadExecutor().submit(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										Utils.textToSpeech(outputText);
+									} catch (Exception e) {
+										throw new RuntimeException(e);
+									}
+								}
+							});
 						lblOutput.setText(outputText);
 					} 
 					catch (Exception e) {

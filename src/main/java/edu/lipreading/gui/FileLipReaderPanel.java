@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,6 +24,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
+import edu.lipreading.Utils;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
@@ -169,8 +171,22 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 				public void run()
 				{
 					recordedSample = normalizer.normalize(recordedSample);
-					String outputText = classifier.test(recordedSample);
+					final String outputText = classifier.test(recordedSample);
 					lblOutput.setText(outputText);
+					try {
+						Executors.newSingleThreadExecutor().submit(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									Utils.textToSpeech(outputText);
+								} catch (Exception e) {
+									throw new RuntimeException(e);
+								}
+							}
+						});
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					btnRecord.setText("Read Lips From File");
 					btnRecord.setEnabled(true);
 

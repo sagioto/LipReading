@@ -25,6 +25,13 @@ import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javazoom.jl.player.Player;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
@@ -79,7 +86,26 @@ public class Utils {
 	public static boolean isCI() {
 		return System.getProperty("user.name").equals("travis");
 	}
+	
+	public static void textToSpeech(String text) throws Exception{
+		text = text.replace(" ", "+");
+		HttpClient httpclient = new DefaultHttpClient();
+		String stringURL = "http://translate.google.com/translate_tts?ie=utf-8&tl=en&q=" + text;
+		URLDecoder.decode(stringURL, "ISO-8859-1");
+		HttpGet httpget = new HttpGet(stringURL);
+		HttpResponse get = httpclient.execute(httpget);
 
+		InputStream in = get.getEntity().getContent();
+		Player player = new Player(in);
+		player.play();
+
+		in.close();
+	}
+
+	public static void main(String ... args) throws Exception{
+		Utils.textToSpeech("hello world");
+	}
+	
 	public static String getFileNameFromUrl(String urlToDownload) throws UnsupportedEncodingException {
 		String[] split = urlToDownload.split("/");
 		String fileName = split[split.length - 1];

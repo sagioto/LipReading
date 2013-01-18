@@ -46,7 +46,7 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
-
+@SuppressWarnings(value = { "unused" })
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int ROI_FIX = -20;
 	private static final int SIDE_CONFIDENCE = 10;
