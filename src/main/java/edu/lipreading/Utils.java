@@ -1,7 +1,6 @@
 package edu.lipreading;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,9 +18,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -32,8 +28,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import weka.classifiers.functions.MultilayerPerceptron;
-import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
@@ -102,10 +96,6 @@ public class Utils {
 		in.close();
 	}
 
-	public static void main(String ... args) throws Exception{
-		Utils.textToSpeech("hello world");
-	}
-	
 	public static String getFileNameFromUrl(String urlToDownload) throws UnsupportedEncodingException {
 		String[] split = urlToDownload.split("/");
 		String fileName = split[split.length - 1];
@@ -149,37 +139,6 @@ public class Utils {
 		return trainingSet;
 	}
 
-	public static Future<List<Sample>> asyncGetTrainingSetFromZip(final String zipUrl) throws Exception {
-		return Executors.newSingleThreadExecutor().submit(new Callable<List<Sample>>(){
-			@Override
-			public List<Sample> call() throws Exception {
-				if(!new File(Utils.getFileNameFromUrl(zipUrl)).exists())
-					Utils.get(zipUrl);
-				ZipFile samplesZip = new ZipFile(Utils.getFileNameFromUrl(zipUrl));
-				List<Sample> trainingSet = new Vector<Sample>();
-				Enumeration<? extends ZipEntry> entries = samplesZip.entries();
-				while (entries.hasMoreElements()) {
-					ZipEntry entry = entries.nextElement();
-					Sample read = (Sample) XStream.read(samplesZip.getInputStream(entry));
-					trainingSet.add(read);
-				}
-				samplesZip.close();
-				return trainingSet;
-			}
-		});	
-	}
-
-	public static Future<MultilayerPerceptron> asyncGetModel(final String modelFilePath) throws Exception {
-		return Executors.newSingleThreadExecutor().submit(new Callable<MultilayerPerceptron>(){
-			@Override
-			public MultilayerPerceptron call() throws Exception {
-				File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
-				if(!modelFile.exists())
-					Utils.get(modelFilePath);
-				return (MultilayerPerceptron)SerializationHelper.read(new FileInputStream(modelFile));
-			}
-		});	
-	}
 
 	public static void dataSetToCSV(String zipFileInput, String outputFile) throws Exception {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
