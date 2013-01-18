@@ -93,6 +93,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
                 btnRecord.setEnabled(false);
                 btnRecord.setText("Downloading File...");
                 lblOutput.setText("");
+                
                 Thread videoGrabberThread = new Thread(new Runnable()
                 {
                     public void run()
@@ -140,7 +141,10 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         });
         btnChooseFile.setBounds(530, 333, 32, 32);
         add(btnChooseFile);
-
+        
+        progressBar.setBounds(0, 490, 716, 16);
+        progressBar.setVisible(false);
+        add(progressBar);
     }
 
     @Override

@@ -37,12 +37,12 @@ public abstract class AbstractFeatureExtractor {
 			throws MalformedURLException, IOException, Exception {
 		FrameGrabber grabber = null;
 		String sampleName;
-		if(isSourceUrl(source)){		
+		if(Utils.isSourceUrl(source)){		
 			Utils.get(source);
 			sampleName = Utils.getFileNameFromUrl(source);
 			grabber = FFmpegFrameGrabber.createDefault(sampleName);
 		}
-		else if(isSourceFile(source)){
+		else if(Utils.isSourceFile(source)){
 			sampleName = Utils.getFileName(source);
 			grabber = FFmpegFrameGrabber.createDefault(source);
 		}
@@ -55,14 +55,6 @@ public abstract class AbstractFeatureExtractor {
 		return grabber;
 	}
 
-	private boolean isSourceFile(String source) {
-		return null != source && !isSourceUrl(source);
-	}
-
-	private boolean isSourceUrl(String source) {
-		return null != source && source.contains("://");
-	}
-	
 	public Sample getSample() {
 		return sample;
 	}

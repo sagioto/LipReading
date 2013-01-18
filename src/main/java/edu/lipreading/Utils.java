@@ -21,6 +21,8 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.swing.JProgressBar;
+
 import javazoom.jl.player.Player;
 
 import org.apache.http.HttpResponse;
@@ -49,7 +51,7 @@ public class Utils {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public static void get(String urlToDownload) throws MalformedURLException, IOException{
+	public static void get(String urlToDownload, JProgressBar progressBar) throws MalformedURLException, IOException{
 		URL url = new URL(urlToDownload);
 		InputStream in = url.openStream();
 		String filename = getFileNameFromUrl(urlToDownload);
@@ -65,6 +67,8 @@ public class Utils {
 			out.write(buf, 0, len);
 			totalLen += len;
 			i = (100 * totalLen) / size;
+			if(progressBar != null)
+			    progressBar.setValue(i);
 			String print = "\r[                                                  ]" + i + "%";
 			for (int j = 0; j < i; j += 2) {
 				print = print.replaceFirst(" ", "*");                
@@ -75,6 +79,10 @@ public class Utils {
 		System.out.println();
 		in.close();
 		out.close();
+	}
+	
+	public static void get(String urlToDownload) throws MalformedURLException, IOException{
+	    get(urlToDownload, null);
 	}
 
 	public static boolean isCI() {
@@ -230,5 +238,13 @@ public class Utils {
 		}
 		return ans;
 	}
+	
+	public static boolean isSourceFile(String source) {
+        return null != source && !isSourceUrl(source);
+    }
+
+    public static boolean isSourceUrl(String source) {
+        return null != source && source.contains("://");
+    }
 
 }

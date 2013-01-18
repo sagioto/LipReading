@@ -9,10 +9,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import edu.lipreading.Utils;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class VideoCapturePanel extends JPanel {
@@ -29,6 +31,7 @@ public class VideoCapturePanel extends JPanel {
 	protected ColoredStickersFeatureExtractor stickersExtractor;
 	protected Thread videoGrabber;
 	protected AtomicBoolean threadStop;
+	protected JProgressBar progressBar = new JProgressBar();;
 
 	/**
 	 * Create the panel.
@@ -45,6 +48,10 @@ public class VideoCapturePanel extends JPanel {
 		canvas.createBufferStrategy(1);
 
 		threadStop = new AtomicBoolean(true);
+		
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+       
 	}
 
 	public void startVideo() throws Exception {
@@ -127,7 +134,13 @@ public class VideoCapturePanel extends JPanel {
 	}
 
 	public void initGrabber() throws MalformedURLException, IOException, Exception{
-		grabber = stickersExtractor.getGrabber(videoInput);
+		if(Utils.isSourceUrl(videoInput)) {
+		    progressBar.setValue(0);
+		    progressBar.setVisible(true);
+		    Utils.get(videoInput, progressBar);
+		    videoInput = Utils.getFileNameFromUrl(videoInput);
+		}
+	    grabber = stickersExtractor.getGrabber(videoInput);
 	}
 
 
