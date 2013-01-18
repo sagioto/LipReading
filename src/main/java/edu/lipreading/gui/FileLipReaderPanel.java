@@ -142,7 +142,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         btnChooseFile.setBounds(530, 333, 32, 32);
         add(btnChooseFile);
         
-        progressBar.setBounds(0, 490, 716, 16);
+        progressBar.setBounds(0, 494, 715, 18);
+        progressBar.setStringPainted(true);
         progressBar.setVisible(false);
         add(progressBar);
     }

@@ -48,10 +48,6 @@ public class VideoCapturePanel extends JPanel {
 		canvas.createBufferStrategy(1);
 
 		threadStop = new AtomicBoolean(true);
-		
-		progressBar = new JProgressBar();
-		progressBar.setStringPainted(true);
-       
 	}
 
 	public void startVideo() throws Exception {
