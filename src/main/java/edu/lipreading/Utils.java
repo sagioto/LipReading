@@ -230,12 +230,18 @@ public class Utils {
 	}
 
 	public static int getMinIndex(double[] ds) {
+		return getMinIndex(ds, true);
+	}
+
+	public static int getMinIndex(double[] ds, boolean includeZero) {
 		int ans = 0;
 		double min = Double.MAX_VALUE;
 		for (int i = 0; i < ds.length; i++) {
-			min = Math.min(min, ds[i]);
-			if(min == ds[i])
-				ans = i;
+			if(includeZero || ds[i] != 0){
+				min = Math.min(min, ds[i]);
+				if(min == ds[i])
+					ans = i;
+			}
 		}
 		return ans;
 	}
