@@ -27,6 +27,3 @@ echo "installing ffmepg"
 cd ~/src
 wget http://ffmpeg.org/releases/ffmpeg-1.0.tar.bz2
 tar xvf ffmpeg-1.0.tar.bz2
-cd ffmpeg-1.0
-
-./configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable-x11grab --enable-shared
