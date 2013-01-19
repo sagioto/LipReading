@@ -23,7 +23,7 @@ make
 sudo make install
 
 # 1.2) Download and install ffmpeg
-echo "installing ffmepg"
+echo "downloading ffmepg"
 cd ~/src
 wget http://ffmpeg.org/releases/ffmpeg-1.0.tar.bz2
 tar xvf ffmpeg-1.0.tar.bz2
