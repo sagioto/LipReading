@@ -82,7 +82,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		while((grabbed = grabber.grab()) != null){
 			cvClearMemStorage(storage);
 			cvCvtColor(grabbed, manipulated, CV_RGB2GRAY);
-			CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 1, CV_HAAR_FIND_BIGGEST_OBJECT);
+			CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 13, CV_HAAR_FIND_BIGGEST_OBJECT);
 			CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
 			r.y(r.y() + ROI_FIX);
 			final int x = r.x(), y = r.y();
@@ -417,8 +417,8 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 	public static void main(String ... args) throws Exception{
 		NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
-		fe.setOutput(true);
-		fe.extract("yes.3gp");
+		fe.setOutput(false);
+		fe.extract("various.3gp");
 		fe.shutdown();
 
 	}
