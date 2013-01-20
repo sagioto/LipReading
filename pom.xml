@@ -101,7 +101,6 @@
 			<version>1.0.1-1</version>
 		</dependency>
 
-
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -118,6 +117,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12.4</version>
 				<configuration>
+					<parallel>classes</parallel>
 					<useFile>false</useFile>
 					<argLine>-Xss2m</argLine>
 				</configuration>
