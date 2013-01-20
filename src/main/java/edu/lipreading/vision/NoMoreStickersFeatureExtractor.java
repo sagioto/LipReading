@@ -16,6 +16,7 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -52,6 +53,9 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int SIDE_CONFIDENCE = 10;
 	private static final int VERTICTAL_CONFIDENCE = 5;
 	private final ExecutorService executor = Executors.newCachedThreadPool();
+	private IplImage manipulated;
+	private CvMemStorage storage;
+	private CvHaarClassifierCascade classifier;
 
 	@Override
 	protected Sample getPoints() throws Exception, InterruptedException,
@@ -59,43 +63,71 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		IplImage grabbed;
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
-		Loader.load(opencv_objdetect.class);
-		String fileNameFromUrl = Utils.getFileNameFromUrl(Constants.HAAR_CASCADE_MOUTH_FILE);
-		if(!new File(fileNameFromUrl).exists())
-			Utils.get(Constants.HAAR_CASCADE_MOUTH_FILE);
-		CvHaarClassifierCascade classifier = new CvHaarClassifierCascade(cvLoad(Utils.getFileNameFromUrl(fileNameFromUrl)));
 
-		int width = grabber.getImageWidth();
-		int height = grabber.getImageHeight();
 		if(isGui()){
 			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			if(isOutput()){
-				recorder = FFmpegFrameRecorder.createDefault(getSample().getId().split("\\.")[0] + "-output.MOV",width, height);
+				recorder = FFmpegFrameRecorder.createDefault(getSample().getId().split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
 				recorder.setFrameRate(grabber.getFrameRate());
 				recorder.start();
 			}
 		}
-		IplImage manipulated = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1);
-		CvMemStorage storage = CvMemStorage.create();
 
 		while((grabbed = grabber.grab()) != null){
-			cvClearMemStorage(storage);
-			cvCvtColor(grabbed, manipulated, CV_RGB2GRAY);
-			CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 13, CV_HAAR_FIND_BIGGEST_OBJECT);
-			CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
-			r.y(r.y() + ROI_FIX);
+			List<Integer> frameCoordinates = getPoints(grabbed);
+
+			if(isGui()){
+				if(frameCoordinates != null){
+					for (int i = 0; i < frameCoordinates.size(); i += 2) {
+						cvCircle(grabbed, 
+								new CvPoint(frameCoordinates.get(i),
+										frameCoordinates.get(i + 1)), 
+										1, CvScalar.RED, 3, 0, 0);
+					}
+					//cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
+				}
+				frame.showImage(grabbed);
+				if(isOutput()){
+					recorder.record(grabbed);
+				}
+
+
+				getSample().getMatrix().add(frameCoordinates);
+			}
+		}
+		storage.release();
+		if(isGui()){
+			frame.dispose();
+			if(isOutput()){
+				recorder.stop();
+			}
+		}
+		return getSample();
+	}
+
+	private List<Integer> getPoints(IplImage grabbed) throws Exception {
+		if(manipulated == null)
+			manipulated = cvCreateImage(cvSize(grabbed.width(), grabbed.height()), IPL_DEPTH_8U, 1);
+		if(storage == null || classifier == null)
+			init();
+		cvClearMemStorage(storage);
+		cvCvtColor(grabbed, manipulated, CV_RGB2GRAY);
+		CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 13, CV_HAAR_FIND_BIGGEST_OBJECT);
+		CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
+		if(!r.isNull()){
+			//r.y(r.y() + ROI_FIX);
 			final int x = r.x(), y = r.y();
 			cvSetImageROI(grabbed, r);
 			final CvMat mat = grabbed.asCvMat();
 
 			List<Future<int[]>> points = new Vector<Future<int[]>>();
 			/*final Future<double[][]> getH = executor.submit(new Callable<double[][]>() {
-				@Override
-				public double[][] call() throws Exception {
-					return getH(mat);
-				}
-			});*/
+			@Override
+			public double[][] call() throws Exception {
+				return getH(mat);
+			}
+		});*/
 			final Future<double[][]> getL = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
@@ -103,25 +135,25 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				}
 			});
 			/*TODO make gradient algorithm work
-			final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
-				@Override
-				public double[][][] call() throws Exception {
-					return getRsup(getH.get(), getL.get());
-				}
-			});
-			final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
-				@Override
-				public double[][] call() throws Exception {
-					return getRinf(getH.get(), getL.get());
-				}
-			});
-			final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
-				@Override
-				public int[] call() throws Exception {
-					return getUpper(getRsup.get(), getRinf.get());
-				}
-			});
-			points.add(getUpper);*/
+		final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
+			@Override
+			public double[][][] call() throws Exception {
+				return getRsup(getH.get(), getL.get());
+			}
+		});
+		final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
+			@Override
+			public double[][] call() throws Exception {
+				return getRinf(getH.get(), getL.get());
+			}
+		});
+		final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
+			@Override
+			public int[] call() throws Exception {
+				return getUpper(getRsup.get(), getRinf.get());
+			}
+		});
+		points.add(getUpper);*/
 			final Future<double[][]> getLmini = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
@@ -143,12 +175,12 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			});
 			points.add(getLeft);
 			/*TODO make gradient algorithm work
-			final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
-				@Override
-				public int[] call() throws Exception {
-					return getLower(getCenterLine(getRight, getLeft), getRinf.get());
-				}
-			});*/
+		final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
+			@Override
+			public int[] call() throws Exception {
+				return getLower(getCenterLine(getRight, getLeft), getRinf.get());
+			}
+		});*/
 			final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
 				@Override
 				public int[] call() throws Exception {
@@ -173,30 +205,19 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				frameCoordinates.add(coordinateY);
 			}
 			cvResetImageROI(grabbed);
-			if(isGui()){
-				for (int i = 0; i < frameCoordinates.size(); i += 2) {
-					cvCircle(grabbed, 
-							new CvPoint(frameCoordinates.get(i),
-									frameCoordinates.get(i + 1)), 
-									1, CvScalar.RED, 3, 0, 0);
-				}
-				//cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
-				frame.showImage(grabbed);
-				if(isOutput()){
-					recorder.record(grabbed);
-				}
-			}
+			return frameCoordinates;
+		}
+		return null;
+	}
 
-			getSample().getMatrix().add(frameCoordinates);
-		}
-		storage.release();
-		if(isGui()){
-			frame.dispose();
-			if(isOutput()){
-				recorder.stop();
-			}
-		}
-		return getSample();
+	private void init() throws Exception {
+		Loader.load(opencv_objdetect.class);
+		String fileNameFromUrl = Utils.getFileNameFromUrl(Constants.HAAR_CASCADE_MOUTH_FILE);
+		if(!new File(fileNameFromUrl).exists())
+			Utils.get(Constants.HAAR_CASCADE_MOUTH_FILE);
+		classifier = new CvHaarClassifierCascade(cvLoad(Utils.getFileNameFromUrl(fileNameFromUrl)));
+		storage = CvMemStorage.create();
+
 	}
 
 	protected int[] getLower(double[][] L, int centerLine) {
@@ -219,14 +240,14 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		double[] column = matrixL.getColumn(centerLine);
 		for (int i = 0; i < column.length; i++) {
 			boolean found = true;
-			for (int j = i; j < Math.min(i + VERTICTAL_CONFIDENCE, column.length) && found; j++) {
+			for (int j = i; j < Math.min(i + VERTICTAL_CONFIDENCE, column.length - 1) && found; j++) {
 				found &= column[j] > column[j + 1];
 			}
 			if(found)
 				return new int[] {centerLine, i};
 		}
 		return new int []{centerLine, L.length / 4};
-		
+
 	}
 
 	/**
@@ -418,7 +439,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	public static void main(String ... args) throws Exception{
 		NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
 		fe.setOutput(false);
-		fe.extract("various.3gp");
+		fe.extract(null);
 		fe.shutdown();
 
 	}
