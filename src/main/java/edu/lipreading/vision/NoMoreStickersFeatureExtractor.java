@@ -95,7 +95,8 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				getSample().getMatrix().add(frameCoordinates);
 			}
 		}
-		storage.release();
+		if(storage != null)
+		    storage.release();
 		if(isGui()){
 			frame.dispose();
 			if(isOutput()){
@@ -440,7 +441,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		fe.setOutput(false);
 		fe.extract(null);
 		fe.shutdown();
-
 	}
 
 }
