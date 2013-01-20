@@ -5,7 +5,7 @@
 
 # 1.2)install ffmpeg
 echo "installing ffmepg"
-cd ~/src/ffmpeg-1.0
+cd ~/src/ffmpeg-1.0.1
 ./configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable-x11grab --enable-shared
 make
 sudo make install
