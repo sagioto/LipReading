@@ -42,6 +42,9 @@
 			<includes>
 				<include>*.sh</include>
 			</includes>
+			<excludes>
+			  <exclude>LipReading.sh</exclude>
+			</excludes>
 		</fileSet>
 	</fileSets>
 </assembly>
