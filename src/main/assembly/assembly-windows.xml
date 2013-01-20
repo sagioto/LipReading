@@ -10,13 +10,13 @@
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
 			<useTransitiveDependencies>true</useTransitiveDependencies>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 		</dependencySet>
 	</dependencySets>
 	<fileSets>
 		<fileSet>
 			<directory>target</directory>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>*.jar</include>
 			</includes>
