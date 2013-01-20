@@ -25,7 +25,7 @@
 			<directory>src/main/scripts</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>*.cmd</include>
+				<include>*.bat</include>
 			</includes>
 		</fileSet>
 		<fileSet>
