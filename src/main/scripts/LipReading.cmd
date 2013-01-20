@@ -1,1 +1,1 @@
-java -jar lib/LipReading*.jar -gui
+java -jar bin/LipReading*.jar -gui
