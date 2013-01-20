@@ -42,7 +42,8 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			if(isOutput()){
-				recorder = FFmpegFrameRecorder.createDefault(getSample().getId().split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
+			    String[] sampleNameSplit = getSample().getId().split("\\.");
+                recorder = FFmpegFrameRecorder.createDefault(sampleNameSplit[0] + "-output." + sampleNameSplit[1],grabber.getImageWidth(), grabber.getImageHeight());
 				recorder.start();
 			}
 		}

@@ -67,7 +67,8 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
 			if(isOutput()){
-				recorder = FFmpegFrameRecorder.createDefault(getSample().getId().split("\\.")[0] + "-output.MOV",grabber.getImageWidth(), grabber.getImageHeight());
+				String[] sampleNameSplit = getSample().getId().split("\\.");
+                recorder = FFmpegFrameRecorder.createDefault(sampleNameSplit[0] + "-output." + sampleNameSplit[1],grabber.getImageWidth(), grabber.getImageHeight());
 				recorder.setFrameRate(grabber.getFrameRate());
 				recorder.start();
 			}
@@ -116,7 +117,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 13, CV_HAAR_FIND_BIGGEST_OBJECT);
 		CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
 		if(!r.isNull()){
-			//r.y(r.y() + ROI_FIX);
+			r.y(r.y() + ROI_FIX);
 			final int x = r.x(), y = r.y();
 			cvSetImageROI(grabbed, r);
 			final CvMat mat = grabbed.asCvMat();
