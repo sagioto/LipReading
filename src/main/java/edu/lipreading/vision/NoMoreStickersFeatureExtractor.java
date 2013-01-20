@@ -16,7 +16,6 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
