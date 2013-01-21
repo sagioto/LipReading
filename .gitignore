@@ -5,6 +5,7 @@
 *.jar
 *.war
 *.ear
+*.zip
 
 # media files #
 **/*.jpg
@@ -15,11 +16,14 @@
 **/*.3gp
 **/*.mov
 **/*.MOV
-**/*.log
+**/*.wmv
 
 # output files #
 *yes*.xml
 *no*.xml
+*hello*.xml
+**/*.csv
+**/*.log
 
 # Maven #
 target/
