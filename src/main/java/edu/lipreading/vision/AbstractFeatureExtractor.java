@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
+import com.googlecode.javacv.CanvasFrame;
 import com.googlecode.javacv.FFmpegFrameGrabber;
+import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
+import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.VideoInputFrameGrabber;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
@@ -30,8 +34,6 @@ public abstract class AbstractFeatureExtractor {
 		grabber.stop();
 		return sample;
 	}
-
-	abstract protected Sample getPoints() throws Exception, InterruptedException, ExecutionException;
 
 	public FrameGrabber getGrabber(String source)
 			throws MalformedURLException, IOException, Exception {
@@ -78,5 +80,48 @@ public abstract class AbstractFeatureExtractor {
 	public void setOutput(boolean shouldOutput) {
 		this.output = shouldOutput;
 	}
+
+	protected Sample getPoints() throws Exception {
+				IplImage grabbed;
+				CanvasFrame frame = null;
+				FrameRecorder recorder = null;
+			
+				if(isGui()){
+					frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
+					frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
+					if(isOutput()){
+						String[] sampleNameSplit = getSample().getId().split("\\.");
+						recorder = FFmpegFrameRecorder.createDefault(sampleNameSplit[0] + "-output." + sampleNameSplit[1],grabber.getImageWidth(), grabber.getImageHeight());
+						recorder.setFrameRate(grabber.getFrameRate());
+						recorder.start();
+					}
+				}
+			
+				while((grabbed = grabber.grab()) != null){
+					List<Integer> frameCoordinates = getPoints(grabbed);
+			
+					if(isGui()){
+						paintCoordinates(grabbed, frameCoordinates);
+						frame.showImage(grabbed);
+						if(isOutput()){
+							recorder.record(grabbed);
+						}
+			
+			
+						getSample().getMatrix().add(frameCoordinates);
+					}
+				}
+				if(isGui()){
+					frame.dispose();
+					if(isOutput()){
+						recorder.stop();
+					}
+				}
+				return getSample();
+			}
+
+	abstract public void paintCoordinates(IplImage grabbed, List<Integer> frameCoordinates);
+
+	abstract public List<Integer> getPoints(IplImage grabbed) throws Exception;
 	
 }

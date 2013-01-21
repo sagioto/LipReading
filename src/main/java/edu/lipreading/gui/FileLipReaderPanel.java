@@ -135,8 +135,10 @@ public class FileLipReaderPanel extends VideoCapturePanel {
             public void mouseClicked(MouseEvent arg0) {
                 int returnVal = fileChooser.showOpenDialog(FileLipReaderPanel.this);
 
-                if (returnVal == JFileChooser.APPROVE_OPTION)
+                if (returnVal == JFileChooser.APPROVE_OPTION){
                     txtFilePath.setText(fileChooser.getSelectedFile().getPath());
+                    progressBar.setVisible(false);
+                }
             }
         });
         btnChooseFile.setBounds(530, 333, 32, 32);

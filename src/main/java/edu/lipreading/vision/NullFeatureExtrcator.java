@@ -1,13 +1,19 @@
 package edu.lipreading.vision;
 
-import com.googlecode.javacv.FrameGrabber.Exception;
+import java.util.List;
 
-import edu.lipreading.Sample;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
+
 
 public class NullFeatureExtrcator extends AbstractFeatureExtractor{
 
 	@Override
-	protected Sample getPoints() throws Exception {
+	public void paintCoordinates(IplImage grabbed,
+			List<Integer> frameCoordinates) {}
+
+	@Override
+	public List<Integer> getPoints(IplImage grabbed) throws Exception {
 		return null;
 	}
 

@@ -11,14 +11,10 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.googlecode.javacv.CanvasFrame;
-import com.googlecode.javacv.FFmpegFrameRecorder;
-import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.cpp.opencv_core.CvArr;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
@@ -26,68 +22,10 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
 import edu.lipreading.Constants;
-import edu.lipreading.Sample;
 
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-	private final static short NUM_OF_STICKERS = (short) Constants.POINT_COUNT;
-
-	@Override
-	protected Sample getPoints() throws Exception {
-		IplImage grabbed;
-		CanvasFrame frame = null;
-		FrameRecorder recorder = null;
-
-		if(isGui()){
-			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
-			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
-			if(isOutput()){
-			    String[] sampleNameSplit = getSample().getId().split("\\.");
-                recorder = FFmpegFrameRecorder.createDefault(sampleNameSplit[0] + "-output." + sampleNameSplit[1],grabber.getImageWidth(), grabber.getImageHeight());
-				recorder.start();
-			}
-		}
-
-		while((grabbed = grabber.grab()) != null){
-			List<Integer> frameCoordinates = getPoints(grabbed);
-
-			getSample().getMatrix().add(frameCoordinates);
-			if(isGui()){
-				for(int i = 0; i < NUM_OF_STICKERS; i++){
-					CvScalar color = null;
-					switch (i){
-					case Constants.UPPER_VECTOR_INDEX:
-						color = StickerColorConfiguration.UPPER_STICKER_MAX;
-						break;
-					case Constants.LOWER_VECTOR_INDEX:
-						color = StickerColorConfiguration.LOWER_STICKER_MAX;
-						break;
-					case Constants.LEFT_VECTOR_INDEX:
-						color = StickerColorConfiguration.LEFT_STICKER_MAX;
-						break;
-					case Constants.RIGHT_VECTOR_INDEX:
-						color = StickerColorConfiguration.RIGHT_STICKER_MAX;
-						break;
-					}
-					cvCircle((CvArr)grabbed, new CvPoint(frameCoordinates.get(i * 2), frameCoordinates.get((i * 2) + 1)), 25, color, 3, 0, 0);
-					frame.showImage(grabbed);
-					if(isOutput()){
-						recorder.record(grabbed);
-					}
-				}
-			}
-		}
-		if(isGui()){
-			frame.dispose();
-			if(isOutput()){
-				recorder.stop();
-			}
-		}
-		return getSample();
-	}
-	
-	public List<Integer> getPoints(IplImage img)
-			throws InterruptedException, ExecutionException {
+	public List<Integer> getPoints(IplImage img) throws Exception {
 		List<Integer> frameCoordinates = new Vector<Integer>();
 		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
 
@@ -141,6 +79,32 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		ans.add(posX);
 		ans.add(posY);
 		return ans;
+	}
+
+	@Override
+	public void paintCoordinates(IplImage grabbed,
+			List<Integer> frameCoordinates) {
+		for (int i=0; i< Constants.POINT_COUNT; i++){
+			CvScalar color = null;
+			switch (i){
+			case Constants.UPPER_VECTOR_INDEX:
+				color = StickerColorConfiguration.UPPER_STICKER_MAX;
+				break;
+			case Constants.LOWER_VECTOR_INDEX:
+				color = StickerColorConfiguration.LOWER_STICKER_MAX;
+				break;
+			case Constants.LEFT_VECTOR_INDEX:
+				color = StickerColorConfiguration.LEFT_STICKER_MAX;
+				break;
+			case Constants.RIGHT_VECTOR_INDEX:
+				color = StickerColorConfiguration.RIGHT_STICKER_MAX;
+				break;
+			}
+			int x = frameCoordinates.get(i * 2);
+			int y = frameCoordinates.get((i * 2) + 1);
+			if (x != 0 && y!=0)
+				cvCircle((CvArr)grabbed, new CvPoint(x, y), 20, color, 3, 0, 0);
+		}
 	}
 
 }

@@ -1,11 +1,14 @@
 package edu.lipreading.vision;
 
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
 import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
 import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
 import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
 import static com.googlecode.javacv.cpp.opencv_core.cvSize;
@@ -15,7 +18,6 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_FIND_BIGGEST_OB
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -24,15 +26,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolatingFunction;
-import org.apache.commons.math3.analysis.interpolation.SmoothingPolynomialBicubicSplineInterpolator;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.CanvasFrame;
-import com.googlecode.javacv.FFmpegFrameRecorder;
-import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.cpp.opencv_core.CvMat;
 import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
@@ -44,70 +41,18 @@ import com.googlecode.javacv.cpp.opencv_objdetect;
 import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 
 import edu.lipreading.Constants;
-import edu.lipreading.Sample;
 import edu.lipreading.Utils;
-@SuppressWarnings(value = { "unused" })
+
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
-	private static final int ROI_FIX = -20;
-	private static final int SIDE_CONFIDENCE = 10;
-	private static final int VERTICTAL_CONFIDENCE = 5;
+	private static final int ROI_FIX = -10;
+	private static final int SIDE_CONFIDENCE = 5;
+	private static final int VERTICTAL_CONFIDENCE = 10;
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 	private IplImage manipulated;
-	private CvMemStorage storage;
 	private CvHaarClassifierCascade classifier;
+	private CvMemStorage storage;
 
-	@Override
-	protected Sample getPoints() throws Exception, InterruptedException,
-	ExecutionException {
-		IplImage grabbed;
-		CanvasFrame frame = null;
-		FrameRecorder recorder = null;
-
-		if(isGui()){
-			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
-			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
-			if(isOutput()){
-				String[] sampleNameSplit = getSample().getId().split("\\.");
-                recorder = FFmpegFrameRecorder.createDefault(sampleNameSplit[0] + "-output." + sampleNameSplit[1],grabber.getImageWidth(), grabber.getImageHeight());
-				recorder.setFrameRate(grabber.getFrameRate());
-				recorder.start();
-			}
-		}
-
-		while((grabbed = grabber.grab()) != null){
-			List<Integer> frameCoordinates = getPoints(grabbed);
-
-			if(isGui()){
-				if(frameCoordinates != null){
-					for (int i = 0; i < frameCoordinates.size(); i += 2) {
-						cvCircle(grabbed, 
-								new CvPoint(frameCoordinates.get(i),
-										frameCoordinates.get(i + 1)), 
-										1, CvScalar.RED, 3, 0, 0);
-					}
-					//cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.RED, 1, CV_AA, 0);
-				}
-				frame.showImage(grabbed);
-				if(isOutput()){
-					recorder.record(grabbed);
-				}
-
-
-				getSample().getMatrix().add(frameCoordinates);
-			}
-		}
-		if(storage != null)
-		    storage.release();
-		if(isGui()){
-			frame.dispose();
-			if(isOutput()){
-				recorder.stop();
-			}
-		}
-		return getSample();
-	}
-
-	private List<Integer> getPoints(IplImage grabbed) throws Exception {
+	public List<Integer> getPoints(IplImage grabbed) throws Exception {
 		if(manipulated == null)
 			manipulated = cvCreateImage(cvSize(grabbed.width(), grabbed.height()), IPL_DEPTH_8U, 1);
 		if(storage == null || classifier == null)
@@ -123,38 +68,18 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			final CvMat mat = grabbed.asCvMat();
 
 			List<Future<int[]>> points = new Vector<Future<int[]>>();
-			/*final Future<double[][]> getH = executor.submit(new Callable<double[][]>() {
-			@Override
-			public double[][] call() throws Exception {
-				return getH(mat);
-			}
-		});*/
+			final Future<double[][]> getH = executor.submit(new Callable<double[][]>() {
+				@Override
+				public double[][] call() throws Exception {
+					return getH(mat);
+				}
+			});
 			final Future<double[][]> getL = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
 					return getL(mat);
 				}
 			});
-			/*TODO make gradient algorithm work
-		final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
-			@Override
-			public double[][][] call() throws Exception {
-				return getRsup(getH.get(), getL.get());
-			}
-		});
-		final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
-			@Override
-			public double[][] call() throws Exception {
-				return getRinf(getH.get(), getL.get());
-			}
-		});
-		final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
-			@Override
-			public int[] call() throws Exception {
-				return getUpper(getRsup.get(), getRinf.get());
-			}
-		});
-		points.add(getUpper);*/
 			final Future<double[][]> getLmini = executor.submit(new Callable<double[][]>() {
 				@Override
 				public double[][] call() throws Exception {
@@ -175,17 +100,10 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				}
 			});
 			points.add(getLeft);
-			/*TODO make gradient algorithm work
-		final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
-			@Override
-			public int[] call() throws Exception {
-				return getLower(getCenterLine(getRight, getLeft), getRinf.get());
-			}
-		});*/
 			final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
 				@Override
 				public int[] call() throws Exception {
-					return getUpper(getL.get(), getCenterLine(getRight, getLeft));
+					return getUpper(getL.get(), getH.get(), getCenterLine(getRight, getLeft));
 				}
 
 			});
@@ -206,6 +124,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				frameCoordinates.add(coordinateY);
 			}
 			cvResetImageROI(grabbed);
+			cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+r.width(), y+r.height()), CvScalar.RED, 1, CV_AA, 0);
 			return frameCoordinates;
 		}
 		return null;
@@ -219,6 +138,19 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		classifier = new CvHaarClassifierCascade(cvLoad(Utils.getFileNameFromUrl(fileNameFromUrl)));
 		storage = CvMemStorage.create();
 
+	}
+
+	@Override
+	public void paintCoordinates(IplImage grabbed,
+			List<Integer> frameCoordinates) {
+		if(frameCoordinates != null){
+			for (int i = 0; i < frameCoordinates.size(); i += 2) {
+				cvCircle(grabbed, 
+						new CvPoint(frameCoordinates.get(i),
+								frameCoordinates.get(i + 1)), 
+								1, CvScalar.RED, 3, 0, 0);
+			}
+		}
 	}
 
 	protected int[] getLower(double[][] L, int centerLine) {
@@ -236,8 +168,14 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	}
 
 
-	protected int[] getUpper(double[][] L, int centerLine) {
+	protected int[] getUpper(double[][] L, double[][] h, int centerLine) {
 		RealMatrix matrixL = new Array2DRowRealMatrix(L);
+		RealMatrix matrixH = new Array2DRowRealMatrix(h);
+		RealMatrix hMinusL = matrixH.subtract(matrixL);
+		return new int []{centerLine, 
+				Utils.getMinIndex(hMinusL.getColumn(centerLine), false)};
+	}
+	/*RealMatrix matrixL = new Array2DRowRealMatrix(L);
 		double[] column = matrixL.getColumn(centerLine);
 		for (int i = 0; i < column.length; i++) {
 			boolean found = true;
@@ -248,8 +186,103 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				return new int[] {centerLine, i};
 		}
 		return new int []{centerLine, L.length / 4};
+	 */
 
+	/*TODO make gradient algorithm work
+		final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
+			@Override
+			public int[] call() throws Exception {
+				return getLower(getCenterLine(getRight, getLeft), getRinf.get());
+			}
+		});
+	TODO make gradient algorithm work
+		final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
+			@Override
+			public double[][][] call() throws Exception {
+				return getRsup(getH.get(), getL.get());
+			}
+		});
+		final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
+			@Override
+			public double[][] call() throws Exception {
+				return getRinf(getH.get(), getL.get());
+			}
+		});
+		final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
+			@Override
+			public int[] call() throws Exception {
+				return getUpper(getRsup.get(), getRinf.get());
+			}
+		});
+		points.add(getUpper);
+
+	private double[][][] getRsup(double[][] h, double[][] L) throws Exception{
+		double[][][] ans = new double[h.length][h[0].length][3];
+		RealMatrix matrixL = new Array2DRowRealMatrix(L);
+		RealMatrix matrixH = new Array2DRowRealMatrix(h);
+		RealMatrix hMinusL = matrixH.subtract(matrixL);
+		Utils.matrixtToCSV(hMinusL.getData(), "hml.csv");
+		double [] xs = new double[hMinusL.getRowDimension()], 
+				ys = new double[hMinusL.getColumnDimension()];
+		for (int i = 0; i < xs.length; i++) {
+			xs[i] = i;
+		}
+		for (int i = 0; i < ys.length; i++) {
+			ys[i] = i;	
+		}
+		SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
+		long start = System.currentTimeMillis(); 
+		BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hMinusL.getData());
+		System.out.println("sup " + (System.currentTimeMillis() - start));
+		for (int i = 0; i < ans.length; i++) {
+			for (int j = 0; j < ans[0].length; j++) {
+				ans[0][i][j] = func.partialDerivativeX(i, j);
+				ans[1][i][j] = func.partialDerivativeY(i, j);
+				ans[2][i][j] = func.partialDerivativeXY(i, j);
+			}
+		}
+		return ans;
 	}
+
+	private double[][] getRinf(double[][] h, double[][] L) throws Exception{
+		double[][] ans = new double[h.length][h[0].length];
+		RealMatrix matrixL = new Array2DRowRealMatrix(L);
+		RealMatrix matrixH = new Array2DRowRealMatrix(h);
+		RealMatrix hPlusL = matrixH.add(matrixL);
+		Utils.matrixtToCSV(hPlusL.getData(), "hpl.csv");
+		double [] xs = new double[hPlusL.getRowDimension()], 
+				ys = new double[hPlusL.getColumnDimension()];
+		for (int i = 0; i < xs.length; i++) {
+			xs[i] = i;
+		}
+		for (int i = 0; i < ys.length; i++) {
+			ys[i] = i;	
+		}
+		long start = System.currentTimeMillis(); 
+		SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
+		BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hPlusL.getData());
+		for (int i = 0; i < ans.length; i++) {
+			for (int j = 0; j < ans[0].length; j++) {
+				ans[i][j] = func.partialDerivativeY(i, j); 
+			}
+		}
+		System.out.println("inf " + (System.currentTimeMillis() - start));
+		return ans;
+	}
+
+	private int[] getLower(int center, double[][] Rinf){
+		int[] ans = new int[2];
+		RealMatrix RinfMatrix = new Array2DRowRealMatrix(Rinf);
+		ans[0] = center; 
+		ans[1] = Utils.getMinIndex(RinfMatrix.getColumn(center));
+		return ans;
+	}
+
+	private int[] getUpper(double[][][] Rsup, double[][] Rinf){
+		int[] ans = new int[2];
+		//TODO make gradient algorithm work
+		return ans;
+	}*/
 
 	/**
 	 * @param roi a matrix of the roi pixels arranged as BGR
@@ -297,58 +330,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			}
 		}
 		return L;
-	}
-
-	private double[][][] getRsup(double[][] h, double[][] L){
-		double[][][] ans = new double[h.length][h[0].length][3];
-		RealMatrix matrixL = new Array2DRowRealMatrix(L);
-		RealMatrix matrixH = new Array2DRowRealMatrix(h);
-		RealMatrix hMinusL = matrixH.subtract(matrixL);
-		double [] xs = new double[hMinusL.getRowDimension()], 
-				ys = new double[hMinusL.getColumnDimension()];
-		for (int i = 0; i < xs.length; i++) {
-			xs[i] = i;
-		}
-		for (int i = 0; i < ys.length; i++) {
-			ys[i] = i;	
-		}
-		SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
-		long start = System.currentTimeMillis(); 
-		BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hMinusL.getData());
-		System.out.println("sup " + (System.currentTimeMillis() - start));
-		for (int i = 0; i < ans.length; i++) {
-			for (int j = 0; j < ans[0].length; j++) {
-				ans[0][i][j] = func.partialDerivativeX(i, j);
-				ans[1][i][j] = func.partialDerivativeY(i, j);
-				ans[2][i][j] = func.partialDerivativeXY(i, j);
-			}
-		}
-		return ans;
-	}
-
-	private double[][] getRinf(double[][] h, double[][] L){
-		double[][] ans = new double[h.length][h[0].length];
-		RealMatrix matrixL = new Array2DRowRealMatrix(L);
-		RealMatrix matrixH = new Array2DRowRealMatrix(h);
-		RealMatrix hPlusL = matrixH.add(matrixL);
-		double [] xs = new double[hPlusL.getRowDimension()], 
-				ys = new double[hPlusL.getColumnDimension()];
-		for (int i = 0; i < xs.length; i++) {
-			xs[i] = i;
-		}
-		for (int i = 0; i < ys.length; i++) {
-			ys[i] = i;	
-		}
-		long start = System.currentTimeMillis(); 
-		SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
-		BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hPlusL.getData());
-		for (int i = 0; i < ans.length; i++) {
-			for (int j = 0; j < ans[0].length; j++) {
-				ans[i][j] = func.partialDerivativeY(i, j); 
-			}
-		}
-		System.out.println("inf " + (System.currentTimeMillis() - start));
-		return ans;
 	}
 
 
@@ -401,19 +382,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		return ans;
 	}
 
-	private int[] getLower(int center, double[][] Rinf){
-		int[] ans = new int[2];
-		RealMatrix RinfMatrix = new Array2DRowRealMatrix(Rinf);
-		ans[0] = center; 
-		ans[1] = Utils.getMinIndex(RinfMatrix.getColumn(center));
-		return ans;
-	}
-
-	private int[] getUpper(double[][][] Rsup, double[][] Rinf){
-		int[] ans = new int[2];
-		//TODO make gradient algorithm work
-		return ans;
-	}
 
 	private int getCenterLine(final Future<int[]> getRight,
 			final Future<int[]> getLeft)
@@ -421,26 +389,16 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		return (getRight.get()[0] + getLeft.get()[0]) / 2;
 	}
 
-	public static void printMatrix(double [][] matrix, PrintStream out){
-		out.println(matrix.length + " " + matrix[0].length);
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[i].length; j++) {
-				out.print(matrix[i][j]);
-				if(j != matrix[i].length)
-					out.print(" ");
-			}
-			out.println();
-		}
-	}
-
 	public void shutdown(){
-		this.executor.shutdownNow();
+		executor.shutdownNow();
+		if(storage != null)
+			storage.release();
 	}
 
 	public static void main(String ... args) throws Exception{
 		NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
-		fe.setOutput(false);
-		fe.extract(null);
+		fe.setOutput(true);
+		fe.extract("various.3gp");
 		fe.shutdown();
 	}
 

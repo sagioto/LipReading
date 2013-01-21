@@ -1,6 +1,7 @@
 package edu.lipreading.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -9,21 +10,16 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
-import com.googlecode.javacv.cpp.opencv_core.CvArr;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.lipreading.Constants;
 import edu.lipreading.vision.StickerColorConfiguration;
-import javax.swing.JLabel;
-import java.awt.Font;
-
-import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
 public class VideoConfigPanel extends VideoCapturePanel {
 	/**
@@ -195,30 +191,10 @@ public class VideoConfigPanel extends VideoCapturePanel {
 						break;
 				}
 				List<Integer> frameCoordinates = stickersExtractor.getPoints(grabbed);
-				for (int i=0; i< Constants.POINT_COUNT; i++){
-					CvScalar color = null;
-					switch (i){
-					case Constants.UPPER_VECTOR_INDEX:
-						color = StickerColorConfiguration.UPPER_STICKER_MAX;
-						break;
-					case Constants.LOWER_VECTOR_INDEX:
-						color = StickerColorConfiguration.LOWER_STICKER_MAX;
-						break;
-					case Constants.LEFT_VECTOR_INDEX:
-						color = StickerColorConfiguration.LEFT_STICKER_MAX;
-						break;
-					case Constants.RIGHT_VECTOR_INDEX:
-						color = StickerColorConfiguration.RIGHT_STICKER_MAX;
-						break;
-					}
-					int x = frameCoordinates.get(i * 2);
-					int y = frameCoordinates.get((i * 2) + 1);
-					if (x != 0 && y!=0)
-						cvCircle((CvArr)grabbed, new CvPoint(x, y), 20, color, 3, 0, 0);
-					image = grabbed.getBufferedImage();
-					canvas.setImage(image);
-					canvas.paint(null);
-				}
+				stickersExtractor.paintCoordinates(grabbed, frameCoordinates);
+				image = grabbed.getBufferedImage();
+				canvas.setImage(image);
+				canvas.paint(null);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
