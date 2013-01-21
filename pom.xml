@@ -141,7 +141,7 @@
 				<version>2.4</version>
 				<configuration>
 					<descriptors>
-						<descriptor>src/main/assembly/assembly-${assembly-config}.xml</descriptor>
+						<descriptor>src/main/assembly/assembly-${os.name}.xml</descriptor>
 					</descriptors>
 					<finalName>${project.artifactId}-${project.version}-${platform.name}</finalName>
 				</configuration>
@@ -177,7 +177,6 @@
 			</activation>
 			<properties>
 				<os.name>linux</os.name>
-				<assembly-config>${os.name}</assembly-config>
 			</properties>
 		</profile>
 		<profile>
@@ -200,7 +199,6 @@
 			</activation>
 			<properties>
 				<os.name>windows</os.name>
-				<assembly-config>${os.name}</assembly-config>
 			</properties>
 		</profile>
 		<profile>
