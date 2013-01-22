@@ -7,6 +7,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
@@ -18,14 +19,21 @@ import weka.core.xml.XStream;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
+import edu.lipreading.normalization.SimpleTimeNormalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 
 public class TrainingPanel extends LipReaderPanel {
 	private static final long serialVersionUID = -5713175015110844830L;
 	private final JComboBox<String> chooseLabel;
+	private final JComboBox<String> normalizerType;
 	private String label;
 	private final Map<String, AtomicInteger> counters = new HashMap<String, AtomicInteger>();
+	private AtomicBoolean shouldUpdate = new AtomicBoolean(false);
 	private JButton addToTrainingSet;
 	private JButton saveToFile;
+	private JButton normalize;
 
 	public TrainingPanel() {
 		super();
@@ -64,6 +72,7 @@ public class TrainingPanel extends LipReaderPanel {
 		addToTrainingSet.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				updateSampleId();
 				TrainingSet.get().add(recordedSample);
 			}
 		});
@@ -77,6 +86,7 @@ public class TrainingPanel extends LipReaderPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				updateSampleId();
 				JFileChooser saver = new JFileChooser();
 				saver.setFileFilter(new FileFilter() {
 
@@ -106,7 +116,36 @@ public class TrainingPanel extends LipReaderPanel {
 		saveToFile.setBounds(525, 385, 60, 20);
 		add(saveToFile);
 		saveToFile.setEnabled(false);
-
+		
+		normalizerType = new JComboBox<String>(new String[]{"Center", "Stretch Time", "Simple Time", "Skipped Frames"});
+		normalizerType.setBounds(250, 415, 110, 20);
+		normalizerType.setEnabled(false);
+		add(normalizerType);
+		
+		normalize = new JButton("Normalize");
+		normalize.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switch((String)normalizerType.getSelectedItem()){
+				case "Center":
+					recordedSample = new CenterNormalizer().normalize(recordedSample);
+					break;
+				case "Stretch Time":
+					recordedSample = new LinearStretchTimeNormalizer().normalize(recordedSample);
+					break;
+				case "Simple Time":
+					recordedSample = new SimpleTimeNormalizer().normalize(recordedSample);
+					break;
+				case "Skipped Frames":
+					recordedSample = new SkippedFramesNormalizer().normalize(recordedSample);
+					break;
+				}
+			}
+		});
+		normalize.setBounds(370, 415, 80, 20);
+		normalize.setEnabled(false);
+		add(normalize);
+		
 		JButton exportDataSet = new JButton("Export Data Set");
 		exportDataSet.addActionListener(new ActionListener() {
 
@@ -179,16 +218,25 @@ public class TrainingPanel extends LipReaderPanel {
 			}
 		});
 		int exportDataSetWidth = 200;
-		exportDataSet.setBounds(245, 470, exportDataSetWidth, 20);
+		exportDataSet.setBounds(250, 470, exportDataSetWidth, 20);
 		add(exportDataSet);
 
 	}
 	
 	@Override
 	protected void handleRecordedSample() {
-		recordedSample.setId(getLabel() + "-"  + counters.get(getLabel().toLowerCase()).incrementAndGet());
+		shouldUpdate.set(true);
 		addToTrainingSet.setEnabled(true);
 		saveToFile.setEnabled(true);
+		normalize.setEnabled(true);
+		normalizerType.setEnabled(true);
+	}
+	
+	private void updateSampleId() {
+		if(shouldUpdate.get()){
+			shouldUpdate.set(false);
+			recordedSample.setId(getLabel().toLowerCase() + "-" + counters.get(label.toLowerCase()));
+		}
 	}
 
 	private void setLabel(String value) {
