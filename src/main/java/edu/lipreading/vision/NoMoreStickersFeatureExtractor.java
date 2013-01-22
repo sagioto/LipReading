@@ -172,117 +172,13 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		RealMatrix matrixL = new Array2DRowRealMatrix(L);
 		RealMatrix matrixH = new Array2DRowRealMatrix(h);
 		RealMatrix hMinusL = matrixH.subtract(matrixL);
+		//TODO: instead of just min find first getting up
+		//then scan for all columns between the sides for
+		//first up with a close y value, and calculate the average of their xs an ys
 		return new int []{centerLine, 
 				Utils.getMinIndex(hMinusL.getColumn(centerLine), false)};
 	}
-	/*RealMatrix matrixL = new Array2DRowRealMatrix(L);
-		double[] column = matrixL.getColumn(centerLine);
-		for (int i = 0; i < column.length; i++) {
-			boolean found = true;
-			for (int j = i; j < Math.min(i + VERTICTAL_CONFIDENCE, column.length - 1) && found; j++) {
-				found &= column[j] > column[j + 1];
-			}
-			if(found)
-				return new int[] {centerLine, i};
-		}
-		return new int []{centerLine, L.length / 4};
-	 */
-
-	/*TODO make gradient algorithm work
-		final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
-			@Override
-			public int[] call() throws Exception {
-				return getLower(getCenterLine(getRight, getLeft), getRinf.get());
-			}
-		});
-	TODO make gradient algorithm work
-		final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
-			@Override
-			public double[][][] call() throws Exception {
-				return getRsup(getH.get(), getL.get());
-			}
-		});
-		final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
-			@Override
-			public double[][] call() throws Exception {
-				return getRinf(getH.get(), getL.get());
-			}
-		});
-		final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
-			@Override
-			public int[] call() throws Exception {
-				return getUpper(getRsup.get(), getRinf.get());
-			}
-		});
-		points.add(getUpper);
-
-	private double[][][] getRsup(double[][] h, double[][] L) throws Exception{
-		double[][][] ans = new double[h.length][h[0].length][3];
-		RealMatrix matrixL = new Array2DRowRealMatrix(L);
-		RealMatrix matrixH = new Array2DRowRealMatrix(h);
-		RealMatrix hMinusL = matrixH.subtract(matrixL);
-		Utils.matrixtToCSV(hMinusL.getData(), "hml.csv");
-		double [] xs = new double[hMinusL.getRowDimension()], 
-				ys = new double[hMinusL.getColumnDimension()];
-		for (int i = 0; i < xs.length; i++) {
-			xs[i] = i;
-		}
-		for (int i = 0; i < ys.length; i++) {
-			ys[i] = i;	
-		}
-		SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
-		long start = System.currentTimeMillis(); 
-		BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hMinusL.getData());
-		System.out.println("sup " + (System.currentTimeMillis() - start));
-		for (int i = 0; i < ans.length; i++) {
-			for (int j = 0; j < ans[0].length; j++) {
-				ans[0][i][j] = func.partialDerivativeX(i, j);
-				ans[1][i][j] = func.partialDerivativeY(i, j);
-				ans[2][i][j] = func.partialDerivativeXY(i, j);
-			}
-		}
-		return ans;
-	}
-
-	private double[][] getRinf(double[][] h, double[][] L) throws Exception{
-		double[][] ans = new double[h.length][h[0].length];
-		RealMatrix matrixL = new Array2DRowRealMatrix(L);
-		RealMatrix matrixH = new Array2DRowRealMatrix(h);
-		RealMatrix hPlusL = matrixH.add(matrixL);
-		Utils.matrixtToCSV(hPlusL.getData(), "hpl.csv");
-		double [] xs = new double[hPlusL.getRowDimension()], 
-				ys = new double[hPlusL.getColumnDimension()];
-		for (int i = 0; i < xs.length; i++) {
-			xs[i] = i;
-		}
-		for (int i = 0; i < ys.length; i++) {
-			ys[i] = i;	
-		}
-		long start = System.currentTimeMillis(); 
-		SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
-		BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hPlusL.getData());
-		for (int i = 0; i < ans.length; i++) {
-			for (int j = 0; j < ans[0].length; j++) {
-				ans[i][j] = func.partialDerivativeY(i, j); 
-			}
-		}
-		System.out.println("inf " + (System.currentTimeMillis() - start));
-		return ans;
-	}
-
-	private int[] getLower(int center, double[][] Rinf){
-		int[] ans = new int[2];
-		RealMatrix RinfMatrix = new Array2DRowRealMatrix(Rinf);
-		ans[0] = center; 
-		ans[1] = Utils.getMinIndex(RinfMatrix.getColumn(center));
-		return ans;
-	}
-
-	private int[] getUpper(double[][][] Rsup, double[][] Rinf){
-		int[] ans = new int[2];
-		//TODO make gradient algorithm work
-		return ans;
-	}*/
+	
 
 	/**
 	 * @param roi a matrix of the roi pixels arranged as BGR
@@ -403,3 +299,113 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	}
 
 }
+
+
+/*RealMatrix matrixL = new Array2DRowRealMatrix(L);
+double[] column = matrixL.getColumn(centerLine);
+for (int i = 0; i < column.length; i++) {
+	boolean found = true;
+	for (int j = i; j < Math.min(i + VERTICTAL_CONFIDENCE, column.length - 1) && found; j++) {
+		found &= column[j] > column[j + 1];
+	}
+	if(found)
+		return new int[] {centerLine, i};
+}
+return new int []{centerLine, L.length / 4};
+*/
+
+/*TODO make gradient algorithm work
+final Future<int[]> getLower = executor.submit(new Callable<int[]>() {
+	@Override
+	public int[] call() throws Exception {
+		return getLower(getCenterLine(getRight, getLeft), getRinf.get());
+	}
+});
+TODO make gradient algorithm work
+final Future<double[][][]> getRsup = executor.submit(new Callable<double[][][]>() {
+	@Override
+	public double[][][] call() throws Exception {
+		return getRsup(getH.get(), getL.get());
+	}
+});
+final Future<double[][]> getRinf = executor.submit(new Callable<double[][]>() {
+	@Override
+	public double[][] call() throws Exception {
+		return getRinf(getH.get(), getL.get());
+	}
+});
+final Future<int[]> getUpper = executor.submit(new Callable<int[]>() {
+	@Override
+	public int[] call() throws Exception {
+		return getUpper(getRsup.get(), getRinf.get());
+	}
+});
+points.add(getUpper);
+
+private double[][][] getRsup(double[][] h, double[][] L) throws Exception{
+double[][][] ans = new double[h.length][h[0].length][3];
+RealMatrix matrixL = new Array2DRowRealMatrix(L);
+RealMatrix matrixH = new Array2DRowRealMatrix(h);
+RealMatrix hMinusL = matrixH.subtract(matrixL);
+Utils.matrixtToCSV(hMinusL.getData(), "hml.csv");
+double [] xs = new double[hMinusL.getRowDimension()], 
+		ys = new double[hMinusL.getColumnDimension()];
+for (int i = 0; i < xs.length; i++) {
+	xs[i] = i;
+}
+for (int i = 0; i < ys.length; i++) {
+	ys[i] = i;	
+}
+SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
+long start = System.currentTimeMillis(); 
+BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hMinusL.getData());
+System.out.println("sup " + (System.currentTimeMillis() - start));
+for (int i = 0; i < ans.length; i++) {
+	for (int j = 0; j < ans[0].length; j++) {
+		ans[0][i][j] = func.partialDerivativeX(i, j);
+		ans[1][i][j] = func.partialDerivativeY(i, j);
+		ans[2][i][j] = func.partialDerivativeXY(i, j);
+	}
+}
+return ans;
+}
+
+private double[][] getRinf(double[][] h, double[][] L) throws Exception{
+double[][] ans = new double[h.length][h[0].length];
+RealMatrix matrixL = new Array2DRowRealMatrix(L);
+RealMatrix matrixH = new Array2DRowRealMatrix(h);
+RealMatrix hPlusL = matrixH.add(matrixL);
+Utils.matrixtToCSV(hPlusL.getData(), "hpl.csv");
+double [] xs = new double[hPlusL.getRowDimension()], 
+		ys = new double[hPlusL.getColumnDimension()];
+for (int i = 0; i < xs.length; i++) {
+	xs[i] = i;
+}
+for (int i = 0; i < ys.length; i++) {
+	ys[i] = i;	
+}
+long start = System.currentTimeMillis(); 
+SmoothingPolynomialBicubicSplineInterpolator iterpolator = new SmoothingPolynomialBicubicSplineInterpolator();
+BicubicSplineInterpolatingFunction func = iterpolator.interpolate(xs, ys, hPlusL.getData());
+for (int i = 0; i < ans.length; i++) {
+	for (int j = 0; j < ans[0].length; j++) {
+		ans[i][j] = func.partialDerivativeY(i, j); 
+	}
+}
+System.out.println("inf " + (System.currentTimeMillis() - start));
+return ans;
+}
+
+private int[] getLower(int center, double[][] Rinf){
+int[] ans = new int[2];
+RealMatrix RinfMatrix = new Array2DRowRealMatrix(Rinf);
+ans[0] = center; 
+ans[1] = Utils.getMinIndex(RinfMatrix.getColumn(center));
+return ans;
+}
+
+private int[] getUpper(double[][][] Rsup, double[][] Rinf){
+int[] ans = new int[2];
+//TODO make gradient algorithm work
+return ans;
+}*/
