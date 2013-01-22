@@ -34,6 +34,7 @@ public class MainFrame extends JFrame {
 	private LipReaderPanel lipReaderPanel;
 	private VideoConfigPanel videoConfigPanel;
 	private FileLipReaderPanel fileLipReaderPanel;
+	private TrainingPanel trainingPanel;
 
 	/**
 	 * Launch the application.
@@ -104,13 +105,11 @@ public class MainFrame extends JFrame {
 		tabbedPane.addTab("Live Read", null, lipReaderPanel, "Read from the camera");
 		tabbedPane.addTab("Sticker Configurataion", null, videoConfigPanel, "Adjust the stickers' colors");
 
-		JPanel TrainingPanel = new JPanel();
-		tabbedPane.addTab("Training", null, TrainingPanel, "Train the reader");
+		trainingPanel = new TrainingPanel();
+		tabbedPane.addTab("Training", null, trainingPanel, "Train the reader");
 		fileLipReaderPanel.setVisible(true);
 		videoConfigPanel.setVisible(false);
 		lipReaderPanel.setVisible(false);
-		//disable the training tab
-		tabbedPane.setEnabledAt(3, false);
 		tabbedPane.addChangeListener(new ChangeListener(){
 
 			@Override
@@ -119,10 +118,12 @@ public class MainFrame extends JFrame {
 				case 0: //file
 					videoConfigPanel.stopVideo();
 					lipReaderPanel.stopVideo();
+					trainingPanel.stopVideo();
 					break;
 				case 1: //camera
 					fileLipReaderPanel.stopVideo();
 					videoConfigPanel.stopVideo();
+					trainingPanel.stopVideo();
 					try {
 						lipReaderPanel.startVideo();
 					} catch (Exception ex) {
@@ -132,13 +133,22 @@ public class MainFrame extends JFrame {
 				case 2: //configuration
 					fileLipReaderPanel.stopVideo();
 					lipReaderPanel.stopVideo();
+					trainingPanel.stopVideo();
 					try {
 						videoConfigPanel.startVideo();
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
 					break;
-				case 3:
+				case 3://training
+					fileLipReaderPanel.stopVideo();
+					lipReaderPanel.stopVideo();
+					videoConfigPanel.stopVideo();
+					try {
+						videoConfigPanel.startVideo();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 					break;
 				}
 			}

@@ -32,10 +32,10 @@ public class LipReaderPanel extends VideoCapturePanel {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private JLabel lblOutput;
+    protected JLabel lblOutput;
     private boolean recording;
-    private JButton btnRecord;
-    private Sample recordedSample;
+    protected JButton btnRecord;
+    protected Sample recordedSample;
 
     /**
      * Create the panel.
@@ -69,31 +69,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
                     //btnRecord.setText("Record");
 
-                    //TODO - Extract to thread:
-                    List<Sample> trainingSet;
-                    try {
-                        trainingSet = TrainingSet.get();
-                        Normalizer normalizer = new CenterNormalizer();
-                        Classifier classifier = new TimeWarperClassifier();
-                        classifier.train(trainingSet);
-                        final String outputText = classifier.test(normalizer.normalize(recordedSample));
-                        lblOutput.setText(outputText);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Utils.textToSpeech(outputText);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }).start();
-                        lblOutput.setText(outputText);
-                    } 
-                    catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    handleRecordedSample();
                 }
             }
         });
@@ -139,6 +115,32 @@ public class LipReaderPanel extends VideoCapturePanel {
         }
     }
 
-
+    protected void handleRecordedSample() {
+		//TODO - Extract to thread:
+		List<Sample> trainingSet;
+		try {
+		    trainingSet = TrainingSet.get();
+		    Normalizer normalizer = new CenterNormalizer();
+		    Classifier classifier = new TimeWarperClassifier();
+		    classifier.train(trainingSet);
+		    final String outputText = classifier.test(normalizer.normalize(recordedSample));
+		    lblOutput.setText(outputText);
+		    new Thread(new Runnable() {
+		        @Override
+		        public void run() {
+		            try {
+		                Utils.textToSpeech(outputText);
+		            } catch (Exception e) {
+		                throw new RuntimeException(e);
+		            }
+		        }
+		    }).start();
+		    lblOutput.setText(outputText);
+		} 
+		catch (Exception e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+	}
 
 }
