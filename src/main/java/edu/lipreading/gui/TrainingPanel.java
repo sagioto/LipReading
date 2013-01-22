@@ -106,7 +106,10 @@ public class TrainingPanel extends LipReaderPanel {
 				int option = saver.showSaveDialog(getParent());
 				if (option == JFileChooser.APPROVE_OPTION){
 					try {
-						XStream.write(saver.getSelectedFile(), recordedSample);
+						String path = saver.getSelectedFile().getAbsolutePath();
+						if(path.split("\\.").length != 2)
+							path += ".xml";
+						XStream.write(path, recordedSample);
 					} catch (Exception e1) {
 						throw new RuntimeException(e1);
 					}
@@ -235,7 +238,8 @@ public class TrainingPanel extends LipReaderPanel {
 	private void updateSampleId() {
 		if(shouldUpdate.get()){
 			shouldUpdate.set(false);
-			recordedSample.setId(getLabel().toLowerCase() + "-" + counters.get(label.toLowerCase()));
+			recordedSample.setId(getLabel().toLowerCase() + "-" 
+			+ counters.get(label.toLowerCase()).incrementAndGet());
 		}
 	}
 
