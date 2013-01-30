@@ -36,7 +36,7 @@ public class ResoulutionNormalizer implements Normalizer {
 				}
 			}
 		}
-		return null; //TODO When Sample original resolution can be acquired this should be changed back to return the sample.
+		return sample;
 	}
 
 }
