@@ -10,7 +10,7 @@ import edu.lipreading.Sample;
  * @author Dagan
  *
  */
-public class ResoulutionNormalizer implements Normalizer {
+public class ResolutionNormalizer implements Normalizer {
 
 	public final static int NORMALIZED_WIDTH = 800;
 	public final static int NORMALIZED_HEIGHT = 600;
