@@ -48,9 +48,11 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int LOWER_CONFIDENCE = 5;
 	private static final int UPPER_CONFIDENCE = 10;
 	private static final int RECT_VERTICAL_JUMP = 10;
+	private static final int RECT_FRAME_THRESHHOLD = 5;
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 	private IplImage manipulated;
 	private CvRect prev = new CvRect();
+    private int rectFrameCount = 0;
 	private CvHaarClassifierCascade classifier;
 	private CvMemStorage storage;
 
@@ -65,11 +67,14 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
 		if(r.isNull()){
 			return null;
-		} else if (prev.y() != 0){
+		} else if (prev.y() != 0 && rectFrameCount < RECT_FRAME_THRESHHOLD){
 			if (Math.abs(r.y() - prev.y()) > RECT_VERTICAL_JUMP){
 				CvRect.memcpy(r, prev, prev.sizeof());
+                rectFrameCount++;
 			}
-		}
+		} else if (rectFrameCount >= RECT_FRAME_THRESHHOLD){
+            rectFrameCount = 0;
+        }
 		CvRect.memcpy(prev, r, r.sizeof());
 		r.y(r.y() + ROI_FIX);
 		final int x = r.x(), y = r.y();
@@ -305,7 +310,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	public static void main(String ... args) throws Exception{
 		NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
 		fe.setOutput(true);
-		fe.extract("various.3gp");
+		fe.extract( null );
 		fe.shutdown();
 	}
 
