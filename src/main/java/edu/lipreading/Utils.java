@@ -167,7 +167,7 @@ public class Utils {
 		writer.close();
 	}
 
-	public static void matrixtToCSV(double[][] matrix, String outputFile) throws Exception {
+	public static void matrixToCSV(double[][] matrix, String outputFile) throws Exception {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
 		List<String[]> rows = new ArrayList<String[]>();
 		for (double[] ds : matrix) {
