@@ -247,4 +247,12 @@ public class Utils {
         return null != source && source.contains("://");
     }
 
+    public static void writeSampleToXML(String folderPath, String sampleName, Sample sample) throws Exception{
+		File samplesDir = new File(folderPath);
+		if (!samplesDir.exists()) 
+			samplesDir.mkdir();
+    	File sampleFile = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
+    	sampleFile.createNewFile();
+    	XStream.write(sampleFile , sample);
+    }
 }

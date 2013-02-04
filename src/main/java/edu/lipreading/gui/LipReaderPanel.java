@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Beans;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -36,14 +37,17 @@ public class LipReaderPanel extends VideoCapturePanel {
     private boolean recording;
     protected JButton btnRecord;
     protected Sample recordedSample;
-
+    private String sampleName; 
+    
     /**
      * Create the panel.
      * @throws com.googlecode.javacv.FrameGrabber.Exception 
      */
     public LipReaderPanel() {
         super();
-
+        
+        setSampleName("web cam");
+        
         canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
         setBackground(Color.WHITE);
         setLayout(null);
@@ -51,7 +55,9 @@ public class LipReaderPanel extends VideoCapturePanel {
         recording = false;
 
         btnRecord = new JButton("");
-        btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
+        
+        if (!Beans.isDesignTime())
+        	btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
 
         btnRecord.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -59,7 +65,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                 {
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.STOP_IMAGE_FILE_PATH)));
 
-                    recordedSample = new Sample("web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date()));
+                    recordedSample = new Sample(getSampleName() + " " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date()));
                     lblOutput.setText("");
                     recording = true;
                 }
@@ -67,7 +73,6 @@ public class LipReaderPanel extends VideoCapturePanel {
                 {
                     recording = false;
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
-                    //btnRecord.setText("Record");
 
                     handleRecordedSample();
                 }
@@ -141,6 +146,18 @@ public class LipReaderPanel extends VideoCapturePanel {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		}
+	}
+
+	protected String getSampleName() {
+		return sampleName;
+	}
+
+	protected void setSampleName(String sampleName) {
+		this.sampleName = sampleName;
+	}
+	
+	protected boolean isRecording() {
+		return recording;
 	}
 
 }

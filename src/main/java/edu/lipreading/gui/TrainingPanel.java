@@ -1,44 +1,71 @@
 package edu.lipreading.gui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
-import weka.core.xml.XStream;
+import javax.swing.JLabel;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.SimpleTimeNormalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
+import edu.lipreading.Utils;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JTextField;
 
 public class TrainingPanel extends LipReaderPanel {
+    //TODO - Add exceptions, wrong input, save video option & more
+	
 	private static final long serialVersionUID = -5713175015110844830L;
 	private final JComboBox<String> chooseLabel;
-	private final JComboBox<String> normalizerType;
+	//private final JComboBox<String> normalizerType;
 	private String label;
 	private final Map<String, AtomicInteger> counters = new HashMap<String, AtomicInteger>();
-	private AtomicBoolean shouldUpdate = new AtomicBoolean(false);
-	private JButton addToTrainingSet;
-	private JButton saveToFile;
-	private JButton normalize;
-
+	//private AtomicBoolean shouldUpdate = new AtomicBoolean(false);
+	//private JButton addToTrainingSet;
+	//private JButton saveToFile;
+	//private JButton normalize;
+	private JTextField txtInstancesNum;
+	private JTextField txtPath;
+	private int totalNumOfInstances;
+	private JButton btnCreateTrainingSet;
+	private int currentInstanceNum;
+	final JFileChooser fileChooser = new JFileChooser();
+	private JLabel lblChooseWordsentenceTo;
+	private JLabel lblPathToSave;
+	private JLabel lblSampleCurrentNum;
+	private JLabel lblSampleName;
+	private JButton btnChooseFile;
+	private JLabel lblRecordedSample;
+	private JLabel lblRecordsLeft;
+	
 	public TrainingPanel() {
 		super();
-		canvas.setBounds(142, 10, 420, 308);
-		btnRecord.setBounds(332, 330, 45, 45);
+		btnRecord.setEnabled(false);
+		
+		
+		//btnRecord.addMouseListener(new MouseAdapter() {
+		//	@Override
+		//	public void mouseClicked(MouseEvent e) {
+        btnRecord.addActionListener(new ActionListener() {
+        	@Override
+            public void actionPerformed(ActionEvent arg0) {
+        		if (!isRecording())
+        			setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)));
+			}
+		});
+		canvas.setBounds(163, 142, 345, 255);
+		btnRecord.setBounds(327, 403, 45, 45);
 		remove(lblOutput);
 
 
@@ -64,9 +91,10 @@ public class TrainingPanel extends LipReaderPanel {
 			}
 		});
 		chooseLabel.setToolTipText("Choose a label for the recorded sample");
-		chooseLabel.setBounds(125, 385, 320, 20);
+		chooseLabel.setBounds(309, 11, 247, 20);
 		add(chooseLabel);
 
+		/*
 		addToTrainingSet = new JButton("Add");
 		addToTrainingSet.setToolTipText("Add to training set");
 		addToTrainingSet.addActionListener(new ActionListener() {
@@ -76,7 +104,7 @@ public class TrainingPanel extends LipReaderPanel {
 				TrainingSet.get().add(recordedSample);
 			}
 		});
-		addToTrainingSet.setBounds(455, 385, 60, 20);
+		addToTrainingSet.setBounds(612, 11, 60, 20);
 		add(addToTrainingSet);
 		addToTrainingSet.setEnabled(false);
 
@@ -113,16 +141,19 @@ public class TrainingPanel extends LipReaderPanel {
 				}
 			}
 		});
-		saveToFile.setBounds(525, 385, 60, 20);
+		saveToFile.setBounds(612, 42, 60, 20);
 		add(saveToFile);
 		saveToFile.setEnabled(false);
-		
+	
+	
 		normalizerType = new JComboBox<String>(new String[]{"Center", "Stretch Time", "Simple Time", "Skipped Frames"});
 		normalizerType.setBounds(250, 415, 110, 20);
 		normalizerType.setEnabled(false);
 		add(normalizerType);
-		
+
+	
 		normalize = new JButton("Normalize");
+		
 		normalize.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -142,10 +173,11 @@ public class TrainingPanel extends LipReaderPanel {
 				}
 			}
 		});
-		normalize.setBounds(370, 415, 80, 20);
+		normalize.setBounds(592, 73, 80, 20);
 		normalize.setEnabled(false);
 		add(normalize);
-		
+		*/
+		/*
 		JButton exportDataSet = new JButton("Export Data Set");
 		exportDataSet.addActionListener(new ActionListener() {
 
@@ -218,33 +250,183 @@ public class TrainingPanel extends LipReaderPanel {
 			}
 		});
 		int exportDataSetWidth = 200;
-		exportDataSet.setBounds(250, 470, exportDataSetWidth, 20);
+		exportDataSet.setBounds(592, 105, 115, 20);
 		add(exportDataSet);
+		*/
+		txtInstancesNum = new JTextField();
+		txtInstancesNum.setBounds(248, 42, 86, 20);
+		add(txtInstancesNum);
+		txtInstancesNum.setColumns(10);
+		
+		JLabel lblNumberOfInstances = new JLabel("Number of instances:");
+		lblNumberOfInstances.setBounds(136, 45, 113, 14);
+		add(lblNumberOfInstances);
+		
+		txtPath = new JTextField();
+		txtPath.setBounds(212, 71, 302, 20);
+		add(txtPath);
+		txtPath.setColumns(10);
+		
+		btnCreateTrainingSet = new JButton("Create Training Set");
+		btnCreateTrainingSet.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				setLabel((String)chooseLabel.getSelectedItem());
+				try {
+					setTotalNumOfInstances(Integer.parseInt(txtInstancesNum.getText()));
+				}
+				catch (NumberFormatException ex) {
+					throw new NumberFormatException("Number of instances requires a number");
+					/*
+					JOptionPane.showMessageDialog(this,
+							"Number of instances requires a number",
+							"Wrong input",
+							JOptionPane.WARNING_MESSAGE);
+							*/
+				}
+				currentInstanceNum = 0;
+				enableTrainingSetParams(false);
+			}
 
+		});
+		btnCreateTrainingSet.setBounds(425, 104, 131, 23);
+		add(btnCreateTrainingSet);
+		
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+		btnChooseFile = new JButton(new ImageIcon(getClass().getResource(Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
+		btnChooseFile.setBorderPainted(false);
+		btnChooseFile.setBackground(Color.WHITE);
+		btnChooseFile.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int returnVal = fileChooser.showOpenDialog(TrainingPanel.this);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION){
+					txtPath.setText(fileChooser.getSelectedFile().getPath());
+				}
+			}
+		});
+		btnChooseFile.setBounds(524, 61, 32, 32);;
+		add(btnChooseFile);
+		
+		lblChooseWordsentenceTo = new JLabel("Choose Word/Sentence to record:");
+		lblChooseWordsentenceTo.setBounds(136, 14, 165, 14);
+		add(lblChooseWordsentenceTo);
+		
+		lblPathToSave = new JLabel("Path to save:");
+		lblPathToSave.setBounds(136, 76, 113, 14);
+		add(lblPathToSave);
+		
+		lblRecordedSample = new JLabel("Recorded Sample:");
+		lblRecordedSample.setForeground(Color.GRAY);
+		lblRecordedSample.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblRecordedSample.setBounds(136, 459, 123, 14);
+		add(lblRecordedSample);
+		
+		lblSampleName = new JLabel("Recorded Sample:");
+		lblSampleName.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblSampleName.setForeground(Color.DARK_GRAY);
+		lblSampleName.setBounds(248, 459, 196, 14);
+		add(lblSampleName);
+		
+		lblRecordsLeft = new JLabel("Left to record:");
+		lblRecordsLeft.setForeground(Color.GRAY);
+		lblRecordsLeft.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblRecordsLeft.setBounds(136, 484, 95, 14);
+		add(lblRecordsLeft);
+		
+		lblSampleCurrentNum = new JLabel("num");
+		lblSampleCurrentNum.setForeground(Color.DARK_GRAY);
+		lblSampleCurrentNum.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblSampleCurrentNum.setBounds(231, 484, 45, 14);
+		add(lblSampleCurrentNum);
+		
+		lblSampleCurrentNum.setVisible(false);
+		lblSampleName.setVisible(false);
+		lblRecordsLeft.setVisible(false);
+		lblRecordedSample.setVisible(false);
+		
 	}
 	
 	@Override
 	protected void handleRecordedSample() {
-		shouldUpdate.set(true);
-		addToTrainingSet.setEnabled(true);
-		saveToFile.setEnabled(true);
-		normalize.setEnabled(true);
-		normalizerType.setEnabled(true);
+		//shouldUpdate.set(true);
+
+		currentInstanceNum++;
+		counters.put(getLabel(), counters.get(getLabel() + 1));
+		//TODO - show currentInstanceNum information on GUI
+		
+		if (currentInstanceNum == totalNumOfInstances)
+		{
+			enableTrainingSetParams(true);
+		}
+		
+		try {
+			
+			String samplePath =  recordedSample.getId().replaceAll("[:/]", ".") + ".xml"; //TODO Add path
+			Utils.writeSampleToXML(txtPath.getText() ,samplePath, recordedSample);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		lblSampleCurrentNum.setText(new Integer(totalNumOfInstances - currentInstanceNum).toString());
+		lblSampleName.setText(recordedSample.getId());
+
+		//TODO - add if save to file
+		
+		//addToTrainingSet.setEnabled(true);
+		//saveToFile.setEnabled(true);// TODO Change 
+		//normalize.setEnabled(true);
+		//normalizerType.setEnabled(true);
+		
 	}
-	
+	/*
 	private void updateSampleId() {
 		if(shouldUpdate.get()){
 			shouldUpdate.set(false);
 			recordedSample.setId(getLabel().toLowerCase() + "-" + counters.get(label.toLowerCase()));
 		}
 	}
-
+*/
 	private void setLabel(String value) {
 		this.label = value;
 	}
 
 	public String getLabel() {
 		return label;
+	}
+
+	public int getTotalNumOfInstances() {
+		return totalNumOfInstances;
+	}
+
+	public void setTotalNumOfInstances(int numOfInstances) {
+		this.totalNumOfInstances = numOfInstances;
+	}
+	
+	private void enableTrainingSetParams(boolean b) {
+		chooseLabel.setEnabled(b);
+		txtInstancesNum.setEnabled(b);
+		btnCreateTrainingSet.setEnabled(b);
+		txtPath.setEnabled(b);
+		btnChooseFile.setEnabled(b);
+		btnRecord.setEnabled(!b);
+		lblSampleCurrentNum.setText("");
+		lblSampleName.setText("");
+		lblSampleCurrentNum.setVisible(!b);
+		lblSampleName.setVisible(!b);
+		lblRecordsLeft.setVisible(!b);
+		lblRecordedSample.setVisible(!b);
+	}
+
+	public int getCurrentInstanceNum() {
+		return currentInstanceNum;
+	}
+
+	public void setCurrentInstanceNum(int currentInstanceNum) {
+		this.currentInstanceNum = currentInstanceNum;
 	}
 }
 
