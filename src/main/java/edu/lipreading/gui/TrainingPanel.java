@@ -15,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
@@ -24,7 +26,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JTextField;
 
 public class TrainingPanel extends LipReaderPanel {
-    //TODO - Add exceptions, wrong input, save video option & more
 	
 	private static final long serialVersionUID = -5713175015110844830L;
 	private final JComboBox<String> chooseLabel;
@@ -271,21 +272,29 @@ public class TrainingPanel extends LipReaderPanel {
 		btnCreateTrainingSet.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				setLabel((String)chooseLabel.getSelectedItem());
+				boolean error = false;
 				try {
 					setTotalNumOfInstances(Integer.parseInt(txtInstancesNum.getText()));
 				}
-				catch (NumberFormatException ex) {
-					throw new NumberFormatException("Number of instances requires a number");
-					/*
-					JOptionPane.showMessageDialog(this,
+				catch (NumberFormatException ex) {		
+					error = true;
+					JOptionPane.showMessageDialog(TrainingPanel.this,
 							"Number of instances requires a number",
 							"Wrong input",
 							JOptionPane.WARNING_MESSAGE);
-							*/
 				}
-				currentInstanceNum = 0;
-				enableTrainingSetParams(false);
+				if (txtPath.getText().isEmpty()){
+					error = true;
+					JOptionPane.showMessageDialog(TrainingPanel.this,
+							"Please choose a folder to save the recorded Training Set",
+							"Wrong input",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				if (error == false){
+					setLabel((String)chooseLabel.getSelectedItem());
+					currentInstanceNum = 0;
+					enableTrainingSetParams(false);
+				}
 			}
 
 		});
@@ -355,7 +364,6 @@ public class TrainingPanel extends LipReaderPanel {
 
 		currentInstanceNum++;
 		counters.put(getLabel(), counters.get(getLabel() + 1));
-		//TODO - show currentInstanceNum information on GUI
 		
 		if (currentInstanceNum == totalNumOfInstances)
 		{
@@ -364,20 +372,22 @@ public class TrainingPanel extends LipReaderPanel {
 		
 		try {
 			
-			String samplePath =  recordedSample.getId().replaceAll("[:/]", ".") + ".xml"; //TODO Add path
-			Utils.writeSampleToXML(txtPath.getText() ,samplePath, recordedSample);
+			String fileName =  recordedSample.getId().replaceAll("[:/]", ".") + ".xml";
+			Utils.writeSampleToXML(txtPath.getText() ,fileName, recordedSample);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(TrainingPanel.this,
+					"Cannot save file. Reason:" + e.getMessage(),
+					"Wrong input",
+					JOptionPane.ERROR_MESSAGE);
 		}
 		
 		lblSampleCurrentNum.setText(new Integer(totalNumOfInstances - currentInstanceNum).toString());
 		lblSampleName.setText(recordedSample.getId());
 
-		//TODO - add if save to file
+		//TODO - add save video file option
 		
 		//addToTrainingSet.setEnabled(true);
-		//saveToFile.setEnabled(true);// TODO Change 
+		//saveToFile.setEnabled(true);
 		//normalize.setEnabled(true);
 		//normalizerType.setEnabled(true);
 		
