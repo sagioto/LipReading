@@ -48,7 +48,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int LOWER_CONFIDENCE = 5;
 	private static final int UPPER_CONFIDENCE = 10;
 	private static final int RECT_VERTICAL_JUMP = 10;
-	private static final int RECT_FRAME_THRESHHOLD = 5;
+	private static final int RECT_FRAME_THRESHOLD = 5;
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 	private IplImage manipulated;
 	private CvRect prev = new CvRect();
@@ -67,12 +67,12 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
 		if(r.isNull()){
 			return null;
-		} else if (prev.y() != 0 && rectFrameCount < RECT_FRAME_THRESHHOLD){
+		} else if (prev.y() != 0 && rectFrameCount < RECT_FRAME_THRESHOLD){
 			if (Math.abs(r.y() - prev.y()) > RECT_VERTICAL_JUMP){
 				CvRect.memcpy(r, prev, prev.sizeof());
                 rectFrameCount++;
 			}
-		} else if (rectFrameCount >= RECT_FRAME_THRESHHOLD){
+		} else if (rectFrameCount >= RECT_FRAME_THRESHOLD){
             rectFrameCount = 0;
         }
 		CvRect.memcpy(prev, r, r.sizeof());
@@ -138,7 +138,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			frameCoordinates.add(coordinateY);
 		}
 		cvResetImageROI(grabbed);
-		cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+r.width(), y+r.height()), CvScalar.RED, 1, CV_AA, 0);
+		cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+r.width(), y+r.height()), CvScalar.GREEN, 1, CV_AA, 0);
 		return frameCoordinates;
 	}
 
@@ -160,7 +160,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 				cvCircle(grabbed,
 						new CvPoint(frameCoordinates.get(i),
 								frameCoordinates.get(i + 1)),
-								1, CvScalar.RED, 3, 0, 0);
+								1, CvScalar.GREEN, 3, 0, 0);
 			}
 		}
 	}
@@ -309,7 +309,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 	public static void main(String ... args) throws Exception{
 		NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
-		fe.setOutput(true);
+		//fe.setOutput(true);
 		fe.extract( null );
 		fe.shutdown();
 	}
