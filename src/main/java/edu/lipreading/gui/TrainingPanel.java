@@ -376,7 +376,7 @@ public class TrainingPanel extends LipReaderPanel {
 		//shouldUpdate.set(true);
 
 		currentInstanceNum++;
-		counters.put(getLabel(), counters.get(getLabel() + 1));
+		counters.get(getLabel().toLowerCase()).incrementAndGet();
 		
 		if (currentInstanceNum == totalNumOfInstances)
 		{
