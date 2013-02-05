@@ -24,6 +24,7 @@ import edu.lipreading.Utils;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTextField;
+import javax.swing.JCheckBox;
 
 public class TrainingPanel extends LipReaderPanel {
 	
@@ -49,6 +50,7 @@ public class TrainingPanel extends LipReaderPanel {
 	private JButton btnChooseFile;
 	private JLabel lblRecordedSample;
 	private JLabel lblRecordsLeft;
+	private JCheckBox chckbxSaveVideo;
 	
 	public TrainingPanel() {
 		super();
@@ -61,8 +63,13 @@ public class TrainingPanel extends LipReaderPanel {
         btnRecord.addActionListener(new ActionListener() {
         	@Override
             public void actionPerformed(ActionEvent arg0) {
-        		if (!isRecording())
+        		if (!isRecording()){
         			setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)));
+        			//TODO Add if checkbox is checked
+        			if (chckbxSaveVideo.isSelected())
+        				recordedVideoFilePath = txtPath.getText() + "//Videos";
+        		}
+        		
 			}
 		});
 		canvas.setBounds(163, 142, 345, 255);
@@ -298,7 +305,7 @@ public class TrainingPanel extends LipReaderPanel {
 			}
 
 		});
-		btnCreateTrainingSet.setBounds(425, 104, 131, 23);
+		btnCreateTrainingSet.setBounds(425, 113, 131, 23);
 		add(btnCreateTrainingSet);
 		
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -350,6 +357,12 @@ public class TrainingPanel extends LipReaderPanel {
 		lblSampleCurrentNum.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblSampleCurrentNum.setBounds(231, 484, 45, 14);
 		add(lblSampleCurrentNum);
+		
+		chckbxSaveVideo = new JCheckBox("Save To Video File");
+		chckbxSaveVideo.setBackground(Color.WHITE);
+		chckbxSaveVideo.setSelected(true);
+		chckbxSaveVideo.setBounds(136, 98, 123, 23);
+		add(chckbxSaveVideo);
 		
 		lblSampleCurrentNum.setVisible(false);
 		lblSampleName.setVisible(false);

@@ -38,6 +38,7 @@ public class LipReaderPanel extends VideoCapturePanel {
     protected JButton btnRecord;
     protected Sample recordedSample;
     private String sampleName; 
+    protected String recordedVideoFilePath;
     
     /**
      * Create the panel.
@@ -64,16 +65,37 @@ public class LipReaderPanel extends VideoCapturePanel {
                 if (!recording) // Button should start recording
                 {
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.STOP_IMAGE_FILE_PATH)));
-
-                    recordedSample = new Sample(getSampleName() + " " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date()));
+                    String sampleId = getSampleName() + " " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());
+                    recordedSample = new Sample(sampleId);
+                    
+                    if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()){
+                    	setRecorder(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
+                    	setRecordingToFile(true);
+                    }
+                    
                     lblOutput.setText("");
                     recording = true;
                 }
                 else // Button should stop recording
                 {
                     recording = false;
+                    
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
-
+                    
+                    // Stop saving video file
+                    if (isRecordingToFile())
+                    {
+	                    recordedVideoFilePath = "";
+	                    //TODO
+	                    setRecordingToFile(false);
+	                    try {
+							recorder.stop();
+						} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                    }
+                    
                     handleRecordedSample();
                 }
             }
@@ -115,6 +137,14 @@ public class LipReaderPanel extends VideoCapturePanel {
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                }
+                if (isRecordingToFile()){
+                	try {
+    					recorder.record(grabbed);
+    				} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
                 }
             }
         }
