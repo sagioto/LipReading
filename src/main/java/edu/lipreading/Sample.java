@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Vector;
 
 public class Sample {
-	private String id;
+
+    private String id;
 	private List<List<Integer>> matrix;
+    private int width;
+    private int height;
+    private String label;
 
 	public Sample(String id, List<List<Integer>> matrix) {
 		super();
@@ -37,6 +41,32 @@ public class Sample {
 		return this;
 	}
 
+    public int getWidth() {
+        return width;
+    }
+
+    public Sample setWidth(int width) {
+        this.width = width;
+        return this;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public Sample setHeight(int height) {
+        this.height = height;
+        return this;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Sample setLabel(String label) {
+        this.label = label;
+        return this;
+    }
 
 	@Override
 	public int hashCode() {
@@ -73,12 +103,7 @@ public class Sample {
 				&& this.getMatrix().get(0) != null){
 			int size = this.getMatrix().size() * this.getMatrix().get(0).size() + 1;
 			String[] ans = new String[size];
-			if(this.getId().contains("yes"))
-				ans[0] = "yes";
-			else if(this.getId().contains("no"))
-				ans[0] = "no";
-			if(this.getId().contains("hello"))
-				ans[0] = "hello";
+			ans[0] = this.getLabel();
 			for (int i = 0; i < this.getMatrix().size(); i++) {
 				for (int j = 0; j < this.getMatrix().get(0).size(); j++) {
 					ans[1 + (i * this.getMatrix().get(0).size()) + j] = String.valueOf(this.getMatrix().get(i).get(j));
@@ -88,6 +113,7 @@ public class Sample {
 		}
 		return null;
 	}
+
 
 
 }

@@ -39,7 +39,7 @@ public class TimeWarperClassifier implements Classifier{
 					final TimeWarper tw = new TimeWarper();
 					if(!test.equals(training)){
 						for (int i = 0; i < vocabulary.size(); i++) {
-							if(training.getId().contains(vocabulary.get(i))){
+							if(training.getLabel().equals(vocabulary.get(i))){
 								results[i].addAndGet(Double.doubleToLongBits(tw.dtw(test, training)));
 								counts[i].incrementAndGet();
 							}
