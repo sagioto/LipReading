@@ -323,7 +323,7 @@ public class TrainingPanel extends LipReaderPanel {
 				}
 			}
 		});
-		btnChooseFile.setBounds(524, 61, 32, 32);;
+		btnChooseFile.setBounds(524, 61, 32, 32);
 		add(btnChooseFile);
 		
 		lblChooseWordsentenceTo = new JLabel("Choose Word/Sentence to record:");
