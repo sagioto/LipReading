@@ -1,24 +1,20 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
+import com.googlecode.javacv.FFmpegFrameRecorder;
+import com.googlecode.javacv.FrameGrabber;
+import com.googlecode.javacv.cpp.avutil;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import edu.lipreading.Utils;
+import edu.lipreading.vision.ColoredStickersFeatureExtractor;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
-import com.googlecode.javacv.FFmpegFrameRecorder;
-import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.cpp.avutil;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
-import edu.lipreading.Utils;
-import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class VideoCapturePanel extends JPanel {
 
@@ -30,11 +26,10 @@ public class VideoCapturePanel extends JPanel {
 	protected BufferedImage image = null;
 	protected VideoCanvas canvas;
 	protected FrameGrabber grabber = null;
-	protected String sampleName;
 	protected ColoredStickersFeatureExtractor stickersExtractor;
 	protected Thread videoGrabber;
 	protected AtomicBoolean threadStop;
-	protected JProgressBar progressBar = new JProgressBar();;
+	protected JProgressBar progressBar = new JProgressBar();
 	protected FFmpegFrameRecorder recorder = null;
 	private boolean recordToFile = false;
 	
