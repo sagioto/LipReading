@@ -23,16 +23,16 @@ public class LipReading {
 		List<String> argsAsList = Arrays.asList(args);
 		if(args.length == 0 || argsAsList.contains("-help")){
 			System.out.println("usage:");
-			System.out.println("\t-help : prints this message");
-			System.out.println("\t-extract <video file url, name or 0 for webcam> : extracts Sample object from the file into an xml");
-			System.out.println("\t-output : when used with -extract records an output video");
-			System.out.println("\t-dataset <path of folder of video files> : go through all the video files and" +
-					"\n\t generate Sample xmls for each of them");
-			System.out.println("\t-test <video file url, name, 0 for webcam or xml> : uses the input file as test against a default data set");
-			System.out.println("\t-test <video file url, name, 0 for webcam or xml>  <zip file url> : uses the input file as test against " +
-					"\n\t the data set in the given zip file url");
-			System.out.println("\t-csv <input zip file, output file> : converts zip data set into csv one");
-			System.out.println("\t-gui : start the GUI");
+			System.out.println("-help : prints this message");
+			System.out.println("-extract <video file url, name or 0 for webcam> : extracts Sample object from the file into an xml");
+			System.out.println("-output : when used with -extract records an output video");
+			System.out.println("-dataset <path of folder of video files> : go through all the video files and" +
+					"\n generate Sample xmls for each of them");
+			System.out.println("-test <video file url, name, 0 for webcam or xml> : uses the input file as test against a default data set");
+			System.out.println("-test <video file url, name, 0 for webcam or xml>  <zip file url> : uses the input file as test against " +
+					"\n the data set in the given zip file url");
+			System.out.println("-csv <input zip file, output file> : converts zip data set into csv one");
+			System.out.println("-gui : start the GUI");
 			System.exit(0);
 		}
 
