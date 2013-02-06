@@ -1,23 +1,6 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.Beans;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
@@ -26,6 +9,15 @@ import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.Beans;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class LipReaderPanel extends VideoCapturePanel {
 

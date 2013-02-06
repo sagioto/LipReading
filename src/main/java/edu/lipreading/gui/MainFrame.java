@@ -1,27 +1,15 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Panel;
-import java.awt.Toolkit;
-import java.util.Arrays;
-import java.util.List;
+import com.googlecode.javacv.FrameGrabber;
+import edu.lipreading.Constants;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import com.googlecode.javacv.FrameGrabber;
-
-import edu.lipreading.Constants;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 public class MainFrame extends JFrame {
 
 	/**

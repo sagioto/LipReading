@@ -1,21 +1,15 @@
 package edu.lipreading.vision;
 
+import com.googlecode.javacv.*;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import edu.lipreading.Sample;
+import edu.lipreading.Utils;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import com.googlecode.javacv.CanvasFrame;
-import com.googlecode.javacv.FFmpegFrameGrabber;
-import com.googlecode.javacv.FFmpegFrameRecorder;
-import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.FrameRecorder;
-import com.googlecode.javacv.VideoInputFrameGrabber;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
-import edu.lipreading.Sample;
-import edu.lipreading.Utils;
 
 public abstract class AbstractFeatureExtractor {
 

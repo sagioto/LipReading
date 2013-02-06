@@ -1,7 +1,6 @@
 package edu.lipreading.vision;
 
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-
 import edu.lipreading.Constants;
 
 public class StickerColorConfiguration {

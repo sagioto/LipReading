@@ -1,10 +1,5 @@
 package edu.lipreading;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
-import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.gui.MainFrame;
@@ -13,6 +8,11 @@ import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
+import weka.core.xml.XStream;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 
 

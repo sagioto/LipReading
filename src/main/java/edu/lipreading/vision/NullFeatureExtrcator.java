@@ -1,8 +1,8 @@
 package edu.lipreading.vision;
 
-import java.util.List;
-
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
+import java.util.List;
 
 
 

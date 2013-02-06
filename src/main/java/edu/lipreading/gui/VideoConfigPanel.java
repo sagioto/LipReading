@@ -1,25 +1,17 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Point;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import edu.lipreading.Constants;
+import edu.lipreading.vision.StickerColorConfiguration;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
-import edu.lipreading.Constants;
-import edu.lipreading.vision.StickerColorConfiguration;
 
 public class VideoConfigPanel extends VideoCapturePanel {
 	/**

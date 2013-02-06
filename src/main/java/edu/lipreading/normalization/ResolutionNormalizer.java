@@ -1,8 +1,8 @@
 package edu.lipreading.normalization;
 
-import java.util.List;
-
 import edu.lipreading.Sample;
+
+import java.util.List;
 
 /**
  * This normalizer class intends to normalize the given Sample to a chosen resolution,

@@ -1,19 +1,19 @@
 package edu.lipreading.classification;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.List;
-
+import edu.lipreading.Constants;
+import edu.lipreading.Sample;
+import edu.lipreading.Utils;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffLoader;
-import edu.lipreading.Constants;
-import edu.lipreading.Sample;
-import edu.lipreading.Utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.util.List;
 
 public class MultiLayerPerceptronClassifier implements Classifier{
 	private static final int INSTANCE_SIZE = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + 1;

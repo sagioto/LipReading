@@ -1,10 +1,10 @@
 package edu.lipreading.normalization;
 
-import java.util.List;
-import java.util.Vector;
-
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
+
+import java.util.List;
+import java.util.Vector;
 
 public class LinearStretchTimeNormalizer implements Normalizer {
 

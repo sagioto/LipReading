@@ -1,11 +1,11 @@
 package edu.lipreading;
 
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
-
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 
 public class Constants {
     public static final Properties LIP_READING_PROPS = new Properties();

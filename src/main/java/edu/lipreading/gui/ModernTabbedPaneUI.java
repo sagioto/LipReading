@@ -1,13 +1,11 @@
 package edu.lipreading.gui;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import edu.lipreading.Constants;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -15,16 +13,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
-
-import edu.lipreading.Constants;
 
 
 public class ModernTabbedPaneUI extends BasicTabbedPaneUI {
