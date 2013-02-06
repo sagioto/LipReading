@@ -51,7 +51,7 @@ public abstract class AbstractFeatureExtractor {
 		else{
 			//try open the default camera
 			grabber = VideoInputFrameGrabber.createDefault(0);
-			sampleName = "web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());;
+			sampleName = "web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());
 		}
 		setSample(new Sample(sampleName));
 		return grabber;
