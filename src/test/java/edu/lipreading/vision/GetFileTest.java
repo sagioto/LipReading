@@ -29,7 +29,7 @@ public class GetFileTest {
     @Test
     public void readWordsFileTest() throws Exception {
     	List<String> readFile = Utils.readFile("vocabularies/words.txt");
-    	Assert.assertEquals("Job", readFile.get(0));
+    	Assert.assertEquals("job", readFile.get(0));
     }
 
 	@Test

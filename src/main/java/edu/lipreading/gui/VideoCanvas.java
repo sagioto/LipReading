@@ -1,11 +1,10 @@
 package edu.lipreading.gui;
 
-import java.awt.Canvas;
-import java.awt.Graphics;
+import edu.lipreading.gui.VideoConfigPanel.StickerEvent;
+
+import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-
-import edu.lipreading.gui.VideoConfigPanel.StickerEvent;
 
 public class VideoCanvas extends Canvas{
 

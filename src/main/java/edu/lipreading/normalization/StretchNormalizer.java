@@ -1,8 +1,8 @@
 package edu.lipreading.normalization;
 
-import java.util.List;
-
 import edu.lipreading.Sample;
+
+import java.util.List;
 
 public class StretchNormalizer extends CenterNormalizer {
 	

@@ -1,8 +1,8 @@
 package edu.lipreading.classification;
 
-import java.util.List;
-
 import edu.lipreading.Sample;
+
+import java.util.List;
 
 public class NullClassifier implements Classifier {
 

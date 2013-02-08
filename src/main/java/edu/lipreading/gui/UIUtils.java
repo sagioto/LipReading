@@ -1,7 +1,6 @@
 package edu.lipreading.gui;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class UIUtils {

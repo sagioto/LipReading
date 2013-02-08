@@ -251,4 +251,3 @@ public class TrainingPanel extends LipReaderPanel {
 		return label;
 	}
 }
-

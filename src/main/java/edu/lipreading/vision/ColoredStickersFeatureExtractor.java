@@ -1,12 +1,8 @@
 package edu.lipreading.vision;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
-import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
-import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
+import com.googlecode.javacv.cpp.opencv_core.*;
+import com.googlecode.javacv.cpp.opencv_imgproc.*;
+import edu.lipreading.Constants;
 
 import java.util.List;
 import java.util.Vector;
@@ -15,13 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.googlecode.javacv.cpp.opencv_core.CvArr;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
-
-import edu.lipreading.Constants;
+import static com.googlecode.javacv.cpp.opencv_core.*;
+import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());

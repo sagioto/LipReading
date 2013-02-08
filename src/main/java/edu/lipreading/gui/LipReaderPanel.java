@@ -1,22 +1,6 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
@@ -25,6 +9,15 @@ import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.Normalizer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.Beans;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class LipReaderPanel extends VideoCapturePanel {
 
@@ -36,14 +29,18 @@ public class LipReaderPanel extends VideoCapturePanel {
     private boolean recording;
     protected JButton btnRecord;
     protected Sample recordedSample;
-
+    private String sampleName; 
+    protected String recordedVideoFilePath;
+    
     /**
      * Create the panel.
      * @throws com.googlecode.javacv.FrameGrabber.Exception 
      */
     public LipReaderPanel() {
         super();
-
+        
+        setSampleName("web cam");
+        
         canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
         setBackground(Color.WHITE);
         setLayout(null);
@@ -51,24 +48,46 @@ public class LipReaderPanel extends VideoCapturePanel {
         recording = false;
 
         btnRecord = new JButton("");
-        btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
+        
+        if (!Beans.isDesignTime())
+        	btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
 
         btnRecord.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 if (!recording) // Button should start recording
                 {
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.STOP_IMAGE_FILE_PATH)));
-
-                    recordedSample = new Sample("web cam " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date()));
+                    String sampleId = getSampleName() + " " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());
+                    recordedSample = new Sample(sampleId);
+                    
+                    if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()){
+                    	setRecorder(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
+                    	setRecordingToFile(true);
+                    }
+                    
                     lblOutput.setText("");
                     recording = true;
                 }
                 else // Button should stop recording
                 {
                     recording = false;
+                    
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
-                    //btnRecord.setText("Record");
-
+                    
+                    // Stop saving video file
+                    if (isRecordingToFile())
+                    {
+	                    recordedVideoFilePath = "";
+	                    //TODO
+	                    setRecordingToFile(false);
+	                    try {
+							recorder.stop();
+						} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                    }
+                    
                     handleRecordedSample();
                 }
             }
@@ -111,6 +130,14 @@ public class LipReaderPanel extends VideoCapturePanel {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                if (isRecordingToFile()){
+                	try {
+    					recorder.record(grabbed);
+    				} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
             }
         }
     }
@@ -141,6 +168,18 @@ public class LipReaderPanel extends VideoCapturePanel {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		}
+	}
+
+	protected String getSampleName() {
+		return sampleName;
+	}
+
+	protected void setSampleName(String sampleName) {
+		this.sampleName = sampleName;
+	}
+	
+	protected boolean isRecording() {
+		return recording;
 	}
 
 }

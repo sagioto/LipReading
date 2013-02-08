@@ -2,10 +2,6 @@ package edu.lipreading;
 
 import java.util.List;
 
-import edu.lipreading.Constants;
-import edu.lipreading.Sample;
-import edu.lipreading.Utils;
-
 /**
  * Signelton class of training set
  * @author Dor Leitman
