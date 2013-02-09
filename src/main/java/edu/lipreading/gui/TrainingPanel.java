@@ -65,7 +65,7 @@ public class TrainingPanel extends LipReaderPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!isRecording()){
 					setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)));
-					//TODO Add if checkbox is checked
+
 					if (chckbxSaveVideo.isSelected())
 						recordedVideoFilePath = txtPath.getText() + "//Videos";
 				}
@@ -376,7 +376,6 @@ public class TrainingPanel extends LipReaderPanel {
 		//shouldUpdate.set(true);
 
 		currentInstanceNum++;
-		counters.get(getLabel().toLowerCase()).incrementAndGet();
 
 		if (currentInstanceNum == totalNumOfInstances)
 		{
@@ -396,8 +395,6 @@ public class TrainingPanel extends LipReaderPanel {
 
 		lblSampleCurrentNum.setText(new Integer(totalNumOfInstances - currentInstanceNum).toString());
 		lblSampleName.setText(recordedSample.getId());
-
-		//TODO - add save video file option
 
 		//addToTrainingSet.setEnabled(true);
 		//saveToFile.setEnabled(true);
