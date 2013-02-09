@@ -78,6 +78,7 @@ public class TrainingPanel extends LipReaderPanel {
 
 
 		chooseLabel = new JComboBox<String>();
+		chooseLabel.setMaximumRowCount(6);
 		for (String word : Constants.VOCABULARY) {
 			chooseLabel.addItem(word.substring(0, 1).toUpperCase() + word.substring(1, word.length()));
 			counters.put(word, new AtomicInteger(0));
@@ -343,7 +344,7 @@ public class TrainingPanel extends LipReaderPanel {
 		lblSampleName = new JLabel("Recorded Sample:");
 		lblSampleName.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblSampleName.setForeground(Color.DARK_GRAY);
-		lblSampleName.setBounds(248, 459, 196, 14);
+		lblSampleName.setBounds(248, 459, 308, 14);
 		add(lblSampleName);
 
 		lblRecordsLeft = new JLabel("Left to record:");
