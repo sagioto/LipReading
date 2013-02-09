@@ -69,6 +69,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		List<Integer> ans = new Vector<Integer>();
 		ans.add(posX);
 		ans.add(posY);
+		cvReleaseImage(detectThrs);
 		return ans;
 	}
 
