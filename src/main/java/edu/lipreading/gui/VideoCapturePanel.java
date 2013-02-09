@@ -1,8 +1,6 @@
 package edu.lipreading.gui;
 
-import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.cpp.avutil;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Utils;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
@@ -10,7 +8,6 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -30,8 +27,8 @@ public class VideoCapturePanel extends JPanel {
 	protected Thread videoGrabber;
 	protected AtomicBoolean threadStop;
 	protected JProgressBar progressBar = new JProgressBar();
-	protected FFmpegFrameRecorder recorder = null;
-	private boolean recordToFile = false;
+
+
 	
 	/**
 	 * Create the panel.
@@ -117,17 +114,9 @@ public class VideoCapturePanel extends JPanel {
 				e.printStackTrace();
 			}
 		}
-		if (isRecordingToFile()){
-			try {
-				recorder.stop();
-				setRecordingToFile(false);
-			} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		//stopRecordingVideo();
 	}
+	
 
 	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
 
@@ -155,41 +144,6 @@ public class VideoCapturePanel extends JPanel {
 		this.videoInput = videoInput;
 	}
 
-	protected void setRecorder(String folderPath, String fileName){
-		File folder = new File(folderPath);
-		if (!folder.exists()) 
-			folder.mkdir();
-    	File videoFile = new File(folder, fileName + ".MOV");
-    	try {
-			videoFile.createNewFile();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		recorder = new FFmpegFrameRecorder(videoFile,  grabber.getImageWidth(),grabber.getImageHeight());
-		recorder.setVideoCodec(13);
-        recorder.setFormat("MOV");
-        recorder.setPixelFormat(avutil.PIX_FMT_YUV420P);
-        recorder.setFrameRate(30);
-        //recorder.setVideoBitrate(10 * 1024 * 1024);
-        
-        try {
-			recorder.start();
-	        setRecordingToFile(true);
-		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
-			JOptionPane.showMessageDialog(this,
-					"Can not record and save video file: " + e.getMessage(),
-					"Recording Video File Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-	}
 
-	protected boolean isRecordingToFile() {
-		return recordToFile;
-	}
-
-	protected void setRecordingToFile(boolean recordToFile) {
-		this.recordToFile = recordToFile;
-	}
 	
 }

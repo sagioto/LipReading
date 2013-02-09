@@ -1,5 +1,7 @@
 package edu.lipreading.gui;
 
+import com.googlecode.javacv.FFmpegFrameRecorder;
+import com.googlecode.javacv.cpp.avutil;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
@@ -15,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.Beans;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +36,9 @@ public class LipReaderPanel extends VideoCapturePanel {
     private String sampleName; 
     private String label;
     protected String recordedVideoFilePath;
+	protected FFmpegFrameRecorder recorder = null;
+	private boolean recordToFile = false;
+	protected String videoFilePath; 
     
     /**
      * Create the panel.
@@ -63,7 +70,8 @@ public class LipReaderPanel extends VideoCapturePanel {
                     recordedSample.setLabel(label);
                     
                     if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()){
-                    	setRecorder(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
+                    	recorder = null;
+                    	setVideoFilePath(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
                     	setRecordingToFile(true);
                     }
                     
@@ -80,14 +88,15 @@ public class LipReaderPanel extends VideoCapturePanel {
                     if (isRecordingToFile())
                     {
 	                    recordedVideoFilePath = "";
-	                    //TODO
+	                    //stopRecordingVideo();
 	                    setRecordingToFile(false);
-	                    try {
+	                    /*try {
 							recorder.stop();
 						} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						*/
                     }
                     
                     handleRecordedSample();
@@ -124,6 +133,7 @@ public class LipReaderPanel extends VideoCapturePanel {
             image = grabbed.getBufferedImage();
             canvas.setImage(image);
             canvas.paint(null);
+            
             if (recording)
             {
                 try {
@@ -132,14 +142,59 @@ public class LipReaderPanel extends VideoCapturePanel {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                
+        		
                 if (isRecordingToFile()){
+                	// The following recorder part is ugly, but necessary to be on one scope. 
+                	// Otherwise EXCEPTION_ACCESS_VIOLATION might occur. 
+                	boolean errorOccurred = false;
+                	if (recorder == null){
+                		File videoFile = new File(videoFilePath);
+                		try {
+                			videoFile.createNewFile();
+                		} catch (IOException e1) {
+                			errorOccurred = true;
+                			// TODO Auto-generated catch block
+                			e1.printStackTrace();
+                		}
+                		recorder = new FFmpegFrameRecorder(videoFile,  grabber.getImageWidth(),grabber.getImageHeight());
+                		recorder.setVideoCodec(13);
+                        recorder.setFormat("MOV");
+                        recorder.setPixelFormat(avutil.PIX_FMT_YUV420P);
+                        recorder.setFrameRate(30);
+                        //recorder.setVideoBitrate(10 * 1024 * 1024);
+                        
+                        try {
+                			recorder.start();
+                	        setRecordingToFile(true);
+                		} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+                			errorOccurred = true;
+                			JOptionPane.showMessageDialog(this,
+                					"Can not record and save video file: " + e.getMessage(),
+                					"Recording Video File Error",
+                					JOptionPane.ERROR_MESSAGE);
+                		}
+                	}
                 	try {
-    					recorder.record(grabbed);
+                		if (!errorOccurred)
+                		recorder.record(grabbed);
     				} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
     					// TODO Auto-generated catch block
     					e.printStackTrace();
     				}
                 }
+                
+            }
+            else{
+            	if (recorder != null && !isRecordingToFile()){ //TODO Fix
+        			try {
+    					recorder.stop();
+    					recorder = null;
+    				} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+        		}
             }
         }
     }
@@ -184,5 +239,47 @@ public class LipReaderPanel extends VideoCapturePanel {
 	protected boolean isRecording() {
 		return recording;
 	}
+	
+	
+	protected void setVideoFilePath(String folderPath, String fileName){
+		File folder = new File(folderPath);
+		if (!folder.exists()) 
+			folder.mkdir();
+		videoFilePath = folder.getAbsolutePath() + "\\" + fileName + ".MOV"; //TODO Extract file type to properties file
+	}
 
+	public void stopRecordingVideo(){
+		if (isRecordingToFile()){
+			try {
+				recorder.stop();
+				setRecordingToFile(false);
+			} catch (com.googlecode.javacv.FrameRecorder.Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void stopVideo(){
+		synchronized (threadStop) {
+			threadStop.set(true);
+			try {
+				if (grabber != null){
+					grabber.stop();
+				}
+			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		stopRecordingVideo();
+	}
+	
+	protected boolean isRecordingToFile() {
+		return recordToFile;
+	}
+
+	protected void setRecordingToFile(boolean recordToFile) {
+		this.recordToFile = recordToFile;
+	}
 }
