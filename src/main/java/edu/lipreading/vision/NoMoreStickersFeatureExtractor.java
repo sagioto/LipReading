@@ -1,21 +1,13 @@
 package edu.lipreading.vision;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
-import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
-import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
-import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
-import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
-import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
-import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
-import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
-import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
-import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
-import static com.googlecode.javacv.cpp.opencv_core.cvSize;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2GRAY;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
-import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_FIND_BIGGEST_OBJECT;
-import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
+import com.googlecode.javacpp.Loader;
+import com.googlecode.javacv.cpp.opencv_core.*;
+import com.googlecode.javacv.cpp.opencv_objdetect;
+import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
+import edu.lipreading.Constants;
+import edu.lipreading.Utils;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.File;
 import java.util.List;
@@ -25,22 +17,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
-
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core.CvMat;
-import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.CvSeq;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_objdetect;
-import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
-
-import edu.lipreading.Constants;
-import edu.lipreading.Utils;
+import static com.googlecode.javacv.cpp.opencv_core.*;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2GRAY;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
+import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_FIND_BIGGEST_OBJECT;
+import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int RECT_VERTICAL_JUMP = 10;
@@ -50,14 +31,13 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private CvRect prev = new CvRect();
 	private CvHaarClassifierCascade classifier;
 	private CvMemStorage storage;
-	private int roiFix;
-	private int sideConfidence;
+    private int sideConfidence;
 	private int lowerConfidence;
 	private int upperConfidence;
 	private int rectFrameCount = 0;
 
 	public List<Integer> getPoints(IplImage grabbed) throws Exception {
-		roiFix = grabbed.height() / -32;
+        int roiFix = grabbed.height() / -32;
 		sideConfidence = grabbed.width() / 128;
 		lowerConfidence = grabbed.height() / 128;
 		upperConfidence = grabbed.width() / 32;
@@ -315,7 +295,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	 public static void main(String ... args) throws Exception{
 		 NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
 		 //fe.setOutput(true);
-		 fe.extract( null );
+		 fe.extract( "http://spandh.dcs.shef.ac.uk/gridcorpus/examples/id23_6000_priazn.mpg" );
 		 fe.shutdown();
 	 }
 
