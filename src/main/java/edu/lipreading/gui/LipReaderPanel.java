@@ -30,6 +30,7 @@ public class LipReaderPanel extends VideoCapturePanel {
     protected JButton btnRecord;
     protected Sample recordedSample;
     private String sampleName; 
+    private String label;
     protected String recordedVideoFilePath;
     
     /**
@@ -39,7 +40,7 @@ public class LipReaderPanel extends VideoCapturePanel {
     public LipReaderPanel() {
         super();
         
-        setSampleName("web cam");
+        setSampleName("web cam", null);
         
         canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
         setBackground(Color.WHITE);
@@ -174,8 +175,9 @@ public class LipReaderPanel extends VideoCapturePanel {
 		return sampleName;
 	}
 
-	protected void setSampleName(String sampleName) {
+	protected void setSampleName(String sampleName, String label) {
 		this.sampleName = sampleName;
+		this.label = label;
 	}
 	
 	protected boolean isRecording() {

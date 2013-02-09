@@ -64,7 +64,7 @@ public class TrainingPanel extends LipReaderPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!isRecording()){
-					setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)));
+					setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)), getLabel());
 
 					if (chckbxSaveVideo.isSelected())
 						recordedVideoFilePath = txtPath.getText() + "//Videos";
