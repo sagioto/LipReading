@@ -60,6 +60,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.STOP_IMAGE_FILE_PATH)));
                     String sampleId = getSampleName() + " " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());
                     recordedSample = new Sample(sampleId);
+                    recordedSample.setLabel(label);
                     
                     if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()){
                     	setRecorder(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
