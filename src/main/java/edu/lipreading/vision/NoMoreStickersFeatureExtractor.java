@@ -181,7 +181,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			if(found)
 				return new int[] {centerLine, i};
 		}
-		return new int []{centerLine, L.length * 3 / 4};
+		return new int []{centerLine, 0/*column.length * 3 / 4*/};
 	}
 
 
@@ -198,8 +198,8 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			if(column[i] < column[i + 1]){
 				y = i;
 				found = true;
-				for (int j = i + 2; j < Math.min(column.length, i + upperConfidence) && found; j++){
-					found &= column[i] < column[j];
+				for (int j = i + 3; j < Math.min(column.length, i + upperConfidence) && found; j++){
+					found &= column[j - 1] < column[j];
 				}
 			}
 		}
