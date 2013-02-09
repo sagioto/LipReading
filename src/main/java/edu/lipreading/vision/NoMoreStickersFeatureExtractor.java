@@ -59,7 +59,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	public List<Integer> getPoints(IplImage grabbed) throws Exception {
 		roiFix = grabbed.height() / -32;
 		sideConfidence = grabbed.width() / 128;
-		lowerConfidence = grabbed.height() / 90;
+		lowerConfidence = grabbed.height() / 128;
 		upperConfidence = grabbed.width() / 32;
 
 		if(manipulated == null)
@@ -176,12 +176,12 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		for (int i = column.length - 1; i >= 0; i--) {
 			boolean found = true;
 			for (int j = i; j > Math.max(i - lowerConfidence, 0) && found; j--) {
-				found &= column[j] <= column[j - 1];
+				found &= column[j] < column[j - 1];
 			}
 			if(found)
 				return new int[] {centerLine, i};
 		}
-		return new int []{centerLine, 0/*column.length * 3 / 4*/};
+		return new int []{centerLine,column.length * 3 / 4};
 	}
 
 
@@ -195,11 +195,11 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		boolean found = false;
 		int y = 0;
 		for(int i = 0; i < column.length - 1 && !found; i++){
-			if(column[i] < column[i + 1]){
+			if(column[i] <= column[i + 1]){
 				y = i;
 				found = true;
-				for (int j = i + 3; j < Math.min(column.length, i + upperConfidence) && found; j++){
-					found &= column[j - 1] < column[j];
+				for (int j = i + 2; j < Math.min(column.length, i + upperConfidence) && found; j++){
+					found &= column[i] < column[j];
 				}
 			}
 		}
