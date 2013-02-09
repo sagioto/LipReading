@@ -20,7 +20,7 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class MultiLayerPerceptronClassifierTest {
 
-	static private Classifier mpClassifier;
+	static private MultiLayerPerceptronClassifier mpClassifier;
 	
 	@Test
 	public void testHello() throws Exception{
@@ -53,6 +53,7 @@ public class MultiLayerPerceptronClassifierTest {
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
 	    mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
+        mpClassifier.setVocabulary(Utils.readFile("vocabularies/primitive.txt"));
 	}
 	
 	@AfterClass
