@@ -5,8 +5,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -29,9 +28,8 @@ public abstract class AbstractFeatureExtractor {
 		return sample;
 	}
 
-	public FrameGrabber getGrabber(String source)
-			throws MalformedURLException, IOException, Exception {
-		FrameGrabber grabber = null;
+	public FrameGrabber getGrabber(String source) throws Exception {
+		FrameGrabber grabber;
 		String sampleName;
 		if(Utils.isSourceUrl(source)){		
 			Utils.get(source);
@@ -59,7 +57,7 @@ public abstract class AbstractFeatureExtractor {
 
 		if(isGui()){
 			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
-			frame.setDefaultCloseOperation(CanvasFrame.EXIT_ON_CLOSE);
+			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			if(isOutput()){
 				String[] sampleNameSplit = getSample().getId().split("\\.");
 				recorder = FFmpegFrameRecorder.createDefault(sampleNameSplit[0] + "-output." + sampleNameSplit[1],grabber.getImageWidth(), grabber.getImageHeight());
@@ -73,7 +71,7 @@ public abstract class AbstractFeatureExtractor {
 
 			if(isGui()){
 				paintCoordinates(grabbed, frameCoordinates);
-				frame.showImage(grabbed);
+                frame.showImage(grabbed);
 				if(isOutput()){
 					recorder.record(grabbed);
 				}
