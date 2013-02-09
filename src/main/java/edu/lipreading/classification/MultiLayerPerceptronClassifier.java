@@ -17,8 +17,7 @@ import java.util.List;
 
 public class MultiLayerPerceptronClassifier implements Classifier{
 	private static final int INSTANCE_SIZE = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + 1;
-	
-    private final static List<String> ANS = Constants.VOCABULARY;
+    private List<String> vocabulary = Constants.VOCABULARY;
 	private MultilayerPerceptron classifier;
 	private List<Sample> samples;
 	
@@ -38,7 +37,7 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		return ANS.get((int)ans);
+		return vocabulary.get((int)ans);
 	}
 
 	private Instance sampleToInstance(Sample sample) {
@@ -60,6 +59,14 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 			classifier.buildClassifier(dataSet);
 			weka.core.SerializationHelper.write("mp-classifier.model", classifier);
 	}
+
+    public List<String> getVocabulary() {
+        return vocabulary;
+    }
+
+    public void setVocabulary(List<String> vocabulary) {
+        this.vocabulary = vocabulary;
+    }
 
 	@Override
 	public void update(Sample train) {
