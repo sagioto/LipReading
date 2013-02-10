@@ -69,6 +69,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                     recordedSample = new Sample(sampleId);
                     recordedSample.setLabel(label);
                     
+                    
                     if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()){
                     	recorder = null;
                     	setVideoFilePath(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
@@ -162,7 +163,6 @@ public class LipReaderPanel extends VideoCapturePanel {
                         recorder.setFormat("MOV");
                         recorder.setPixelFormat(avutil.PIX_FMT_YUV420P);
                         recorder.setFrameRate(30);
-                        //recorder.setVideoBitrate(10 * 1024 * 1024);
                         
                         try {
                 			recorder.start();
@@ -174,6 +174,9 @@ public class LipReaderPanel extends VideoCapturePanel {
                 					"Recording Video File Error",
                 					JOptionPane.ERROR_MESSAGE);
                 		}
+                        
+                        recordedSample.setHeight(grabber.getImageHeight());
+                        recordedSample.setWidth(grabber.getImageWidth());
                 	}
                 	try {
                 		if (!errorOccurred)
