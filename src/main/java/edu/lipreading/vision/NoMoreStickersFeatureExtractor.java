@@ -295,7 +295,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	 public static void main(String ... args) throws Exception{
 		 NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
 		 //fe.setOutput(true);
-		 fe.extract( "http://spandh.dcs.shef.ac.uk/gridcorpus/examples/id23_6000_priazn.mpg" );
+		 fe.extract( null );
 		 fe.shutdown();
 	 }
 
