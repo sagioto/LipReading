@@ -58,9 +58,9 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 
 	private List<Integer> getCoordinatesOfObject(IplImage img, CvScalar scalarMin,
 			CvScalar scalarMax) {
-		IplImage detectThrs = getThresholdImage(img, scalarMin, scalarMax);
+		IplImage thresholdImage = getThresholdImage(img, scalarMin, scalarMax);
 		CvMoments moments = new CvMoments();
-		cvMoments(detectThrs, moments, 1);
+		cvMoments(thresholdImage, moments, 1);
 		double mom10 = cvGetSpatialMoment(moments, 1, 0);
 		double mom01 = cvGetSpatialMoment(moments, 0, 1);
 		double area = cvGetCentralMoment(moments, 0, 0);
@@ -69,7 +69,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		List<Integer> ans = new Vector<Integer>();
 		ans.add(posX);
 		ans.add(posY);
-		cvReleaseImage(detectThrs);
+		cvReleaseImage(thresholdImage);
 		return ans;
 	}
 
@@ -95,7 +95,7 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 			int x = frameCoordinates.get(i * 2);
 			int y = frameCoordinates.get((i * 2) + 1);
 			if (x != 0 && y!=0)
-				cvCircle((CvArr)grabbed, new CvPoint(x, y), 20, color, 3, 0, 0);
+				cvCircle(grabbed, new CvPoint(x, y), 20, color, 3, 0, 0);
 		}
 	}
 
