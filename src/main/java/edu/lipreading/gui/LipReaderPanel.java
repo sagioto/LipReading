@@ -23,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static com.googlecode.javacv.cpp.opencv_core.cvFlip;
+
 public class LipReaderPanel extends VideoCapturePanel {
 
     /**
@@ -131,20 +133,27 @@ public class LipReaderPanel extends VideoCapturePanel {
                 if((grabbed = grabber.grab()) == null)
                     break;
             }
+            List<Integer> points = null;
+            try {
+                points = stickersExtractor.getPoints(grabbed);
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+            if(points != null){
+                stickersExtractor.paintCoordinates(grabbed, points);
+            }
+            cvFlip(grabbed, grabbed, 1);
             image = grabbed.getBufferedImage();
             canvas.setImage(image);
             canvas.paint(null);
-            
+            if(points == null){
+                continue;
+            }//not sure about this
+
             if (recording)
             {
-                try {
-                    recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                
-        		
+                recordedSample.getMatrix().add(points);
                 if (isRecordingToFile()){
                 	// The following recorder part is ugly, but necessary to be on one scope. 
                 	// Otherwise EXCEPTION_ACCESS_VIOLATION might occur. 
@@ -247,7 +256,7 @@ public class LipReaderPanel extends VideoCapturePanel {
 	protected void setVideoFilePath(String folderPath, String fileName){
 		File folder = new File(folderPath);
 		if (!folder.exists()) 
-			folder.mkdir();
+			folder.mkdirs();
 		videoFilePath = folder.getAbsolutePath() + "\\" + fileName + ".MOV"; //TODO Extract file type to properties file
 	}
 

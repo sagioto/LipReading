@@ -3,7 +3,9 @@ package edu.lipreading.gui;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Utils;
+import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
+import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +25,7 @@ public class VideoCapturePanel extends JPanel {
 	protected BufferedImage image = null;
 	protected VideoCanvas canvas;
 	protected FrameGrabber grabber = null;
-	protected ColoredStickersFeatureExtractor stickersExtractor;
+	protected AbstractFeatureExtractor stickersExtractor;
 	protected Thread videoGrabber;
 	protected AtomicBoolean threadStop;
 	protected JProgressBar progressBar = new JProgressBar();

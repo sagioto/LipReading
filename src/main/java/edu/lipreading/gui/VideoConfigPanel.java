@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
+import static com.googlecode.javacv.cpp.opencv_core.cvFlip;
+
 public class VideoConfigPanel extends VideoCapturePanel {
 	/**
 	 * 
@@ -123,14 +125,6 @@ public class VideoConfigPanel extends VideoCapturePanel {
 			return (Math.pow((point.x-x), 2) + Math.pow((point.y - y),2)) < Math.pow(radius, 2);
 		}
 
-		public boolean getIsPressed() {
-			return isPressed;
-		}
-
-		public void setIsPressed(boolean b) {
-			isPressed = b;
-		}
-
 		public void setColor(Color c){
 			this.color = c;
 		}
@@ -184,6 +178,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 				}
 				List<Integer> frameCoordinates = stickersExtractor.getPoints(grabbed);
 				stickersExtractor.paintCoordinates(grabbed, frameCoordinates);
+                cvFlip(grabbed, grabbed, 1);
 				image = grabbed.getBufferedImage();
 				canvas.setImage(image);
 				canvas.paint(null);
