@@ -145,6 +145,7 @@ public class LipReaderPanel extends VideoCapturePanel {
             }
             cvFlip(grabbed, grabbed, 1);
             image = grabbed.getBufferedImage();
+            cvFlip(grabbed, grabbed, 1);
             canvas.setImage(image);
             canvas.paint(null);
             if(points == null){
