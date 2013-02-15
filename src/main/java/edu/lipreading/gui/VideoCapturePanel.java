@@ -24,7 +24,7 @@ public class VideoCapturePanel extends JPanel {
     protected FrameGrabber grabber = null;
     protected AbstractFeatureExtractor stickersExtractor;
     protected Thread videoGrabber;
-    protected AtomicBoolean threadStop;
+    protected final AtomicBoolean threadStop;
     protected JProgressBar progressBar = new JProgressBar();
 
 
