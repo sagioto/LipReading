@@ -98,8 +98,8 @@ public class VideoConfigPanel extends VideoCapturePanel {
 	{
 		stickers = new Vector<Sticker>();
 		stickers.add(new Sticker(136, 102, 20, Color.red, StickerLocation.UPPER));
-		stickers.add(new Sticker(64, 147, 20, Color.green, StickerLocation.LEFT));
-		stickers.add(new Sticker(220, 147, 20, Color.blue, StickerLocation.RIGHT));
+		stickers.add(new Sticker(64, 147, 20, Color.green, StickerLocation.RIGHT));
+		stickers.add(new Sticker(220, 147, 20, Color.blue, StickerLocation.LEFT));
 		stickers.add(new Sticker(136, 203, 20, Color.yellow, StickerLocation.LOWER));	   
 
 	}
