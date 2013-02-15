@@ -110,7 +110,6 @@ public class VideoConfigPanel extends VideoCapturePanel {
 	{
 		private int x, y, radius;
 		private Color color;
-		private boolean isPressed;
 		private StickerLocation stickerLocation;
 
 		public Sticker(int x, int y, int radius, Color c, StickerLocation stickerLocation){
