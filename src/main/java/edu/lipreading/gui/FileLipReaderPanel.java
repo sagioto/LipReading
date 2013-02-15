@@ -35,10 +35,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
     private JButton btnRecord;
     private Classifier classifier;
     private Normalizer normalizer;
-    private List<Sample> trainingSet;
     private JTextPane txtFilePath;
-    private Thread classifierThread;
-    private JLabel lblNewLabel;
     private Sample recordedSample;
     final JFileChooser fileChooser = new JFileChooser();
 
@@ -70,7 +67,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         txtFilePath.setBounds(204, 337, 320, 20);
         add(txtFilePath);
 
-        trainingSet = TrainingSet.get();
+        List<Sample> trainingSet = TrainingSet.get();
 
         classifier = new TimeWarperClassifier();
         classifier.train(trainingSet);
@@ -113,7 +110,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         btnRecord.setBounds(275, 387, 143, 23);
         this.add(btnRecord);
 
-        lblNewLabel = new JLabel("File Path:");
+        JLabel lblNewLabel = new JLabel("File Path:");
         lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
         lblNewLabel.setBounds(142, 339, 53, 14);
         add(lblNewLabel);
@@ -157,11 +154,9 @@ public class FileLipReaderPanel extends VideoCapturePanel {
             canvas.paint(null);
 
 
-            classifierThread = new Thread(new Runnable()
-            {
+            Thread classifierThread = new Thread(new Runnable() {
 
-                public void run()
-                {
+                public void run() {
                     recordedSample = normalizer.normalize(recordedSample);
                     final String outputText = classifier.test(recordedSample);
                     lblOutput.setText(outputText);

@@ -24,9 +24,7 @@ public class TrainingPanel extends LipReaderPanel {
 	private JButton btnCreateTrainingSet;
 	private int currentInstanceNum;
 	final JFileChooser fileChooser = new JFileChooser();
-	private JLabel lblChooseWordsentenceTo;
-	private JLabel lblPathToSave;
-	private JLabel lblSampleCurrentNum;
+    private JLabel lblSampleCurrentNum;
 	private JLabel lblSampleName;
 	private JButton btnChooseFile;
 	private JLabel lblRecordedSample;
@@ -114,7 +112,7 @@ public class TrainingPanel extends LipReaderPanel {
                             "Wrong input",
                             JOptionPane.WARNING_MESSAGE);
                 }
-                if (error == false) {
+                if (!error) {
                     setLabel((String) chooseLabel.getSelectedItem());
                     currentInstanceNum = 0;
                     enableTrainingSetParams(false);
@@ -141,11 +139,11 @@ public class TrainingPanel extends LipReaderPanel {
 		btnChooseFile.setBounds(524, 61, 32, 32);
 		add(btnChooseFile);
 
-		lblChooseWordsentenceTo = new JLabel("Choose Word/Sentence to record:");
+        JLabel lblChooseWordsentenceTo = new JLabel("Choose Word/Sentence to record:");
 		lblChooseWordsentenceTo.setBounds(136, 14, 165, 14);
 		add(lblChooseWordsentenceTo);
 
-		lblPathToSave = new JLabel("Path to save:");
+        JLabel lblPathToSave = new JLabel("Path to save:");
 		lblPathToSave.setBounds(136, 76, 113, 14);
 		add(lblPathToSave);
 
@@ -206,7 +204,7 @@ public class TrainingPanel extends LipReaderPanel {
 					JOptionPane.ERROR_MESSAGE);
 		}
 
-		lblSampleCurrentNum.setText(new Integer(totalNumOfInstances - currentInstanceNum).toString());
+		lblSampleCurrentNum.setText(Integer.toString(totalNumOfInstances - currentInstanceNum));
 		lblSampleName.setText(recordedSample.getId());
 	}
 

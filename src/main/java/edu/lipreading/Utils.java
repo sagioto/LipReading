@@ -35,7 +35,7 @@ public class Utils {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public static void get(String urlToDownload, JProgressBar progressBar) throws MalformedURLException, IOException{
+	public static void get(String urlToDownload, JProgressBar progressBar) throws IOException{
 		URL url = new URL(urlToDownload);
 		InputStream in = url.openStream();
 		String filename = getFileNameFromUrl(urlToDownload);
@@ -65,7 +65,7 @@ public class Utils {
 		out.close();
 	}
 	
-	public static void get(String urlToDownload) throws MalformedURLException, IOException{
+	public static void get(String urlToDownload) throws IOException{
 	    get(urlToDownload, null);
 	}
 

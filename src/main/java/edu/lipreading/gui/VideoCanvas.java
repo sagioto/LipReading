@@ -43,8 +43,8 @@ public class VideoCanvas extends Canvas{
                 } while (strategy.contentsRestored());
                 strategy.show();
             } while (strategy.contentsLost());
-        } catch (NullPointerException e) {
-        } catch (IllegalStateException e) { }
+        } catch (NullPointerException ignored) {
+        } catch (IllegalStateException ignored) { }
     }
 
 	public BufferedImage getImage() {
