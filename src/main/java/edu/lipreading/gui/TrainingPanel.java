@@ -1,30 +1,16 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
 import edu.lipreading.Utils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TrainingPanel extends LipReaderPanel {
 
@@ -53,12 +39,11 @@ public class TrainingPanel extends LipReaderPanel {
 
 		btnRecord.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent event) {
 				if (!isRecording()){
 					setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)), getLabel());
-
 					if (chckbxSaveVideo.isSelected())
-						recordedVideoFilePath = txtPath.getText() + "//Videos";
+						recordedVideoFilePath = txtPath.getText() + "/Videos";
 				}
 
 			}
@@ -86,7 +71,7 @@ public class TrainingPanel extends LipReaderPanel {
 		chooseLabel.addItemListener(new ItemListener() {
 
 			@Override
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(ItemEvent event) {
 				setLabel((String)chooseLabel.getSelectedItem());
 			}
 		});
@@ -109,35 +94,33 @@ public class TrainingPanel extends LipReaderPanel {
 		txtPath.setColumns(10);
 
 		btnCreateTrainingSet = new JButton("Create Training Set");
-		btnCreateTrainingSet.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				boolean error = false;
-				try {
-					setTotalNumOfInstances(Integer.parseInt(txtInstancesNum.getText()));
-				}
-				catch (NumberFormatException ex) {		
-					error = true;
-					JOptionPane.showMessageDialog(TrainingPanel.this,
-							"Number of instances requires a number",
-							"Wrong input",
-							JOptionPane.WARNING_MESSAGE);
-				}
-				if (txtPath.getText().isEmpty()){
-					error = true;
-					JOptionPane.showMessageDialog(TrainingPanel.this,
-							"Please choose a folder to save the recorded Training Set",
-							"Wrong input",
-							JOptionPane.WARNING_MESSAGE);
-				}
-				if (error == false){
-					setLabel((String)chooseLabel.getSelectedItem());
-					currentInstanceNum = 0;
-					enableTrainingSetParams(false);
-				}
-			}
-
-		});
+		btnCreateTrainingSet.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                boolean error = false;
+                try {
+                    setTotalNumOfInstances(Integer.parseInt(txtInstancesNum.getText()));
+                } catch (NumberFormatException ex) {
+                    error = true;
+                    JOptionPane.showMessageDialog(TrainingPanel.this,
+                            "Number of instances requires a number",
+                            "Wrong input",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                if (txtPath.getText().isEmpty()) {
+                    error = true;
+                    JOptionPane.showMessageDialog(TrainingPanel.this,
+                            "Please choose a folder to save the recorded Training Set",
+                            "Wrong input",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                if (error == false) {
+                    setLabel((String) chooseLabel.getSelectedItem());
+                    currentInstanceNum = 0;
+                    enableTrainingSetParams(false);
+                }
+            }
+        });
 		btnCreateTrainingSet.setBounds(425, 113, 131, 23);
 		add(btnCreateTrainingSet);
 
@@ -146,16 +129,15 @@ public class TrainingPanel extends LipReaderPanel {
 		btnChooseFile = new JButton(new ImageIcon(getClass().getResource(Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
 		btnChooseFile.setBorderPainted(false);
 		btnChooseFile.setBackground(Color.WHITE);
-		btnChooseFile.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				int returnVal = fileChooser.showOpenDialog(TrainingPanel.this);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION){
-					txtPath.setText(fileChooser.getSelectedFile().getPath());
-				}
-			}
-		});
+		btnChooseFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int returnVal = fileChooser.showOpenDialog(TrainingPanel.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    txtPath.setText(fileChooser.getSelectedFile().getPath());
+                }
+            }
+        });
 		btnChooseFile.setBounds(524, 61, 32, 32);
 		add(btnChooseFile);
 
@@ -216,7 +198,7 @@ public class TrainingPanel extends LipReaderPanel {
 		try {
 
 			String fileName =  recordedSample.getId().replaceAll("[:/]", ".") + ".xml";
-			Utils.writeSampleToXML(txtPath.getText() ,fileName, recordedSample);
+			Utils.writeSampleToXML(txtPath.getText() ,fileName.replace(' ','-'), recordedSample);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(TrainingPanel.this,
 					"Cannot save file. Reason:" + e.getMessage(),

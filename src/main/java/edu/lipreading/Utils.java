@@ -234,9 +234,10 @@ public class Utils {
     public static void writeSampleToXML(String folderPath, String sampleName, Sample sample) throws Exception{
 		File samplesDir = new File(folderPath);
 		if (!samplesDir.exists()) 
-			samplesDir.mkdir();
+			samplesDir.mkdirs();
     	File sampleFile = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
-    	sampleFile.createNewFile();
-    	XStream.write(sampleFile , sample);
+    	FileOutputStream fos = new FileOutputStream(sampleFile);
+        XStream.write(sampleFile , sample);
+        fos.close();
     }
 }

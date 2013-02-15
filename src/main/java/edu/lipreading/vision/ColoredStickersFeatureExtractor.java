@@ -16,6 +16,7 @@ import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
 	public List<Integer> getPoints(IplImage img) throws Exception {
 		List<Integer> frameCoordinates = new Vector<Integer>();
 		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();

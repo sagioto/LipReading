@@ -134,7 +134,6 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			Utils.get(Constants.HAAR_CASCADE_MOUTH_FILE);
 		classifier = new CvHaarClassifierCascade(cvLoad(Utils.getFileNameFromUrl(fileNameFromUrl)));
 		storage = CvMemStorage.create();
-
 	}
 
 	@Override
