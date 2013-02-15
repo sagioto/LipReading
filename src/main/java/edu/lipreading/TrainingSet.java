@@ -14,7 +14,7 @@ public class TrainingSet {
 
 	public static List<Sample> trainingSet = null;
 
-	private static Object monitor = new Object();
+	private static final Object monitor = new Object();
 
 	public static List<Sample> get() {
 		if (trainingSet == null){
