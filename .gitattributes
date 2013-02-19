@@ -8,3 +8,5 @@
 *.png binary
 *.war binary
 *.zip binary
+*.o binary
+*.so binary
