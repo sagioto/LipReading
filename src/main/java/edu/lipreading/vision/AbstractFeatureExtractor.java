@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 
 public abstract class AbstractFeatureExtractor {
-
 	protected FrameGrabber grabber;
 	private Sample sample;
 	private boolean output = false;
@@ -29,9 +28,8 @@ public abstract class AbstractFeatureExtractor {
 	}
 
 	public FrameGrabber getGrabber(String source) throws Exception {
-		FrameGrabber grabber;
 		String sampleName;
-		if(Utils.isSourceUrl(source)){		
+		if(Utils.isSourceUrl(source)){
 			Utils.get(source);
 			sampleName = Utils.getFileNameFromUrl(source);
 			grabber = FFmpegFrameGrabber.createDefault(sampleName);

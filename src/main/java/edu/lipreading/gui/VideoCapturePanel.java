@@ -31,7 +31,6 @@ public class VideoCapturePanel extends JPanel {
 
     /**
      * Create the panel.
-     * @throws com.googlecode.javacv.FrameGrabber.Exception
      */
     public VideoCapturePanel() {
         stickersExtractor = new ColoredStickersFeatureExtractor();

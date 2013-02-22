@@ -41,7 +41,6 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 
     /**
      * Create the panel.
-     * @throws com.googlecode.javacv.FrameGrabber.Exception
      */
     public FileLipReaderPanel() {
         super();

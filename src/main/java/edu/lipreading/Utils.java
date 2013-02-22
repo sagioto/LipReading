@@ -32,7 +32,7 @@ public class Utils {
 	 * in the current directory
 	 * 
 	 * @param urlToDownload
-	 * @throws MalformedURLException
+     * @param progressBar
 	 * @throws IOException
 	 */
 	public static void get(String urlToDownload, JProgressBar progressBar) throws IOException{

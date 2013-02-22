@@ -2,7 +2,6 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.cpp.avutil;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
@@ -23,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
-import static com.googlecode.javacv.cpp.opencv_core.cvSize;
 
 public class LipReaderPanel extends VideoCapturePanel {
 
@@ -45,7 +42,6 @@ public class LipReaderPanel extends VideoCapturePanel {
 
     /**
      * Create the panel.
-     * @throws com.googlecode.javacv.FrameGrabber.Exception
      */
     public LipReaderPanel() {
         super();

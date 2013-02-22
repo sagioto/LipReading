@@ -1,7 +1,5 @@
 package edu.lipreading.vision;
 
-import com.googlecode.javacv.cpp.opencv_core.*;
-import com.googlecode.javacv.cpp.opencv_imgproc.*;
 import edu.lipreading.Constants;
 
 import java.util.List;

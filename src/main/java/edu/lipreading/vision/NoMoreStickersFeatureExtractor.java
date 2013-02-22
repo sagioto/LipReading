@@ -1,7 +1,6 @@
 package edu.lipreading.vision;
 
 import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core.*;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 import edu.lipreading.Constants;
