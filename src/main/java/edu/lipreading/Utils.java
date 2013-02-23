@@ -1,28 +1,43 @@
 package edu.lipreading;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import javax.swing.JProgressBar;
+
 import javazoom.jl.player.Player;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.xml.XStream;
+import au.com.bytecode.opencsv.CSVWriter;
 
-import javax.swing.*;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 
 public class Utils {
 
@@ -182,7 +197,7 @@ public class Utils {
 
 	public static List<String> readFile(String resource){
 		String string = convertStreamToString(ClassLoader.getSystemResourceAsStream(resource));
-		return Arrays.asList(string.toLowerCase().split("\r\n"));
+		return Arrays.asList(string.toLowerCase().split("\n"));
 	}
 
 	public static String convertStreamToString(InputStream is) {
