@@ -163,6 +163,8 @@ public class LipReaderPanel extends VideoCapturePanel {
                 stickersExtractor.paintCoordinates(grabbed, points);
             }
             cvFlip(grabbed, grabbed, 1);
+            if(recording)
+                cvCircle(grabbed, new CvPoint(20, 20), 8, CvScalar.RED, -1, 1, 0);
             image = grabbed.getBufferedImage();
             canvas.setImage(image);
             canvas.paint(null);
