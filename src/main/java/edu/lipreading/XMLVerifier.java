@@ -1,6 +1,7 @@
 package edu.lipreading;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import weka.core.xml.XStream;
@@ -22,11 +23,13 @@ public class XMLVerifier {
 			return;
 		}
 
+
+		List<String> invalidXMLs = new ArrayList<String>();
 		String xmlsLocation = args[0];
 		int numOfInconsistencies = 0;
 		int biggestInconsistency = 0;
 		int numOfFiles = 0;
-		int invalidXMLs = 0;
+		int numOfInvalidXMLs = 0;
 		String biggestInconsistentSample = "";
 
 		File xmlPath = new File(xmlsLocation);
@@ -51,9 +54,8 @@ public class XMLVerifier {
 						biggestInconsistentSample = xml.getName();
 					}
 				} catch (Exception e) {
-					System.out.println("Error parsing XML file: "
-							+ xml.getName());
-					invalidXMLs++;
+					invalidXMLs.add(xml.getName());
+					numOfInvalidXMLs++;
 				}
 			}
 		}
@@ -61,8 +63,12 @@ public class XMLVerifier {
 		numOfInconsistencies = numOfInconsistencies / 2;
 		biggestInconsistency = biggestInconsistency / 2;
 
+		for(String badXML : invalidXMLs) {
+			System.out.println("Error parsing XML file: "
+					+ badXML);
+		}
 		System.out.println("Number of XMLs scanned: " + numOfFiles);
-		System.out.println("Number of Invalid XML Files: " + invalidXMLs);
+		System.out.println("Number of Invalid XML Files: " + numOfInvalidXMLs);
 		System.out.println("Number of Inconsistencies found: "
 				+ numOfInconsistencies);
 		System.out.println("Sample '" + biggestInconsistentSample
