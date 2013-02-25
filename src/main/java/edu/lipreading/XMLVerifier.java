@@ -24,16 +24,22 @@ public class XMLVerifier {
 		}
 
 
-		List<String> invalidXMLs = new ArrayList<String>();
+		boolean convert = false;
+		int converted = 0;
 		String xmlsLocation = args[0];
+		
+		List<String> invalidXMLs = new ArrayList<String>();
 		int numOfInconsistencies = 0;
 		int biggestInconsistency = 0;
 		int numOfFiles = 0;
 		int numOfInvalidXMLs = 0;
+		int consistentSamples = 0;
 		String biggestInconsistentSample = "";
 
 		File xmlPath = new File(xmlsLocation);
-
+		File convertDir = new File(xmlsLocation + "\\convert");
+		convertDir.mkdirs();
+		
 		for (File xml : xmlPath.listFiles()) {
 			if (xml.getName().endsWith(".xml")) {
 				try {
@@ -48,10 +54,22 @@ public class XMLVerifier {
 							}
 						}
 					}
+					if(convert) {
+						samp.setOriginalMatrixSize(samp.getMatrix().size());
+						try {
+						XStream.write(convertDir.getAbsolutePath() + "\\" + xml.getName(), samp);
+						converted++;
+						} catch(Exception e) {
+							System.out.println("Could not convert file " + xml.getName());
+						}
+					}
 					if (biggestInconsistency == 0
 							|| sampInconsistency > biggestInconsistency) {
 						biggestInconsistency = sampInconsistency;
 						biggestInconsistentSample = xml.getName();
+					}
+					if(sampInconsistency == 0) {
+						consistentSamples++;
 					}
 				} catch (Exception e) {
 					invalidXMLs.add(xml.getName());
@@ -71,9 +89,13 @@ public class XMLVerifier {
 		System.out.println("Number of Invalid XML Files: " + numOfInvalidXMLs);
 		System.out.println("Number of Inconsistencies found: "
 				+ numOfInconsistencies);
+		System.out.println("Number of samples without inconsistencies: " + consistentSamples);
 		System.out.println("Sample '" + biggestInconsistentSample
 				+ "' with most inconsistencies contained: "
 				+ biggestInconsistency);
+		if(convert) {
+			System.out.println("Successfully converted " + converted + " files");
+		}
 	}
 
 }

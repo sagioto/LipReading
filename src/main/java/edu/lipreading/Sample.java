@@ -10,7 +10,8 @@ public class Sample {
     private int width;
     private int height;
     private String label;
-
+    private int originalMatrixSize;
+    
 	public Sample(String id, List<List<Integer>> matrix) {
 		super();
 		this.id = id;
@@ -67,6 +68,14 @@ public class Sample {
         this.label = label;
         return this;
     }
+
+	public int getOriginalMatrixSize() {
+		return originalMatrixSize;
+	}
+
+	public void setOriginalMatrixSize(int originalMatrixSize) {
+		this.originalMatrixSize = originalMatrixSize;
+	}
 
 	@Override
 	public int hashCode() {
