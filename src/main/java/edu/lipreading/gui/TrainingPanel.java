@@ -11,6 +11,8 @@ import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class TrainingPanel extends LipReaderPanel {
 
@@ -30,6 +32,7 @@ public class TrainingPanel extends LipReaderPanel {
 	private JLabel lblRecordedSample;
 	private JLabel lblRecordsLeft;
 	private JCheckBox chckbxSaveVideo;
+	private JCheckBox chckbxShowLips;
 
 	public TrainingPanel() {
 		super();
@@ -176,6 +179,17 @@ public class TrainingPanel extends LipReaderPanel {
 		chckbxSaveVideo.setSelected(true);
 		chckbxSaveVideo.setBounds(136, 98, 123, 23);
 		add(chckbxSaveVideo);
+		
+		chckbxShowLips = new JCheckBox("Show Lips Identification");
+		chckbxShowLips.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				showLipsIdentification = chckbxShowLips.isSelected();
+			}
+		});
+		chckbxShowLips.setSelected(true);
+		chckbxShowLips.setBackground(Color.WHITE);
+		chckbxShowLips.setBounds(262, 98, 143, 23);
+		add(chckbxShowLips);
 
 		lblSampleCurrentNum.setVisible(false);
 		lblSampleName.setVisible(false);

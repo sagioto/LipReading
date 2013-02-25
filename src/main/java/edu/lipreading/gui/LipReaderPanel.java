@@ -39,6 +39,7 @@ public class LipReaderPanel extends VideoCapturePanel {
     protected FFmpegFrameRecorder recorder = null;
     private boolean recordToFile = false;
     protected String videoFilePath;
+    protected boolean showLipsIdentification = true;
 
     /**
      * Create the panel.
@@ -159,7 +160,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                     recorder = null;
                 }
             }
-            if(points != null){
+            if((points != null) && showLipsIdentification){
                 stickersExtractor.paintCoordinates(grabbed, points);
             }
             cvFlip(grabbed, grabbed, 1);
