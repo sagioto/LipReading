@@ -5,7 +5,6 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
 import javazoom.jl.player.Player;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -148,9 +147,9 @@ public class Utils {
         }
         List<String[]> samplesStrings = new ArrayList<String[]>();
         samplesStrings.add(title);
-        Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
+        Normalizer cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
         for (Sample sample : trainingSet) {
-            sample = LipReading.normelize(sample, sfn, cn, tn);
+            sample = LipReading.normelize(sample, cn, tn);
             samplesStrings.add(sample.toCSV());
         }
         writer.writeAll(samplesStrings);
