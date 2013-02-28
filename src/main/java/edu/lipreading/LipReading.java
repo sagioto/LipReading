@@ -55,10 +55,12 @@ public class LipReading {
             test(fe, args[argsAsList.lastIndexOf("-test") + 1], Constants.DEFAULT_TRAINING_SET_ZIP, cn, tn);
         }
         else if(argsAsList.contains("-csv")){
-            Utils.dataSetToCSV(args[argsAsList.lastIndexOf("-csv") + 1], args[argsAsList.lastIndexOf("-csv") + 2]);
+            List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-csv") + 1]);
+            Utils.dataSetToCSV(trainingSet, args[argsAsList.lastIndexOf("-csv") + 2]);
         }
         else if(argsAsList.contains("-arff")){
-            Utils.dataSetToARFF(args[argsAsList.lastIndexOf("-arff") + 1], args[argsAsList.lastIndexOf("-arff") + 2]);
+            List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
+            Utils.dataSetToARFF(trainingSet, args[argsAsList.lastIndexOf("-arff") + 2]);
         }
         else if(argsAsList.contains("-gui")){
             MainFrame.main(args);

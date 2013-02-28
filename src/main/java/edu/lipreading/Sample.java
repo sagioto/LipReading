@@ -110,19 +110,25 @@ public class Sample {
 	public String[] toCSV() {
 		if(this.getMatrix() != null && !this.getMatrix().isEmpty()
 				&& this.getMatrix().get(0) != null){
-			int size = this.getMatrix().size() * this.getMatrix().get(0).size() + 1;
+            int size = this.getMatrix().size() * this.getMatrix().get(0).size() + Constants.SAMPLE_ROW_SHIFT;
 			String[] ans = new String[size];
 			ans[0] = this.getLabel();
+			ans[1] = String.valueOf(this.getOriginalMatrixSize());
+			ans[2] = String.valueOf(this.getWidth());
+			ans[3] = String.valueOf(this.getHeight());
 			for (int i = 0; i < this.getMatrix().size(); i++) {
 				for (int j = 0; j < this.getMatrix().get(0).size(); j++) {
-					ans[1 + (i * this.getMatrix().get(0).size()) + j] = String.valueOf(this.getMatrix().get(i).get(j));
+                    try{
+					ans[Constants.SAMPLE_ROW_SHIFT + (i * this.getMatrix().get(0).size()) + j] =
+                            String.valueOf(this.getMatrix().get(i).get(j));
+                    }catch(RuntimeException e){
+                        System.out.print(this.getId());
+                    }
 				}				
 			}
 			return ans;
 		}
 		return null;
 	}
-
-
 
 }
