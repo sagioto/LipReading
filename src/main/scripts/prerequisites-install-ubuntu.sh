@@ -18,7 +18,7 @@ echo "installing x264"
 wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/last_stable_x264.tar.bz2
 tar xvf last_stable_x264.tar.bz2
 cd x264*
-./configure --enable-shared
+./configure --enable-shared --disable-asm
 make
 sudo make install
 
