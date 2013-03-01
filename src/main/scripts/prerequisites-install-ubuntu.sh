@@ -15,10 +15,10 @@ echo "installing x264 ffmpeg gstreamr gtk v4l and libjpeg go for coffee..."
 
 # 1.1) Download and install x264
 echo "installing x264"
-wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/last_stable_x264.tar.bz2
+wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-20121231-2245-stable.tar.bz2
 tar xvf last_stable_x264.tar.bz2
 cd x264*
-./configure --enable-shared --disable-asm
+./configure --enable-shared
 make
 sudo make install
 
