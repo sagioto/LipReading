@@ -5,6 +5,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 import javazoom.jl.player.Player;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -117,12 +118,15 @@ public class Utils {
     }
 
     public static List<Sample> getTrainingSetFromZip(String zipUrl) throws Exception {
-        ZipFile samplesZip = new ZipFile(zipUrl);
-        if(Utils.isSourceUrl(zipUrl)){
-            if(!new File(getFileNameFromUrl(zipUrl)).exists())
-                Utils.get(zipUrl);
-            samplesZip = new ZipFile(getFileNameFromUrl(zipUrl));
+        String name = zipUrl;
+        if(!Utils.isSourceUrl(zipUrl)){
+            name = zipUrl;
         }
+        else if(!new File(Utils.getFileNameFromUrl(name)).exists()){
+            Utils.get(zipUrl);
+            name = Utils.getFileNameFromUrl(name);
+        }
+        ZipFile samplesZip= new ZipFile(name);
         List<Sample> trainingSet = new Vector<Sample>();
         Enumeration<? extends ZipEntry> entries = samplesZip.entries();
         while (entries.hasMoreElements()) {
@@ -147,9 +151,9 @@ public class Utils {
         }
         List<String[]> samplesStrings = new ArrayList<String[]>();
         samplesStrings.add(title);
-        Normalizer cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
+        Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
         for (Sample sample : trainingSet) {
-            sample = LipReading.normelize(sample, cn, tn);
+            sample = LipReading.normelize(sample, sfn, cn, tn);
             samplesStrings.add(sample.toCSV());
         }
         writer.writeAll(samplesStrings);
