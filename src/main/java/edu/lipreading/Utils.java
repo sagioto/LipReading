@@ -122,8 +122,10 @@ public class Utils {
         if(!Utils.isSourceUrl(zipUrl)){
             name = zipUrl;
         }
-        else if(!new File(Utils.getFileNameFromUrl(name)).exists()){
-            Utils.get(zipUrl);
+        else{
+            if(!new File(Utils.getFileNameFromUrl(name)).exists()){
+                Utils.get(zipUrl);
+            }
             name = Utils.getFileNameFromUrl(name);
         }
         ZipFile samplesZip= new ZipFile(name);
