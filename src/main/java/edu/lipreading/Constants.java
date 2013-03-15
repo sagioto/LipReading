@@ -31,9 +31,12 @@ public class Constants {
     public static final List<String> VOCABULARY = Utils.readFile(LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
     
     public static final int FRAMES_COUNT = Integer.valueOf(LIP_READING_PROPS.getProperty("FRAMES_COUNT"));
-    
+
+    public static final int SAMPLE_ROW_SHIFT = Integer.valueOf(LIP_READING_PROPS.getProperty("SAMPLE_ROW_SHIFT"));
+
     public static final int POINT_COUNT = Integer.valueOf(LIP_READING_PROPS.getProperty("POINT_COUNT"));
-    
+
+
     public static final CvScalar UPPER_STICKER_MIN = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MIN"));
     public static final CvScalar UPPER_STICKER_MAX = Utils.getCvScalar(LIP_READING_PROPS.getProperty("UPPER_STICKER_MAX"));
     
@@ -51,7 +54,6 @@ public class Constants {
 	public static final short LEFT_VECTOR_INDEX = 2;
 	public static final short RIGHT_VECTOR_INDEX = 3;
 	
-    public static final int SAMPLE_ROW_SHIFT = 4;
 
 
 	public static final String LIP_IMAGE_FILE_PATH = LIP_READING_PROPS.getProperty("LIP_IMAGE_FILE_PATH");
