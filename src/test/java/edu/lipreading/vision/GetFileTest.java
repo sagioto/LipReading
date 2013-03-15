@@ -13,7 +13,7 @@ import edu.lipreading.Utils;
 
 public class GetFileTest {
 
-	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/no-%286%29.MOV";
+	protected static final String FILE_URL = "https://dl.dropbox.com/u/8720454/set2/yes/yes-5.MOV";
 
 	@Before
 	public void setUp() throws Exception {

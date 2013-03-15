@@ -1,20 +1,16 @@
 package edu.lipreading.classification;
 
+import edu.lipreading.Sample;
+import edu.lipreading.Utils;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Test;
+import weka.core.xml.XStream;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.Assert;
-
-import org.junit.AfterClass;
-import org.junit.Test;
-
-import weka.core.xml.XStream;
-import edu.lipreading.Sample;
-import edu.lipreading.Utils;
-import edu.lipreading.classification.TimeWarper;
-import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 
 public class TimeWarperTest {
 
@@ -28,15 +24,6 @@ public class TimeWarperTest {
 	protected static final int YES_INDEX = 0;
 	protected static final int NO_INDEX = 1;
 
-	@Test
-	public void DTWTest() throws Exception{
-		ColoredStickersFeatureExtractor extractor = new ColoredStickersFeatureExtractor();
-		TimeWarper tw = new TimeWarper();
-		Sample testSample = extractor.extract(FILE_URL);
-		Sample trainingSample = extractor.extract(FILE_URL2);
-		double ans = tw.dtw(trainingSample, testSample);
-		System.out.println("DTW:" + ans);
-	}
 
 	@Test
 	public void DTWIdentityTest() throws Exception{
