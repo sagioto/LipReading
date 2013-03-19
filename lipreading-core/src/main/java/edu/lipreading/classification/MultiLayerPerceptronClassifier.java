@@ -19,9 +19,12 @@ public class MultiLayerPerceptronClassifier implements Classifier{
 	private List<Sample> samples;
 	
 	public MultiLayerPerceptronClassifier(String modelFilePath) throws Exception {
-		File modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
+        File modelFile  = new File(modelFilePath);
+        if(Utils.isSourceUrl(modelFilePath)){
+		modelFile = new File(Utils.getFileNameFromUrl(modelFilePath));
 		if(!modelFile.exists())
 			Utils.get(modelFilePath);
+        }
         Object read = SerializationHelper.read(new FileInputStream(modelFile));
         this.classifier  = (MultilayerPerceptron) read;
 	}

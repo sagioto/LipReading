@@ -52,7 +52,7 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
-	    mpClassifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
+	    mpClassifier = new MultiLayerPerceptronClassifier(System.getProperty("user.dir") + "/lipreading-android/assets/yesnohello.model");
         mpClassifier.setVocabulary(Utils.readFile("vocabularies/primitive.txt"));
 	}
 	
