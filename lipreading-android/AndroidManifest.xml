@@ -13,8 +13,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".LipReadingActivity">
+    <application android:icon="@drawable/icon" android:label="@string/app_name"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+        <activity android:name=".LipReadingActivity"
+            android:configChanges="orientation" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

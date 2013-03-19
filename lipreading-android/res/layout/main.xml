@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
-    <SurfaceView
-            android:layout_width="wrap_content"
-            android:layout_height="400dp"
-            android:id="@+id/surfaceView" android:layout_centerHorizontal="true" android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true" android:layout_alignParentRight="true"/>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/output"
-            android:id="@+id/output" android:layout_centerHorizontal="true" android:layout_alignParentTop="true"
-            android:layout_marginTop="621dp"/>
+        android:id="@+id/output"
+        android:editable="false"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/output"
+        android:layout_centerHorizontal="true"
+        android:textColor="#33B5E5" />
     <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/recordButton" android:layout_alignParentTop="true"
-            android:layout_marginTop="650dp" android:layout_alignTop="@+id/output"
-            android:contentDescription=""/>
+        android:id="@+id/recordButton"
+        android:src="@drawable/record"
+        android:contentDescription="@string/recordButtonDescription"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+    <FrameLayout
+        android:id="@+id/previewLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/output"
+        android:layout_alignRight="@+id/output"
+        android:layout_above="@+id/recordButton"
+        android:layout_alignLeft="@+id/output" />
 </RelativeLayout>
