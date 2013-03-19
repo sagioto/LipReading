@@ -2,7 +2,6 @@ package edu.lipreading;
 
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
-import edu.lipreading.gui.MainFrame;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
@@ -32,7 +31,6 @@ public class LipReading {
             System.out.println("-test <video file url, name, 0 for webcam or xml>  <zip file url> : uses the input file as test against " +
                     "\n the data set in the given zip file url");
             System.out.println("-csv <input zip file, output file> : converts zip data set into csv one");
-            System.out.println("-gui : start the GUI");
             System.exit(0);
         }
 
@@ -61,10 +59,6 @@ public class LipReading {
         else if(argsAsList.contains("-arff")){
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
             Utils.dataSetToARFF(trainingSet, args[argsAsList.lastIndexOf("-arff") + 2]);
-        }
-        else if(argsAsList.contains("-gui")){
-            MainFrame.main(args);
-            return;
         }
         System.exit(0);
     }

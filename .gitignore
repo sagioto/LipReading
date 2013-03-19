@@ -22,8 +22,8 @@
 *yes*.xml
 *no*.xml
 *hello*.xml
-**/*.csv
-**/*.log
+*.csv
+*.log
 
 # Maven #
 target/

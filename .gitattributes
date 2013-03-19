@@ -1,5 +1,6 @@
 # Expilicitly specify text file to be stored and normalized using lf line ending
 * text eol=lf
+*.bat eol=crlf
 
 # Leave binary files untouched
 *.jar binary

@@ -1,6 +1,7 @@
 package edu.lipreading.vision;
 
 import com.googlecode.javacpp.Loader;
+import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 import edu.lipreading.Constants;
@@ -28,7 +29,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final ExecutorService executor = Executors.newCachedThreadPool();
 	private IplImage manipulated;
 	private CvRect prev = new CvRect();
-	private CvHaarClassifierCascade classifier;
+    private CvHaarClassifierCascade classifier;
 	private CvMemStorage storage;
     private int sideConfidence;
 	private int lowerConfidence;
@@ -282,6 +283,14 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		 }
 		 return ans;
 	 }
+
+    public void setClassifier(CvHaarClassifierCascade classifier) {
+        this.classifier = classifier;
+    }
+
+    public void setStorage(CvMemStorage storage) {
+        this.storage = storage;
+    }
 
 
 	 public void shutdown(){
