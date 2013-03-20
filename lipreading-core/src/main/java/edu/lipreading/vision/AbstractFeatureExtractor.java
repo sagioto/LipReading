@@ -53,6 +53,7 @@ public abstract class AbstractFeatureExtractor {
 		CanvasFrame frame = null;
 		FrameRecorder recorder = null;
 
+
 		if(isGui()){
 			frame = new CanvasFrame(getSample().getId(), CanvasFrame.getDefaultGamma()/grabber.getGamma());
 			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -82,6 +83,9 @@ public abstract class AbstractFeatureExtractor {
 				recorder.stop();
 			}
 		}
+        getSample().setWidth(grabber.getImageWidth());
+        getSample().setHeight(grabber.getImageHeight());
+        getSample().setOriginalMatrixSize(getSample().getMatrix().size());
 		return getSample();
 	}
 

@@ -2,7 +2,6 @@ package edu.lipreading;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -10,9 +9,22 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import com.googlecode.javacpp.Loader;
+import com.googlecode.javacv.cpp.opencv_core;
+import com.googlecode.javacv.cpp.opencv_objdetect;
+import edu.lipreading.classification.Classifier;
+import edu.lipreading.classification.MultiLayerPerceptronClassifier;
+import edu.lipreading.normalization.*;
+import edu.lipreading.vision.AbstractFeatureExtractor;
+import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.zip.ZipInputStream;
+
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 
 public class LipReadingActivity extends Activity implements TextToSpeech.OnInitListener {
     private TextToSpeech tts;
@@ -20,13 +32,15 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private TextView output;
     private CameraPreview cm;
     private boolean isRecording = false;
-/*    private AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
+    private MouthView mouthView;
+    private Classifier classifier;
+    private Sample sample;
+    private AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
     private Normalizer cn = new CenterNormalizer();
     private Normalizer tn = new LinearStretchTimeNormalizer();
     private Normalizer rn = new RotationNormalizer();
-    private Normalizer rsn = new ResolutionNormalizer();*/
-
-
+    private Normalizer sfn = new SkippedFramesNormalizer();
+    private Normalizer rsn = new ResolutionNormalizer();
 
     /**
      * Called when the activity is first created.
@@ -40,17 +54,18 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         Log.i("started", "onCreate");
         setContentView(R.layout.main);
         tts = new TextToSpeech(this, this);
-        Camera camera = Camera.open(getFrontFacingCamera());
 
         // Create our Preview view and set it as the content of our activity.
-        cm = new CameraPreview(this, camera);
-        FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
-        previewLayout.addView(cm);
-        recordButton = (ImageButton) findViewById(R.id.recordButton);
-        output = (TextView) findViewById(R.id.output);
         try{
+            mouthView = new MouthView(this);
+            cm = new CameraPreview(this, mouthView);
+            FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
+            previewLayout.addView(cm);
+            recordButton = (ImageButton) findViewById(R.id.recordButton);
+            output = (TextView) findViewById(R.id.output);
+            classifier = new MultiLayerPerceptronClassifier(new ZipInputStream(getAssets().open("yesnohello2.model")));
             initFeatureExtractor();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             new AlertDialog.Builder(this).setMessage(e.getMessage()).create().show();
         }
@@ -61,10 +76,14 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                         isRecording = !isRecording;
                         if(isRecording){
                             recordButton.setImageResource(R.drawable.stop);
-
+                            sample = new Sample("live");
                         } else {
                             recordButton.setImageResource(R.drawable.record);
-          //                  output.setText(classifier.test(sample));
+                            String ans = classifier.test(LipReading.normelize(sample, sfn, cn, tn));
+                            ans = ans.replaceAll(" i ", " I ");
+                            ans = ans.replaceAll(" i'", " I'");
+                            ans = ans.substring(0,1).toUpperCase() + ans.substring(1, ans.length());
+                            output.setText(ans);
                             speakOut();
                         }
                     }
@@ -75,13 +94,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private void initFeatureExtractor() throws IOException {
         // Load the classifier file from Java resources.
         // cvLoad must get file path so I copy it from assets to external storage and delete it later
-        /*String s = Utils.convertStreamToString(this.getAssets().open("haarcascade_mcs_mouth.xml"));
-        File dir = this.getExternalFilesDir("xml");
-        dir.mkdirs();
-        File externalClassifier = new File(dir, "haarcascade_mcs_mouth.xml");
-        FileWriter fw = new FileWriter(externalClassifier);
-        fw.write(s);
-        fw.close();
+        File externalClassifier = getFile("haarcascade_mcs_mouth.xml");
 
         // Preload the opencv_objdetect module to work around a known bug.
         Loader.load(opencv_objdetect.class);
@@ -92,7 +105,18 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             throw new IOException("Could not load the classifier file.");
         }
         ((NoMoreStickersFeatureExtractor)fe).setClassifier(classifier);
-        ((NoMoreStickersFeatureExtractor)fe).setStorage(opencv_core.CvMemStorage.create());*/
+        ((NoMoreStickersFeatureExtractor)fe).setStorage(opencv_core.CvMemStorage.create());
+    }
+
+    private File getFile(String fileName) throws IOException {
+        String s = Utils.convertStreamToString(this.getAssets().open(fileName));
+        File dir = this.getExternalFilesDir(fileName.split("\\.")[1]);
+        dir.mkdirs();
+        File externalClassifier = new File(dir, fileName);
+        FileWriter fw = new FileWriter(externalClassifier);
+        fw.write(s);
+        fw.close();
+        return externalClassifier;
     }
 
     @Override
@@ -113,17 +137,6 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private void speakOut() {
         String text = output.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-    }
-
-    public int getFrontFacingCamera() {
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
-            Camera.getCameraInfo(i, info);
-            if(info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT){
-                return i;
-            }
-        }
-        throw new IllegalStateException("No front facing camera");
     }
 }
 

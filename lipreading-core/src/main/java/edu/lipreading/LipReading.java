@@ -10,6 +10,8 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import weka.core.xml.XStream;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,7 +68,14 @@ public class LipReading {
 
 
     private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile, Normalizer... normalizers) throws Exception {
-        Classifier classifier = new MultiLayerPerceptronClassifier(Constants.MPC_MODEL_URL);
+        File modelFile  = new File(Constants.MPC_MODEL_URL);
+        if(Utils.isSourceUrl(Constants.MPC_MODEL_URL)){
+            modelFile = new File(Utils.getFileNameFromUrl(Constants.MPC_MODEL_URL));
+            if(!modelFile.exists()) {
+                Utils.get(Constants.MPC_MODEL_URL);
+            }
+        }
+        Classifier classifier = new MultiLayerPerceptronClassifier(new FileInputStream(modelFile));
         Sample sample = fe.extract(testFile);
         sample = normelize(sample, normalizers);
         System.out.println("got the word: " +

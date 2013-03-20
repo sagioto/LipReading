@@ -16,9 +16,12 @@
         android:id="@+id/recordButton"
         android:src="@drawable/record"
         android:contentDescription="@string/recordButtonDescription"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_alignParentBottom="true"/>
+    <!--android:layout_width="wrap_content"
+        android:background="@null"
+        android:layout_centerHorizontal="true"-->
     <FrameLayout
         android:id="@+id/previewLayout"
         android:layout_width="wrap_content"

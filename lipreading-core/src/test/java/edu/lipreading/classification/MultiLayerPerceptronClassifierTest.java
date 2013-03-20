@@ -1,8 +1,11 @@
 package edu.lipreading.classification;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 
+import edu.lipreading.normalization.SkippedFramesNormalizer;
+import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -24,17 +27,17 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@Test
 	public void testHello() throws Exception{
-		testClassifier("https://dl.dropbox.com/u/8720454/set2/hello/hello-18.MOV", "hello");
+		testClassifier("https://dl.dropbox.com/u/8720454/test3/Hello37-14.24.32-23.02.2013.MOV", "hello");
 	}
 
 	@Test
 	public void testYes() throws Exception{
-		testClassifier("https://dl.dropbox.com/u/8720454/set2/yes/yes-23.MOV", "yes");
+		testClassifier("https://dl.dropbox.com/u/8720454/test3/Yes57-17.46.01-23.02.2013.MOV", "yes");
 	}
 
 	@Test
 	public void testNo() throws Exception{
-		testClassifier("https://dl.dropbox.com/u/8720454/set2/no/no-9.MOV", "no");
+		testClassifier("https://dl.dropbox.com/u/8720454/test3/No43-17.46.30-23.02.2013.MOV", "no");
 	}
 	
 	
@@ -43,8 +46,9 @@ public class MultiLayerPerceptronClassifierTest {
 		Utils.get(url);
 		Normalizer cn = new CenterNormalizer();
 		Normalizer tn = new LinearStretchTimeNormalizer();
-		AbstractFeatureExtractor fe = new ColoredStickersFeatureExtractor();
-		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), cn, tn);
+        Normalizer sfn = new SkippedFramesNormalizer();
+		AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
+		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), sfn, cn, tn);
 		String ans = mpClassifier.test(sample);
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();
@@ -52,7 +56,12 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
-	    mpClassifier = new MultiLayerPerceptronClassifier(System.getProperty("user.dir") + "/lipreading-android/assets/yesnohello.model");
+        String userDir = System.getProperty("user.dir");
+        if(userDir.contains("-core"))
+            userDir = userDir.substring(0, userDir.lastIndexOf(System.getProperty("file.separator")));
+        String modelFilePath = userDir + "/lipreading-android/assets/yesnohello2.model";
+        FileInputStream modelInputStream = new FileInputStream(new File(modelFilePath));
+        mpClassifier = new MultiLayerPerceptronClassifier(modelInputStream);
         mpClassifier.setVocabulary(Utils.readFile("vocabularies/primitive.txt"));
 	}
 	
