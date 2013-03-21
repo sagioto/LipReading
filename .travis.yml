@@ -10,5 +10,3 @@ before_install:
   - export ANDROID_HOME=${PWD}/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   - android update sdk --filter 1,2,4,5 --no-ui --force
-  - ls ${ANDROID_HOME}/tools
-  - ls ${ANDROID_HOME}/platform-tools
