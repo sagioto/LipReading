@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
      */
     public MainFrame() {
         setTitle("Lip Reading");
-        setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(Constants.LR_ICON)));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(edu.lipreading.gui.Constants.LR_ICON)));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 720, 651);
         setResizable(false);
@@ -71,7 +71,7 @@ public class MainFrame extends JFrame {
         List<String> fonts = Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
         String fontName = "Origin";
         if(!fonts.contains(fontName))
-            lblTitle = new JLabel(new ImageIcon(MainFrame.class.getResource(Constants.LIP_READING_TITLE)));
+            lblTitle = new JLabel(new ImageIcon(MainFrame.class.getResource(edu.lipreading.gui.Constants.LIP_READING_TITLE)));
         else{
             lblTitle = new JLabel("Lip Reading");
             lblTitle.setForeground(Color.WHITE);

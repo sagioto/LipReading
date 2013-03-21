@@ -114,7 +114,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         lblNewLabel.setBounds(142, 339, 53, 14);
         add(lblNewLabel);
 
-        JButton btnChooseFile = new JButton(new ImageIcon(getClass().getResource(Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
+        JButton btnChooseFile = new JButton(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
         btnChooseFile.setBorderPainted(false);
         btnChooseFile.setBackground(Color.WHITE);
         btnChooseFile.addMouseListener(new MouseAdapter() {

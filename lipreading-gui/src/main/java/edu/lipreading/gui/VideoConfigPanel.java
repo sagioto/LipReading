@@ -76,7 +76,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		add(lblNewLabel);
 
 		JLabel lipsPic = new JLabel("");
-		lipsPic.setIcon(new ImageIcon(getClass().getResource(Constants.LIP_IMAGE_FILE_PATH)));
+		lipsPic.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.LIP_IMAGE_FILE_PATH)));
 		lipsPic.setBounds(64, 107, 168, 104);
 		add(lipsPic);
 

@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.zip.ZipInputStream;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 
@@ -35,7 +34,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private MouthView mouthView;
     private Classifier classifier;
     private Sample sample;
-    private AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
+    private AbstractFeatureExtractor featureExtractor = new NoMoreStickersFeatureExtractor();
     private Normalizer cn = new CenterNormalizer();
     private Normalizer tn = new LinearStretchTimeNormalizer();
     private Normalizer rn = new RotationNormalizer();
@@ -63,7 +62,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             previewLayout.addView(cm);
             recordButton = (ImageButton) findViewById(R.id.recordButton);
             output = (TextView) findViewById(R.id.output);
-            classifier = new MultiLayerPerceptronClassifier(new ZipInputStream(getAssets().open("yesnohello2.model")));
+            classifier = new MultiLayerPerceptronClassifier(getAssets().open("yesnohello2.model"));
             initFeatureExtractor();
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,8 +103,8 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         if (classifier.isNull()) {
             throw new IOException("Could not load the classifier file.");
         }
-        ((NoMoreStickersFeatureExtractor)fe).setClassifier(classifier);
-        ((NoMoreStickersFeatureExtractor)fe).setStorage(opencv_core.CvMemStorage.create());
+        ((NoMoreStickersFeatureExtractor) featureExtractor).setClassifier(classifier);
+        ((NoMoreStickersFeatureExtractor) featureExtractor).setStorage(opencv_core.CvMemStorage.create());
     }
 
     private File getFile(String fileName) throws IOException {
@@ -137,6 +136,14 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private void speakOut() {
         String text = output.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    private Sample getSample(){
+        return this.sample;
+    }
+
+    private AbstractFeatureExtractor getFeatureExtractor(){
+        return this.featureExtractor;
     }
 }
 
