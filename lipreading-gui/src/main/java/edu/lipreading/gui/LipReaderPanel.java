@@ -2,7 +2,6 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.cpp.avutil;
-import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
 import edu.lipreading.Utils;
@@ -58,13 +57,13 @@ public class LipReaderPanel extends VideoCapturePanel {
         btnRecord = new JButton("");
 
         if (!Beans.isDesignTime())
-            btnRecord.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.RECORD_IMAGE_FILE_PATH)));
+            btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
 
         btnRecord.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 if (!recording) // Button should start recording
                 {
-                    btnRecord.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.STOP_IMAGE_FILE_PATH)));
+                    btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.STOP_IMAGE_FILE_PATH)));
                     String sampleId = getSampleName() + " " + new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(new Date());
                     recordedSample = new Sample(sampleId);
                     recordedSample.setLabel(label);
@@ -83,7 +82,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                 {
                     recording = false;
 
-                    btnRecord.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.RECORD_IMAGE_FILE_PATH)));
+                    btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
 
                     // Stop saving video file
                     if (isRecordingToFile())

@@ -2,7 +2,6 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import edu.lipreading.Constants;
 import edu.lipreading.vision.StickerColorConfiguration;
 
 import javax.swing.*;
@@ -76,7 +75,7 @@ public class VideoConfigPanel extends VideoCapturePanel {
 		add(lblNewLabel);
 
 		JLabel lipsPic = new JLabel("");
-		lipsPic.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.LIP_IMAGE_FILE_PATH)));
+		lipsPic.setIcon(new ImageIcon(getClass().getResource(Constants.LIP_IMAGE_FILE_PATH)));
 		lipsPic.setBounds(64, 107, 168, 104);
 		add(lipsPic);
 

@@ -29,6 +29,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>lipreading-core</artifactId>
             <version>${project.version}</version>
+
             <!--xml pull already in the android dependencies-->
             <exclusions>
                 <exclusion>
@@ -36,6 +37,7 @@
                     <artifactId>xmlpull</artifactId>
                 </exclusion>
             </exclusions>
+
         </dependency>
         <dependency>
             <groupId>com.googlecode.javacv</groupId>
