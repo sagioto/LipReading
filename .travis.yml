@@ -11,4 +11,5 @@ before_install:
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   - android update sdk --filter 1,2,4,5 --no-ui --force
   - chmod +x ${ANDROID_HOME}/tools/* ${ANDROID_HOME}/platform-tools/*
-  - adb version
+  - ls -la ${ANDROID_HOME}/platform-tools/
+  - ${ANDROID_HOME}/platform-tools/adb version
