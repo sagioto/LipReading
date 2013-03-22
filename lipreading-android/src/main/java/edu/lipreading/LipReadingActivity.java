@@ -14,6 +14,7 @@ import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
+import edu.lipreading.classification.TimeWarperClassifier;
 import edu.lipreading.normalization.*;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
@@ -21,11 +22,13 @@ import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 
 public class LipReadingActivity extends Activity implements TextToSpeech.OnInitListener {
+    private final String TAG = LipReadingActivity.class.getSimpleName();
     private TextToSpeech tts;
     private ImageButton recordButton;
     private TextView output;
@@ -37,9 +40,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private AbstractFeatureExtractor featureExtractor = new NoMoreStickersFeatureExtractor();
     private Normalizer cn = new CenterNormalizer();
     private Normalizer tn = new LinearStretchTimeNormalizer();
-    private Normalizer rn = new RotationNormalizer();
     private Normalizer sfn = new SkippedFramesNormalizer();
-    private Normalizer rsn = new ResolutionNormalizer();
 
     /**
      * Called when the activity is first created.
@@ -50,44 +51,54 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        Log.i("started", "onCreate");
-        setContentView(R.layout.main);
-        tts = new TextToSpeech(this, this);
+
 
         // Create our Preview view and set it as the content of our activity.
         try{
+            getFile("lr.properties");
+            String[] vocabularies = getAssets().list("vocabularies");
+            for (String vocabulary : vocabularies) {
+                getFile("vocabularies/" + vocabulary);
+            }
+            setContentView(R.layout.main);
+            tts = new TextToSpeech(this, this);
             mouthView = new MouthView(this);
             cm = new CameraPreview(this, mouthView);
             FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
             previewLayout.addView(cm);
             recordButton = (ImageButton) findViewById(R.id.recordButton);
+            recordButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isRecording = !isRecording;
+                            if(isRecording){
+                                recordButton.setImageResource(R.drawable.stop);
+                                sample = new Sample("live");
+                            } else {
+                                recordButton.setImageResource(R.drawable.record);
+                                String ans = classifier.test(LipReading.normelize(sample, sfn, cn, tn));
+                                ans = makePretty(ans);
+                                output.setText(ans);
+                                speakOut();
+                            }
+                        }
+                    }
+            );
             output = (TextView) findViewById(R.id.output);
-            classifier = new MultiLayerPerceptronClassifier(getAssets().open("yesnohello2.model"));
+            classifier = new TimeWarperClassifier();//new MultiLayerPerceptronClassifier(getAssets().open("yesnohello2.model"));
             initFeatureExtractor();
         } catch (Exception e) {
             e.printStackTrace();
             new AlertDialog.Builder(this).setMessage(e.getMessage()).create().show();
         }
-        recordButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isRecording = !isRecording;
-                        if(isRecording){
-                            recordButton.setImageResource(R.drawable.stop);
-                            sample = new Sample("live");
-                        } else {
-                            recordButton.setImageResource(R.drawable.record);
-                            String ans = classifier.test(LipReading.normelize(sample, sfn, cn, tn));
-                            ans = ans.replaceAll(" i ", " I ");
-                            ans = ans.replaceAll(" i'", " I'");
-                            ans = ans.substring(0,1).toUpperCase() + ans.substring(1, ans.length());
-                            output.setText(ans);
-                            speakOut();
-                        }
-                    }
-                }
-        );
+    }
+
+    private String makePretty(String ans) {
+        ans = ans.replaceAll(" i ", " I ");
+        ans = ans.replaceAll(" i'", " I'");
+        ans = ans.substring(0,1).toUpperCase() + ans.substring(1, ans.length());
+        return ans;
     }
 
     private void initFeatureExtractor() throws IOException {
@@ -109,13 +120,28 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
 
     private File getFile(String fileName) throws IOException {
         String s = Utils.convertStreamToString(this.getAssets().open(fileName));
-        File dir = this.getExternalFilesDir(fileName.split("\\.")[1]);
+
+        String[] split = fileName.split("\\.");
+        File dir = this.getExternalFilesDir(split[1]);
+
         dir.mkdirs();
-        File externalClassifier = new File(dir, fileName);
-        FileWriter fw = new FileWriter(externalClassifier);
+        String[] split1 = fileName.split("/");
+        File externalFile = new File(dir, fileName);
+        if(split1.length > 1){
+            dir = new File(dir.getAbsolutePath() + "/" + fileName.substring(0, fileName.lastIndexOf("/")));
+            dir.mkdirs();
+            externalFile = new File(dir, split1[1]);
+        }
+        FileWriter fw = new FileWriter(externalFile);
         fw.write(s);
         fw.close();
-        return externalClassifier;
+        return externalFile;
+    }
+
+    private void printArray(String[] list) {
+        for (String s : list) {
+            Log.i("######", s);
+        }
     }
 
     @Override

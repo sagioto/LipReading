@@ -192,7 +192,17 @@ public class Utils {
     }
 
     public static List<String> readFile(String resource){
-        String string = convertStreamToString(ClassLoader.getSystemResourceAsStream(resource));
+        String string;
+        if(isAndroid()){
+            try {
+                string = convertStreamToString(new FileInputStream(resource));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else{
+            string = convertStreamToString(ClassLoader.getSystemResourceAsStream(resource));
+        }
         return Arrays.asList(string.toLowerCase().split("\n"));
     }
 
@@ -250,5 +260,9 @@ public class Utils {
         FileOutputStream fos = new FileOutputStream(sampleFile);
         XStream.write(sampleFile , sample);
         fos.close();
+    }
+
+    static boolean isAndroid() {
+        return System.getProperty("java.vm.vendor").toLowerCase().contains("android");
     }
 }

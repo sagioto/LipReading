@@ -26,23 +26,52 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.googlecode.javacv</groupId>
+            <artifactId>javacv</artifactId>
+            <version>${javacv.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>lipreading-core</artifactId>
             <version>${project.version}</version>
 
-            <!--xml pull already in the android dependencies-->
+
             <exclusions>
+
+                <!--xml pull already in the android dependencies-->
                 <exclusion>
                     <groupId>xmlpull</groupId>
                     <artifactId>xmlpull</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.javacv</groupId>
+                    <artifactId>javacv</artifactId>
+                </exclusion>
+
+                <!--for debugging-->
+               <!-- <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.imagej</groupId>
+                    <artifactId>ij</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.thoughtworks.xstream</groupId>
+                    <artifactId>xstream</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sf.opencsv</groupId>
+                    <artifactId>opencsv</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.soundlibs</groupId>
+                    <artifactId>jlayer</artifactId>
+                </exclusion> -->
+
             </exclusions>
 
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.javacv</groupId>
-            <artifactId>javacv</artifactId>
-            <version>${javacv.version}</version>
         </dependency>
     </dependencies>
 
@@ -58,7 +87,7 @@
                     <resourceDirectory>${project.basedir}/res</resourceDirectory>
                     <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                     <sdk>
-                        <platform>16</platform>
+                        <platform>17</platform>
                     </sdk>
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
                     <dex>
@@ -68,6 +97,44 @@
                     </dex>
                 </configuration>
                 <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>lipreading-core</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>assets</outputDirectory>
+                                    <includes>**/*.properties</includes>
+                                    <excludes>**/pom.properties</excludes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>lipreading-core</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>assets</outputDirectory>
+                                    <includes>vocabularies/*.txt</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

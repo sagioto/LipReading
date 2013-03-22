@@ -2,28 +2,32 @@ package edu.lipreading;
 
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
-import java.util.zip.ZipInputStream;
 
 public class Constants {
     public static final Properties LIP_READING_PROPS = new Properties();
     static {
         InputStream is;
         String propertiesFileName = "lr.properties";
+        String androidPathPrefix = "/storage/sdcard0/Android/data/edu.lipreading/files/";
         try {
-            if(System.getProperty("java.vm.vendor").toLowerCase().contains("android")){
-                is = new FileInputStream("/storage/sdcard0/.lipreading/" + propertiesFileName);
+            if(Utils.isAndroid()){
+                is = new FileInputStream(androidPathPrefix + "properties/" + propertiesFileName);
+
             }
             else{
                 is = ClassLoader.getSystemResourceAsStream(propertiesFileName);
             }
 
             LIP_READING_PROPS.load(is);
+            if(Utils.isAndroid()){
+                LIP_READING_PROPS.setProperty("DEFAULT_VOCABULARY_FILE",
+                        androidPathPrefix + "txt/" + LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
+            }
             is.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
