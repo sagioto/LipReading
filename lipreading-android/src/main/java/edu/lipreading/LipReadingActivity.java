@@ -2,6 +2,7 @@ package edu.lipreading;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -19,11 +20,9 @@ import edu.lipreading.normalization.*;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Locale;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 
@@ -34,10 +33,11 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private TextView output;
     private CameraPreview cm;
     private boolean isRecording = false;
+    private boolean firstTime = true;
     private MouthView mouthView;
     private Classifier classifier;
-    private Sample sample;
-    private AbstractFeatureExtractor featureExtractor = new NoMoreStickersFeatureExtractor();
+    private Sample sample = new Sample("android");
+    private AbstractFeatureExtractor featureExtractor;
     private Normalizer cn = new CenterNormalizer();
     private Normalizer tn = new LinearStretchTimeNormalizer();
     private Normalizer sfn = new SkippedFramesNormalizer();
@@ -66,6 +66,16 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             cm = new CameraPreview(this, mouthView);
             FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
             previewLayout.addView(cm);
+            output = (TextView) findViewById(R.id.output);
+            initFeatureExtractor();
+            final AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    initClassifier();
+                    return null;
+                }
+            };
+            task.execute(null);
             recordButton = (ImageButton) findViewById(R.id.recordButton);
             recordButton.setOnClickListener(
                     new View.OnClickListener() {
@@ -73,6 +83,16 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                         public void onClick(View v) {
                             isRecording = !isRecording;
                             if(isRecording){
+                                if(firstTime){
+                                    try {
+                                        task.get();
+                                    } catch (InterruptedException e) {
+                                        handleException(e);
+                                    } catch (ExecutionException e) {
+                                        handleException(e);
+                                    }
+                                    firstTime = !firstTime;
+                                }
                                 recordButton.setImageResource(R.drawable.stop);
                                 sample = new Sample("live");
                             } else {
@@ -85,13 +105,31 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                         }
                     }
             );
-            output = (TextView) findViewById(R.id.output);
-            classifier = new TimeWarperClassifier();//new MultiLayerPerceptronClassifier(getAssets().open("yesnohello2.model"));
-            initFeatureExtractor();
+
+
+
         } catch (Exception e) {
-            e.printStackTrace();
-            new AlertDialog.Builder(this).setMessage(e.getMessage()).create().show();
+            handleException(e);
         }
+    }
+
+    private void initClassifier() {
+        try{
+            String [] modelParts = getAssets().list("model");
+            Vector<InputStream> streamList = new Vector<InputStream>();
+            for (String part : modelParts) {
+                streamList.add(getAssets().open("model/" + part));
+            }
+            //classifier = new MultiLayerPerceptronClassifier(new SequenceInputStream(streamList.elements()));
+        }catch (Exception e){
+            e.printStackTrace();
+            handleException(e);
+        }
+        classifier = new TimeWarperClassifier();
+    }
+
+    private void handleException(Exception e) {
+        new AlertDialog.Builder(getApplicationContext()).setMessage(e.getMessage()).create().show();
     }
 
     private String makePretty(String ans) {
@@ -108,7 +146,8 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
 
         // Preload the opencv_objdetect module to work around a known bug.
         Loader.load(opencv_objdetect.class);
-
+        featureExtractor = new NoMoreStickersFeatureExtractor();
+        featureExtractor.setGui(false);
         opencv_objdetect.CvHaarClassifierCascade classifier = new opencv_objdetect.CvHaarClassifierCascade(cvLoad(externalClassifier.getAbsolutePath()));
         externalClassifier.delete();
         if (classifier.isNull()) {
@@ -164,11 +203,11 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 
-    private Sample getSample(){
+    public Sample getSample(){
         return this.sample;
     }
 
-    private AbstractFeatureExtractor getFeatureExtractor(){
+    public AbstractFeatureExtractor getFeatureExtractor(){
         return this.featureExtractor;
     }
 }

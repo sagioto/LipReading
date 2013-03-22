@@ -49,7 +49,7 @@
                 </exclusion>
 
                 <!--for debugging-->
-               <!-- <exclusion>
+                <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
                 </exclusion>
@@ -68,7 +68,7 @@
                 <exclusion>
                     <groupId>com.googlecode.soundlibs</groupId>
                     <artifactId>jlayer</artifactId>
-                </exclusion> -->
+                </exclusion>
 
             </exclusions>
 
