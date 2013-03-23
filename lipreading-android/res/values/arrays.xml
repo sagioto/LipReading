@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="voiceType">
+        <item>@string/male</item>
+        <item>@string/female</item>
+    </string-array>
+
+    <string-array name="classifierType">
+        <item>@string/dtw</item>
+        <item>@string/mlp</item>
+    </string-array>
+
+    <string-array name="featureExtractorType">
+        <item>@string/stickers</item>
+        <item>@string/noStickers</item>
+    </string-array>
+</resources>

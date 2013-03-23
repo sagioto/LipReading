@@ -2,11 +2,18 @@ package edu.lipreading;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.app.Fragment;
+import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -14,15 +21,20 @@ import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_objdetect;
 import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.classification.TimeWarperClassifier;
-import edu.lipreading.normalization.*;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
+import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 
@@ -31,8 +43,8 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private TextToSpeech tts;
     private ImageButton recordButton;
     private TextView output;
-    private CameraPreview cm;
-    private boolean isRecording = false;
+    private CameraPreview cameraPreview;
+    private AtomicBoolean isRecording = new AtomicBoolean(false);
     private boolean firstTime = true;
     private MouthView mouthView;
     private Classifier classifier;
@@ -63,9 +75,10 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             setContentView(R.layout.main);
             tts = new TextToSpeech(this, this);
             mouthView = new MouthView(this);
-            cm = new CameraPreview(this, mouthView);
+            cameraPreview = new CameraPreview(this, mouthView);
             FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
-            previewLayout.addView(cm);
+            previewLayout.addView(cameraPreview);
+            previewLayout.addView(mouthView);
             output = (TextView) findViewById(R.id.output);
             initFeatureExtractor();
             final AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
@@ -81,8 +94,8 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            isRecording = !isRecording;
-                            if(isRecording){
+                            isRecording.set(!isRecording.get());
+                            if(isRecording.get()){
                                 if(firstTime){
                                     try {
                                         task.get();
@@ -105,9 +118,6 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                         }
                     }
             );
-
-
-
         } catch (Exception e) {
             handleException(e);
         }
@@ -115,17 +125,33 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
 
     private void initClassifier() {
         try{
-            String [] modelParts = getAssets().list("model");
+            /*String [] modelParts = getAssets().list("model");
             Vector<InputStream> streamList = new Vector<InputStream>();
             for (String part : modelParts) {
                 streamList.add(getAssets().open("model/" + part));
             }
-            //classifier = new MultiLayerPerceptronClassifier(new SequenceInputStream(streamList.elements()));
+            classifier = new MultiLayerPerceptronClassifier(new SequenceInputStream(streamList.elements()));*/
+            String fileNameFromUrl = Utils.getFileNameFromUrl(Constants.DEFAULT_TRAINING_SET_ZIP);
+            String trainingSetFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    .getAbsolutePath() + "/" + fileNameFromUrl;
+            if(!new File(trainingSetFilePath).exists()){
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(Constants.DEFAULT_TRAINING_SET_ZIP));
+                request.setDescription("Downloading the Training set for the Lip Reading Classifier");
+                request.setTitle("Lip Reading Training Set");
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileNameFromUrl);
+                DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                long id = manager.enqueue(request);
+                manager.getUriForDownloadedFile(id);
+            }
+            classifier = new TimeWarperClassifier();
+            classifier.train(Utils.getTrainingSetFromZip(
+                    trainingSetFilePath));
+
         }catch (Exception e){
             e.printStackTrace();
             handleException(e);
         }
-        classifier = new TimeWarperClassifier();
+
     }
 
     private void handleException(Exception e) {
@@ -198,6 +224,14 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent event ) {
+        if(keycode == KeyEvent.KEYCODE_MENU){
+            Fragment settings = PrefsFragment.instantiate(this, "Settings");
+        }
+        return super.onKeyDown(keycode,event);
+    }
+
     private void speakOut() {
         String text = output.getText().toString();
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
@@ -210,5 +244,17 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     public AbstractFeatureExtractor getFeatureExtractor(){
         return this.featureExtractor;
     }
+
+    public boolean isRecording() {
+        return isRecording.get();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        tts.shutdown();
+        ((NoMoreStickersFeatureExtractor)featureExtractor).shutdown();
+    }
+
 }
 

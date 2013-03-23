@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:title="@string/trainingMode"
+        android:defaultValue="false"
+        android:summary="@string/trainingModeDesc"
+        android:key="trainingModePref" />
+    <ListPreference
+        android:title="@string/voiceType"
+        android:summary="@string/voiceTypeDesc"
+        android:defaultValue="@string/male"
+        android:entryValues="@array/voiceType"
+        android:entries="@array/voiceType"
+        android:key="voiceTypePref" />
+    <ListPreference
+        android:title="@string/vocabulary"
+        android:summary="@string/vocabularyDesc"
+        android:key="vocabularyPref" />
+    <ListPreference
+        android:title="@string/classifier"
+        android:summary="@string/classifierDesc"
+        android:defaultValue="@string/dtw"
+        android:entryValues="@array/classifierType"
+        android:entries="@array/classifierType"
+        android:key="classifierPref" />
+    <ListPreference
+        android:title="@string/featureExtractor"
+        android:summary="@string/featureExtractorDesc"
+        android:defaultValue="@string/stickers"
+        android:entryValues="@array/featureExtractorType"
+        android:entries="@array/featureExtractorType"
+        android:key="featureExtractorPref" />
+</PreferenceScreen>

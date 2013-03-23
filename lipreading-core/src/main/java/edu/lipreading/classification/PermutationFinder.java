@@ -1,7 +1,9 @@
 /**
  * 
  */
-package edu.lipreading;
+package edu.lipreading.classification;
+
+import edu.lipreading.Constants;
 
 import java.util.ArrayList;
 
@@ -15,7 +17,6 @@ public class PermutationFinder {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		counter = 0;
 		/*
 		for (int i=2; i<=Constants.VOCABULARY.size(); i++){

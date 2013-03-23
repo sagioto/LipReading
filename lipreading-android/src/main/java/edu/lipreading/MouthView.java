@@ -11,27 +11,34 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetQuadrangleSubPix;
 
 public class MouthView extends View implements Camera.PreviewCallback {
-    public static final int SUBSAMPLING_FACTOR = 4;
+    public static final int SUBSAMPLING_FACTOR = 2;
     private LipReadingActivity context;
     private IplImage image;
     private List<Integer> points;
+    private float scaleX;
+    private float scaleY;
 
     public MouthView(LipReadingActivity context) throws IOException {
         super(context);
         this.context = context;
     }
 
+    @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        try {
-            Camera.Size size = camera.getParameters().getPreviewSize();
-            processImage(data, size.width, size.height);
-            camera.addCallbackBuffer(data);
-        } catch (RuntimeException e) {
-            // The camera has probably just been released, ignore.
-        }
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    Camera.Size size = camera.getParameters().getPreviewSize();
+                    processImage(data, size.width, size.height);
+                    camera.addCallbackBuffer(data);
+                } catch (RuntimeException e) {
+                    // The camera has probably just been released, ignore.
+                }
+            }
+        }).start();
     }
 
     protected void processImage(byte[] data, int width, int height) {
@@ -52,67 +59,44 @@ public class MouthView extends View implements Camera.PreviewCallback {
             }
         }
         try {
-            IplImage rotated = rotateImage(image, 90);
+            IplImage rotated = rotateImage(image);
             points = context.getFeatureExtractor().getPoints(rotated);
-            context.getSample().getMatrix().add(points);
+            if(context.isRecording())
+                context.getSample().getMatrix().add(points);
+            postInvalidate();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        postInvalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if((scaleX == 0 || scaleY == 0) && image != null){
+            //switch between height and width since we use the rotated image
+            scaleX = (float)getWidth()/image.height();
+            scaleY = (float)getHeight()/image.width();
+        }
         Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        if(context.isRecording()){
+            paint.setColor(Color.RED);
+            canvas.drawCircle(20, 20, 10, paint);
+        }
         paint.setColor(Color.GREEN);
-        paint.setTextSize(20);
-
-
-        if (points != null) {
-            paint.setStrokeWidth(2);
-            paint.setStyle(Paint.Style.STROKE);
-            float scaleX = (float)getWidth()/image.width();
-            float scaleY = (float)getHeight()/image.height();
-
+        //int [] arr = new int[] {125, 272, 57, 254, 91, 240, 91, 282};
+        if (points != null && image != null) {
+            paint.setStyle(Paint.Style.FILL);
             for (int i = 0; i < points.size(); i += 2) {
-                canvas.drawCircle(points.get(i) * scaleX, points.get(i + 1) * scaleY, 3, paint);
+                canvas.drawCircle(points.get(i) * scaleX, points.get(i + 1) * scaleY, 2, paint);
             }
         }
     }
 
-    private IplImage rotateImage(final IplImage src, float angleDegrees)
+    private IplImage rotateImage(final IplImage src)
     {
-        // Create a map_matrix, where the left 2x2 matrix
-        // is the transform and the right 2x1 is the dimensions.
-        float[] m = new float[6];
-        CvMat M = CvMat.create(2, 3, CV_32F);
-        int w = src.width();
-        int h = src.height();
-        float angleRadians = angleDegrees * ((float)Math.PI / 180.0f);
-        m[0] = (float)( Math.cos(angleRadians) );
-        m[1] = (float)( Math.sin(angleRadians) );
-        m[3] = -m[1];
-        m[4] = m[0];
-        m[2] = w*0.5f;
-        m[5] = h*0.5f;
-        M.put(0, m[0]);
-        M.put(1, m[1]);
-        M.put(2, m[2]);
-        M.put(3, m[3]);
-        M.put(4, m[4]);
-        M.put(5, m[5]);
-
-        // Make a spare image for the result
-        CvSize sizeRotated = new CvSize();
-        sizeRotated.width(Math.round(w));
-        sizeRotated.height(Math.round(h));
-
-        // Rotate
-        IplImage imageRotated = cvCreateImage( sizeRotated, src.depth(), src.nChannels());
-
-        // Transform the image
-        cvGetQuadrangleSubPix(src, imageRotated, M);
-
-        return imageRotated;
+        IplImage dst = cvCreateImage(new CvSize(src.height(), src.width()), src.depth(), src.nChannels());
+        cvTranspose(src, dst);
+        cvFlip(dst, dst, 0);
+        return dst;
     }
 }

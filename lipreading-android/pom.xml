@@ -57,10 +57,10 @@
                     <groupId>net.imagej</groupId>
                     <artifactId>ij</artifactId>
                 </exclusion>
-                <exclusion>
+                <!--<exclusion>
                     <groupId>com.thoughtworks.xstream</groupId>
                     <artifactId>xstream</artifactId>
-                </exclusion>
+                </exclusion>-->
                 <exclusion>
                     <groupId>net.sf.opencsv</groupId>
                     <artifactId>opencsv</artifactId>

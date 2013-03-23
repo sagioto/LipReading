@@ -21,7 +21,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private SurfaceHolder holder;
     private Camera camera;
     Camera.PreviewCallback previewCallback;
-    
+
     public CameraPreview(Context context, Camera.PreviewCallback previewCallback) {
         super(context);
         this.previewCallback = previewCallback;
@@ -46,11 +46,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-            camera.stopPreview();
-            camera.release();
-            camera = null;
+        camera.stopPreview();
+        camera.release();
+        camera = null;
     }
 
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         // If your preview can change or rotate, take care of those events here.
         // Make sure to stop the preview before resizing or reformatting it.
@@ -86,8 +87,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (previewCallback != null) {
             camera.setPreviewCallbackWithBuffer(previewCallback);
             Camera.Size size = parameters.getPreviewSize();
-            byte[] data = new byte[size.width*size.height*
-                    ImageFormat.getBitsPerPixel(parameters.getPreviewFormat())/8];
+            byte[] data =
+                    new byte[size.width * size.height * ImageFormat.getBitsPerPixel(parameters.getPreviewFormat())/8];
             camera.addCallbackBuffer(data);
         }
         camera.setParameters(parameters);
@@ -101,6 +102,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
+
+
 
     public int getFrontFacingCamera() {
         Camera.CameraInfo info = new Camera.CameraInfo();
