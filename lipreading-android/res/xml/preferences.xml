@@ -13,7 +13,6 @@
             android:defaultValue="@string/male"
             android:entryValues="@array/voiceType"
             android:entries="@array/voiceType"
-            android:persistent="true"
             android:key="voiceTypePref" />
         <ListPreference
             android:title="@string/vocabulary"
@@ -25,7 +24,6 @@
             android:defaultValue="@string/dtw"
             android:entryValues="@array/classifierType"
             android:entries="@array/classifierType"
-            android:persistent="true"
             android:key="classifierPref" />
         <ListPreference
             android:title="@string/featureExtractor"
@@ -33,7 +31,6 @@
             android:defaultValue="@string/noStickers"
             android:entryValues="@array/featureExtractorType"
             android:entries="@array/featureExtractorType"
-            android:persistent="true"
             android:key="featureExtractorPref" />
     </PreferenceCategory>a
 </PreferenceScreen>
