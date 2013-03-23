@@ -196,7 +196,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         new AlertDialog.Builder(this).setMessage(e.getMessage()).create().show();
     }
 
-    private String makePretty(String ans) {
+    public String makePretty(String ans) {
         ans = ans.replaceAll(" i ", " I ");
         ans = ans.replaceAll(" i'", " I'");
         ans = ans.substring(0,1).toUpperCase() + ans.substring(1, ans.length());

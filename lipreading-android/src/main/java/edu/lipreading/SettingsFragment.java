@@ -12,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +37,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
         setPreferenceScreen((PreferenceScreen) findPreference("screen"));
         ListPreference vocabularyPref = (ListPreference) findPreference("vocabularyPref");
-        String[] entries = Constants.VOCABULARY.toArray(new String[Constants.VOCABULARY.size()]);
+        List<String> words = new Vector<String>(Constants.VOCABULARY);
+        for (int i = 0; i < words.size(); i++) {
+            words.set(i, context.makePretty(words.get(i)));
+        }
+        String[] entries = words.toArray(new String[words.size()]);
         vocabularyPref.setEntries(entries);
         vocabularyPref.setEntryValues(entries);
     }
