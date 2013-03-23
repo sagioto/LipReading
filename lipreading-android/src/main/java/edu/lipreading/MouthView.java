@@ -9,16 +9,20 @@ import android.view.View;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
 
 public class MouthView extends View implements Camera.PreviewCallback {
     public static final int SUBSAMPLING_FACTOR = 2;
+
     private LipReadingActivity context;
     private IplImage image;
     private List<Integer> points;
     private float scaleX;
     private float scaleY;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public MouthView(LipReadingActivity context) throws IOException {
         super(context);
@@ -27,7 +31,7 @@ public class MouthView extends View implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        new Thread(new Runnable(){
+        executorService.submit(new Runnable(){
             @Override
             public void run() {
                 try {
@@ -38,7 +42,7 @@ public class MouthView extends View implements Camera.PreviewCallback {
                     // The camera has probably just been released, ignore.
                 }
             }
-        }).start();
+        });
     }
 
     protected void processImage(byte[] data, int width, int height) {
@@ -87,7 +91,13 @@ public class MouthView extends View implements Camera.PreviewCallback {
         if (points != null && image != null) {
             paint.setStyle(Paint.Style.FILL);
             for (int i = 0; i < points.size(); i += 2) {
-                canvas.drawCircle(points.get(i) * scaleX, points.get(i + 1) * scaleY, 2, paint);
+                switch (i){
+                    case 0: paint.setColor(Color.GREEN); break;
+                    case 2: paint.setColor(Color.RED); break;
+                    case 4: paint.setColor(Color.YELLOW); break;
+                    case 6: paint.setColor(Color.BLUE); break;
+                }
+                canvas.drawCircle(points.get(i + 1) * scaleX, points.get(i) * scaleY, 3, paint);
             }
         }
     }
@@ -98,5 +108,9 @@ public class MouthView extends View implements Camera.PreviewCallback {
         cvTranspose(src, dst);
         cvFlip(dst, dst, 0);
         return dst;
+    }
+
+    public void shutdown(){
+        executorService.shutdownNow();
     }
 }
