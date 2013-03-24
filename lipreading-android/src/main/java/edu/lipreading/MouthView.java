@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.View;
 
 import java.io.IOException;
@@ -35,9 +36,11 @@ public class MouthView extends View implements Camera.PreviewCallback {
             @Override
             public void run() {
                 try {
+                    long start = System.currentTimeMillis();
                     Camera.Size size = camera.getParameters().getPreviewSize();
                     processImage(data, size.width, size.height);
                     camera.addCallbackBuffer(data);
+                    Log.d("processing took-", "" + (System.currentTimeMillis() - start));
                 } catch (RuntimeException e) {
                     // The camera has probably just been released, ignore.
                 }

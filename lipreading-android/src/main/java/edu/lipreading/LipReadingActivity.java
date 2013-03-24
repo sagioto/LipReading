@@ -51,9 +51,6 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private CameraPreview cameraPreview;
     private AtomicBoolean isRecording = new AtomicBoolean(false);
     private boolean firstTime = true;
-
-
-
     private boolean trainingMode = false;
     private MouthView mouthView;
     private Classifier classifier;
@@ -75,9 +72,9 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        // Create our Preview view and set it as the content of our activity.
         try{
-
+            preferences = getPreferences(MODE_PRIVATE);
+            setTrainingMode(preferences.getBoolean("trainingModePref", false));
             getFile("lr.properties");
             String[] vocabularies = getAssets().list("vocabularies");
             for (String vocabulary : vocabularies) {
@@ -85,13 +82,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             }
             setContentView(R.layout.main);
             settingsFragment = new SettingsFragment(this);
-            preferences = getPreferences(MODE_PRIVATE);
             tts = new TextToSpeech(this, this);
-            String defVoice = getResources().getString(R.string.male);
-            String voiceType = preferences.getString("voiceTypePref", defVoice);
-            if(!defVoice.equals(voiceType)){
-                tts.setLanguage(Locale.US);
-            }
             mouthView = new MouthView(this);
             cameraPreview = new CameraPreview(this, mouthView);
             FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
@@ -117,6 +108,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                     else{
                         initMLPClassifier();
                     }
+
                     return null;
                 }
             };
@@ -226,8 +218,14 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-
-            int result = tts.setLanguage(Locale.UK);
+            int result;
+            String defVoice = getResources().getString(R.string.male);
+            String voiceType = preferences.getString("voiceTypePref", defVoice);
+            if(!defVoice.equals(voiceType)){
+                result = tts.setLanguage(Locale.US);
+            } else {
+                result = tts.setLanguage(Locale.UK);
+            }
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");

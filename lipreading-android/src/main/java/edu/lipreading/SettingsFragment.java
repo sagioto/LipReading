@@ -72,8 +72,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         SharedPreferences preferences = context.getPreferences(Context.MODE_PRIVATE);
 
-        if("trainingModePref".equals(key))
-            context.setTrainingMode(sharedPreferences.getBoolean("trainingModePref", false));
+        if("trainingModePref".equals(key)){
+            boolean trainingModePref = sharedPreferences.getBoolean("trainingModePref", false);
+            context.setTrainingMode(trainingModePref);
+            preferences.edit().putBoolean(key, trainingModePref).commit();
+        }
         else if("voiceTypePref".equals(key)){
             String defaultVoice = getResources().getString(R.string.male);
             String voiceTypePref = sharedPreferences.getString("voiceTypePref", defaultVoice);
