@@ -5,70 +5,56 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.hardware.Camera;
 import android.view.View;
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_objdetect;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_objdetect.*;
 
 public class MouthView extends View implements Camera.PreviewCallback {
-    public static final int SUBSAMPLING_FACTOR = 4;
+    public static final int SUBSAMPLING_FACTOR = 2;
 
-    private IplImage grayImage;
-    private CvHaarClassifierCascade classifier;
-    private CvMemStorage storage;
-    private CvSeq faces;
+    private LipReadingActivity context;
+    private IplImage image;
+    private List<Integer> points;
+    private float scaleX;
+    private float scaleY;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public MouthView(LipReadingActivity context) throws IOException {
         super(context);
-
-        // Load the classifier file from Java resources.
-        // cvLoad must get file path so I copy it from assets to external storage and delete it later
-        String s = Utils.convertStreamToString(context.getAssets().open("haarcascade_mcs_mouth.xml"));
-        File dir = context.getExternalFilesDir("xml");
-        dir.mkdirs();
-        File externalClassifier = new File(dir, "haarcascade_mcs_mouth.xml");
-        FileWriter fw = new FileWriter(externalClassifier);
-        fw.write(s);
-        fw.close();
-
-        // Preload the opencv_objdetect module to work around a known bug.
-        Loader.load(opencv_objdetect.class);
-
-        classifier = new CvHaarClassifierCascade(cvLoad(externalClassifier.getAbsolutePath()));
-        externalClassifier.delete();
-        if (classifier.isNull()) {
-            throw new IOException("Could not load the classifier file.");
-        }
-        storage = CvMemStorage.create();
+        this.context = context;
     }
 
+    @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        try {
-            Camera.Size size = camera.getParameters().getPreviewSize();
-            processImage(data, size.width, size.height);
-            camera.addCallbackBuffer(data);
-        } catch (RuntimeException e) {
-            // The camera has probably just been released, ignore.
-        }
+        executorService.submit(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    Camera.Size size = camera.getParameters().getPreviewSize();
+                    processImage(data, size.width, size.height);
+                    camera.addCallbackBuffer(data);
+                } catch (RuntimeException e) {
+                    // The camera has probably just been released, ignore.
+                }
+            }
+        });
     }
 
     protected void processImage(byte[] data, int width, int height) {
-        // First, downsample our image and convert it into a grayscale IplImage
         int f = SUBSAMPLING_FACTOR;
-        if (grayImage == null || grayImage.width() != width/f || grayImage.height() != height/f) {
-            grayImage = IplImage.create(width/f, height/f, IPL_DEPTH_8U, 3);
+        if (image == null || image.width() != width/f || image.height() != height/f) {
+            image = IplImage.create(width/f, height/f, IPL_DEPTH_8U, 3);
         }
-        int imageWidth  = grayImage.width();
-        int imageHeight = grayImage.height();
+        int imageWidth  = image.width();
+        int imageHeight = image.height();
         int dataStride = f*width;
-        int imageStride = grayImage.widthStep();
-        ByteBuffer imageBuffer = grayImage.getByteBuffer();
+        int imageStride = image.widthStep();
+        ByteBuffer imageBuffer = image.getByteBuffer();
         for (int y = 0; y < imageHeight; y++) {
             int dataLine = y*dataStride;
             int imageLine = y*imageStride;
@@ -76,33 +62,55 @@ public class MouthView extends View implements Camera.PreviewCallback {
                 imageBuffer.put(imageLine + x, data[dataLine + f*x]);
             }
         }
-
-        cvClearMemStorage(storage);
-        faces = cvHaarDetectObjects(grayImage, classifier, storage, 1.1, 3, CV_HAAR_FIND_BIGGEST_OBJECT);
-        postInvalidate();
+        try {
+            IplImage rotated = rotateImage(image);
+            points = context.getFeatureExtractor().getPoints(rotated);
+            if(context.isRecording())
+                context.getSample().getMatrix().add(points);
+            postInvalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if((scaleX == 0 || scaleY == 0) && image != null){
+            //switch between height and width since we use the rotated image
+            scaleX = (float)getWidth()/image.height();
+            scaleY = (float)getHeight()/image.width();
+        }
         Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        if(context.isRecording()){
+            paint.setColor(Color.RED);
+            canvas.drawCircle(20, 20, 10, paint);
+        }
         paint.setColor(Color.GREEN);
-        paint.setTextSize(20);
-
-        String s = "FacePreview - This side up.";
-        float textWidth = paint.measureText(s);
-        canvas.drawText(s, (getWidth()-textWidth)/2, 20, paint);
-
-        if (faces != null) {
-            paint.setStrokeWidth(2);
-            paint.setStyle(Paint.Style.STROKE);
-            float scaleX = (float)getWidth()/grayImage.width();
-            float scaleY = (float)getHeight()/grayImage.height();
-            int total = faces.total();
-            for (int i = 0; i < total; i++) {
-                CvRect r = new CvRect(cvGetSeqElem(faces, i));
-                int x = r.x(), y = r.y(), w = r.width(), h = r.height();
-                canvas.drawRect(x*scaleX, y*scaleY, (x+w)*scaleX, (y+h)*scaleY, paint);
+        //int [] arr = new int[] {125, 272, 57, 254, 91, 240, 91, 282};
+        if (points != null && image != null) {
+            paint.setStyle(Paint.Style.FILL);
+            for (int i = 0; i < points.size(); i += 2) {
+                switch (i){
+                    case 0: paint.setColor(Color.GREEN); break;
+                    case 2: paint.setColor(Color.RED); break;
+                    case 4: paint.setColor(Color.YELLOW); break;
+                    case 6: paint.setColor(Color.BLUE); break;
+                }
+                canvas.drawCircle(points.get(i + 1) * scaleX, points.get(i) * scaleY, 3, paint);
             }
         }
+    }
+
+    private IplImage rotateImage(final IplImage src)
+    {
+        IplImage dst = cvCreateImage(new CvSize(src.height(), src.width()), src.depth(), src.nChannels());
+        cvTranspose(src, dst);
+        cvFlip(dst, dst, 0);
+        return dst;
+    }
+
+    public void shutdown(){
+        executorService.shutdownNow();
     }
 }

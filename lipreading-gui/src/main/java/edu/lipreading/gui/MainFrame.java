@@ -1,7 +1,6 @@
 package edu.lipreading.gui;
 
 import com.googlecode.javacv.FrameGrabber;
-import edu.lipreading.Constants;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

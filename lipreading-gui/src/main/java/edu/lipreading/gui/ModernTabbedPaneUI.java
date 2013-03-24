@@ -1,7 +1,5 @@
 package edu.lipreading.gui;
 
-import edu.lipreading.Constants;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;

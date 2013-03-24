@@ -2,7 +2,6 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.cpp.avutil;
-import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
 import edu.lipreading.Utils;

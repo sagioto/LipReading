@@ -24,6 +24,11 @@ public class Sample {
 		this.matrix = new Vector<List<Integer>>();
 	}
 
+    public Sample() {
+        super();
+        this.matrix = new Vector<List<Integer>>();
+    }
+
 	public String getId() {
 		return id;
 	}

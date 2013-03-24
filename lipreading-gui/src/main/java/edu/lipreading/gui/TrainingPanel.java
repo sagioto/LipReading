@@ -127,7 +127,7 @@ public class TrainingPanel extends LipReaderPanel {
 
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		btnChooseFile = new JButton(new ImageIcon(getClass().getResource(Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
+		btnChooseFile = new JButton(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.FILE_CHOOSER_IMAGE_FILE_PATH)));
 		btnChooseFile.setBorderPainted(false);
 		btnChooseFile.setBackground(Color.WHITE);
 		btnChooseFile.addActionListener(new ActionListener() {

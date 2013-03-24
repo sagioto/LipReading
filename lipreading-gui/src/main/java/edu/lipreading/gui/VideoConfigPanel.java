@@ -2,7 +2,6 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import edu.lipreading.Constants;
 import edu.lipreading.vision.StickerColorConfiguration;
 
 import javax.swing.*;

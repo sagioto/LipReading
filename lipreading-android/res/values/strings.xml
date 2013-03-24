@@ -5,4 +5,32 @@
     <string name="record">Record</string>
     <string name="stop">Stop</string>
     <string name="recordButtonDescription">Record/Stop Button</string>
+
+    <string name="settingsTitle">Lip Reading Settings</string>
+
+    <string name="trainingMode">Training Mode</string>
+    <string name="trainingModeDesc">If checked will ask you if recognition was correct, if it wasn\'t it will ask what the correct word was</string>
+
+    <string name="voiceType">Voice Type</string>
+    <string name="voiceTypeDesc">Choose the type of voice output</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+
+    <string name="vocabulary">What can I say?</string>
+    <string name="vocabularyDesc">This preference allows to select an item in a array</string>
+
+    <string name="classifier">Classifier</string>
+    <string name="classifierDesc">Choose the type of classifier to classify words</string>
+    <string name="dtw">Dynamic Time Warping</string>
+    <string name="mlp">Multi Layered Perceptron</string>
+
+    <string name="featureExtractor">Feature Extractor</string>
+    <string name="featureExtractorDesc">Choose the video extractor algorithm</string>
+    <string name="stickers">Stickers Feature Extractor</string>
+    <string name="noStickers">No Stickers Feature Extractor</string>
+
+    <string name="correctWordQustion">Which word was it?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="wasCorrectQuestion">Was this right?</string>
 </resources>
