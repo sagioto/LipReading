@@ -75,7 +75,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if("trainingModePref".equals(key)){
             boolean trainingModePref = sharedPreferences.getBoolean("trainingModePref", false);
             context.setTrainingMode(trainingModePref);
-            preferences.edit().putBoolean(key, trainingModePref).commit();
+            preferences.edit().putBoolean(key, trainingModePref).apply();
         }
         else if("voiceTypePref".equals(key)){
             String defaultVoice = getResources().getString(R.string.male);
@@ -85,7 +85,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             } else {
                 this.context.getTts().setLanguage(Locale.US);
             }
-            preferences.edit().putString(key, voiceTypePref).commit();
+            preferences.edit().putString(key, voiceTypePref).apply();
         } else if("classifierPref".equals(key)){
             String defaultClassifier = getResources().getString(R.string.mlp);
             String classifierType = sharedPreferences.getString(key, defaultClassifier);
@@ -94,7 +94,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             } else {
                 this.context.initDTWClassifier();
             }
-            preferences.edit().putString(key, classifierType).commit();
+            preferences.edit().putString(key, classifierType).apply();
         } else if("featureExtractorPref".equals(key)){
             String defaultFeatureExtractor = getResources().getString(R.string.noStickers);
             String feType = sharedPreferences.getString(key, defaultFeatureExtractor);
@@ -103,7 +103,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             } else {
                 this.context.initStickersExtractor();
             }
-            preferences.edit().putString(key, feType).commit();
+            preferences.edit().putString(key, feType).apply();
         }
 
     }
