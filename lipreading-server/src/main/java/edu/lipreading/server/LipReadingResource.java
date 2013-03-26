@@ -62,8 +62,11 @@ public class LipReadingResource {
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    public String label(int id , String label){
-        instances.get(id).setLabel(label);
+    public String train(int id , String label){
+        Sample sample = instances.remove(id);
+        sample.setLabel(label);
+        //add as line arff file
+        //addSampleToArff(sample);
         return "OK";
     }
 }
