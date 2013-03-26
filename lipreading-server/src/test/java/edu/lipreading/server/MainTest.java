@@ -1,5 +1,5 @@
 
-package restLipReading;
+package edu.lipreading.server;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;

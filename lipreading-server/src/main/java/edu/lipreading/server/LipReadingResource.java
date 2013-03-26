@@ -1,5 +1,5 @@
 
-package restLipReading;
+package edu.lipreading.server;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

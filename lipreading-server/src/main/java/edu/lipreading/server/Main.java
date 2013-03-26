@@ -1,5 +1,5 @@
 
-package restLipReading;
+package edu.lipreading.server;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -35,7 +35,7 @@ public class Main {
     protected static HttpServer startServer() throws IOException {
         final Map<String, String> initParams = new HashMap<String, String>();
 
-        initParams.put("com.sun.jersey.config.property.packages", "restLipReading");
+        initParams.put("com.sun.jersey.config.property.packages", "edu.lipreading.server");
 
         System.out.println("Starting grizzly2...");
         return GrizzlyWebContainerFactory.create(BASE_URI, initParams);

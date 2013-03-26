@@ -1,4 +1,4 @@
-package restLipReading;
+package edu.lipreading.server;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
