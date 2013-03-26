@@ -76,7 +76,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.14</version>
 				<configuration>
-					<!-- <parallel>classes</parallel> -->
+					<parallel>classes</parallel>
 					<useFile>false</useFile>
 					<argLine>-Xss2m</argLine>
 				</configuration>
