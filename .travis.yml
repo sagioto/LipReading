@@ -7,8 +7,7 @@ before_install:
   - unzip -o -qq javacv-cppjars/opencv-2.4.4-linux-x86_64.jar
   - unzip -o -qq javacv-cppjars/ffmpeg-1.1.3-linux-x86_64.jar
   - export PATH=${PATH}:${PWD}/com/googlecode/javacv/cpp/linux-x86_64
-  - echo $PATH
-  - ls -la ${PWD}/com/googlecode/javacv/cpp/linux-x86_64
+  - chmod +x ${PWD}/com/googlecode/javacv/cpp/linux-x86_64
   - wget http://dl.google.com/android/android-sdk_r21-linux.tgz
   - tar -zxf android-sdk_r21-linux.tgz
   - export ANDROID_HOME=${PWD}/android-sdk-linux
