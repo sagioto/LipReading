@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
 
 public class LipReadingActivity extends Activity implements TextToSpeech.OnInitListener {
-    private final String TAG = LipReadingActivity.class.getSimpleName();
+    private final String TAG = Thread.currentThread().getStackTrace()[1].getClassName();
     private TextToSpeech tts;
     private ImageButton recordButton;
     private TextView output;
@@ -204,7 +204,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     }
 
     private void initFeatureExtractor() {
-        String defFE = getResources().getString(R.string.noStickers);
+        String defFE = getResources().getString(R.string.stickers);
         String FEType = preferences.getString("featureExtractorPref", defFE);
         if(defFE.equals(FEType)){
             initNoStickersExtractor();

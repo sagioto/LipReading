@@ -39,9 +39,7 @@ public class MultiLayerPerceptronClassifierTest {
 	public void testNo() throws Exception{
 		testClassifier("https://dl.dropbox.com/u/8720454/test3/No50-17.46.41-23.02.2013.MOV", "no");
 	}
-	
-	
-	
+
 	public void testClassifier(String url, String expected) throws Exception{
 		Utils.get(url);
 		Normalizer cn = new CenterNormalizer();
@@ -64,4 +62,5 @@ public class MultiLayerPerceptronClassifierTest {
 	public static void deleteModelFile() throws UnsupportedEncodingException{
 		new File(Utils.getFileNameFromUrl(Constants.MPC_MODEL_URL)).delete();
 	}
+
 }

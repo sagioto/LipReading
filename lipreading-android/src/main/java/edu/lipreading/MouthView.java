@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -21,9 +24,10 @@ import android.view.View;
 import com.googlecode.javacv.cpp.opencv_core.CvSize;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
+import weka.gui.scripting.GroovyScript;
 
 public class MouthView extends View implements Camera.PreviewCallback {
-    public static final int SUBSAMPLING_FACTOR = 1;
+    public static final int SUBSAMPLING_FACTOR = 2;
 
     private Context context;
     private IplImage image;
@@ -31,11 +35,20 @@ public class MouthView extends View implements Camera.PreviewCallback {
     private float scaleX;
     private float scaleY;
 
-	private Paint paint;
+    private Paint paint;
     private int imageWidth;
     private int imageHeight;
     private int dataStride;
     private int imageStride;
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread("Feature-Extractor-Driver");
+            thread.setDaemon(true);
+            return thread;
+        }
+    });
+
 
     public MouthView(Context context) throws IOException {
         super(context);
@@ -46,20 +59,7 @@ public class MouthView extends View implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        post(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    //long start = System.currentTimeMillis();
-                    //Camera.Size size = camera.getParameters().getPreviewSize();
-                    //processImage(data, 352, 288);
-                    camera.addCallbackBuffer(data);
-                    //Log.d("processing took-", "" + (System.currentTimeMillis() - start));
-                } catch (RuntimeException e) {
-                    // The camera has probably just been released, ignore.
-                }
-            }
-        });
+        executor.submit(new featureExtractorDriver(data, camera));
     }
 
     protected void processImage(byte[] data, int width, int height) {
@@ -88,7 +88,7 @@ public class MouthView extends View implements Camera.PreviewCallback {
             LipReadingActivity lrActivity = (LipReadingActivity)context;
             points = lrActivity.getFeatureExtractor().getPoints(rotated);
             if(lrActivity.isRecording())
-            	lrActivity.getSample().getMatrix().add(points);
+                lrActivity.getSample().getMatrix().add(points);
             postInvalidate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +97,7 @@ public class MouthView extends View implements Camera.PreviewCallback {
 
     @Override
     protected void onDraw(Canvas canvas) {
-    	LipReadingActivity lrActivity = (LipReadingActivity)context;
+        LipReadingActivity lrActivity = (LipReadingActivity)context;
         if(lrActivity.isRecording()){
             paint.setColor(Color.RED);
             canvas.drawCircle(20, 20, 10, paint);
@@ -113,7 +113,7 @@ public class MouthView extends View implements Camera.PreviewCallback {
                     case 4: paint.setColor(Color.YELLOW); break;
                     case 6: paint.setColor(Color.BLUE); break;
                 }
-                canvas.drawCircle(points.get(i) * scaleX, points.get(i + 1) * scaleY, 3, paint);
+                canvas.drawCircle(getWidth() - (points.get(i) * scaleX), points.get(i + 1) * scaleY, 3, paint);
             }
         }
     }
@@ -124,5 +124,28 @@ public class MouthView extends View implements Camera.PreviewCallback {
         cvTranspose(src, dst);
         cvFlip(dst, dst, 0);
         return dst;
+    }
+
+    private class featureExtractorDriver implements Runnable {
+        private final byte[] data;
+        private final Camera camera;
+
+        public featureExtractorDriver(byte[] data, Camera camera) {
+            this.data = data;
+            this.camera = camera;
+        }
+
+        @Override
+        public void run() {
+            try {
+                //long start = System.currentTimeMillis();
+                //Camera.Size size = camera.getParameters().getPreviewSize();
+                processImage(data, 352, 288);
+                camera.addCallbackBuffer(data);
+                //Log.d("processing took-", "" + (System.currentTimeMillis() - start));
+            } catch (RuntimeException e) {
+                // The camera has probably just been released, ignore.
+            }
+        }
     }
 }
