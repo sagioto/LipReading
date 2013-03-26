@@ -37,7 +37,7 @@ public class MultiLayerPerceptronClassifierTest {
 
 	@Test
 	public void testNo() throws Exception{
-		testClassifier("https://dl.dropbox.com/u/8720454/test3/No43-17.46.30-23.02.2013.MOV", "no");
+		testClassifier("https://dl.dropbox.com/u/8720454/test3/No50-17.46.41-23.02.2013.MOV", "no");
 	}
 	
 	
@@ -53,7 +53,7 @@ public class MultiLayerPerceptronClassifierTest {
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();
 	}
-	
+
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
         mpClassifier = new MultiLayerPerceptronClassifier(new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream());
