@@ -52,9 +52,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private Classifier classifier;
     private Sample sample = new Sample("android");
     private AbstractFeatureExtractor featureExtractor;
-    private Normalizer cn = new CenterNormalizer();
-    private Normalizer tn = new LinearStretchTimeNormalizer();
-    private Normalizer sfn = new SkippedFramesNormalizer();
+
     private SettingsFragment settingsFragment;
     private SharedPreferences preferences;
 
