@@ -12,5 +12,5 @@ before_install:
   - echo $PATH
   - android update sdk --filter 1,2,4,5 --no-ui --force
   - chmod +x ${ANDROID_HOME}/platform-tools/*
-  - ${ANDROID_HOME}/platform-tools/aapt
+  - ${ANDROID_HOME}/platform-tools/aapt v
   - ls -la ${ANDROID_HOME}/platform-tools
