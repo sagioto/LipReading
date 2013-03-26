@@ -1,5 +1,6 @@
 language: java
 before_install:
+  - sudo apt-get update
   - sudo apt-get install ia32-libs
   - wget https://javacv.googlecode.com/files/javacv-0.4-cppjars.zip
   - unzip javacv-0.4-cppjars.zip
