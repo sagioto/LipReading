@@ -1,11 +1,7 @@
 package edu.lipreading.gui;
 
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import edu.lipreading.Utils;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
 
 public class Constants {

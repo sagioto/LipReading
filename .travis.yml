@@ -1,10 +1,13 @@
 language: java
 before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 libsdl1.2debian:i386 libv4l-dev
   - wget https://javacv.googlecode.com/files/javacv-0.4-cppjars.zip
-  - unzip javacv-0.4-cppjars.zip
-  - unzip -o javacv-cppjars/opencv-2.4.4-linux-x86_64.jar
-  - unzip -o javacv-cppjars/ffmpeg-1.1.3-linux-x86_64.jar
-  - export PATH=${PATH}:${PWD}/com/googlecode/javacv/cpp/linux-x86_64
+  - unzip -qq javacv-0.4-cppjars.zip
+  - unzip -o -qq javacv-cppjars/opencv-2.4.4-linux-x86_64.jar
+  - unzip -o -qq javacv-cppjars/ffmpeg-1.1.3-linux-x86_64.jar
+  - sudo cp com/googlecode/javacv/cpp/linux-x86_64/* /usr/lib/
+  - sudo ldconfig
   - wget http://dl.google.com/android/android-sdk_r21-linux.tgz
   - tar -zxf android-sdk_r21-linux.tgz
   - export ANDROID_HOME=${PWD}/android-sdk-linux

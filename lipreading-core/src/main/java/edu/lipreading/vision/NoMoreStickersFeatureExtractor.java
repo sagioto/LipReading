@@ -1,15 +1,21 @@
 package edu.lipreading.vision;
 
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_objdetect;
-import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
-import edu.lipreading.Constants;
-import edu.lipreading.Utils;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
+import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
+import static com.googlecode.javacv.cpp.opencv_core.cvCircle;
+import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
+import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
+import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
+import static com.googlecode.javacv.cpp.opencv_core.cvSize;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2GRAY;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
+import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_FIND_BIGGEST_OBJECT;
+import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -17,16 +23,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2GRAY;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
-import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_FIND_BIGGEST_OBJECT;
-import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
+
+import com.googlecode.javacpp.Loader;
+import com.googlecode.javacv.cpp.opencv_core.CvMat;
+import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+import com.googlecode.javacv.cpp.opencv_core.CvSeq;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_objdetect;
+import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
+
+import edu.lipreading.Constants;
+import edu.lipreading.Utils;
 
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int RECT_VERTICAL_JUMP = 10;
 	private static final int RECT_FRAME_THRESHOLD = 5;
-	private final ExecutorService executor = Executors.newCachedThreadPool();
+	private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private IplImage manipulated;
 	private CvRect prev = new CvRect();
     private CvHaarClassifierCascade classifier;
@@ -122,6 +139,63 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 			frameCoordinates.add(coordinateX);
 			frameCoordinates.add(coordinateY);
 		}
+		cvResetImageROI(grabbed);
+		//cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+r.width(), y+r.height()), CvScalar.GREEN, 1, CV_AA, 0);
+		return frameCoordinates;
+	}
+
+
+    public List<Integer> getPointsSingleThreaded(IplImage grabbed) throws Exception {
+        int roiFix = grabbed.height() / -32;
+		sideConfidence = grabbed.width() / 128;
+		lowerConfidence = grabbed.height() / 128;
+		upperConfidence = grabbed.width() / 32;
+
+		if(manipulated == null)
+			manipulated = cvCreateImage(cvSize(grabbed.width(), grabbed.height()), IPL_DEPTH_8U, 1);
+		if(storage == null || classifier == null)
+			init();
+		cvClearMemStorage(storage);
+		cvCvtColor(grabbed, manipulated, CV_RGB2GRAY);
+		CvSeq mouths = cvHaarDetectObjects(manipulated, classifier, storage, 1.8, 13, CV_HAAR_FIND_BIGGEST_OBJECT);
+		CvRect r = new CvRect(cvGetSeqElem(mouths, 0));
+		if(r.isNull()){
+			return null;
+		} else if (prev.y() != 0 && rectFrameCount < RECT_FRAME_THRESHOLD){
+			if (Math.abs(r.y() - prev.y()) > RECT_VERTICAL_JUMP){
+				CvRect.memcpy(r, prev, prev.sizeof());
+				rectFrameCount++;
+			}
+		} else if (rectFrameCount >= RECT_FRAME_THRESHOLD){
+			rectFrameCount = 0;
+		}
+		CvRect.memcpy(prev, r, r.sizeof());
+		r.y(r.y() + roiFix);
+		final int x = r.x(), y = r.y();
+		cvSetImageROI(grabbed, r);
+		final CvMat mat = grabbed.asCvMat();
+
+        List<Integer> frameCoordinates = new Vector<Integer>();
+        double[][] h = getH(mat);
+        double[][] l = getL(mat);
+        double[][] lmini = Lmini(l);
+
+        int[] right = getRight(l, lmini);
+        frameCoordinates.add(right[0] + x);
+        frameCoordinates.add(right[1] + y);
+
+        int[] left = getLeft(l, lmini);
+        frameCoordinates.add(left[0] + x);
+        frameCoordinates.add(left[1] + y);
+
+        int[] upper = getUpper(l, h, right[0], left[0]);
+        frameCoordinates.add(upper[0] + x);
+        frameCoordinates.add(upper[1] + y);
+
+        int[] lower = getLower(l, upper[0]);
+        frameCoordinates.add(lower[0] + x);
+        frameCoordinates.add(lower[1] + y);
+
 		cvResetImageROI(grabbed);
 		//cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+r.width(), y+r.height()), CvScalar.GREEN, 1, CV_AA, 0);
 		return frameCoordinates;

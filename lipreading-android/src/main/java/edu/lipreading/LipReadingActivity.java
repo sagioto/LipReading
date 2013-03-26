@@ -1,9 +1,6 @@
 package edu.lipreading;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.app.FragmentTransaction;
+import android.app.*;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -38,7 +35,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
@@ -51,9 +47,6 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private CameraPreview cameraPreview;
     private AtomicBoolean isRecording = new AtomicBoolean(false);
     private boolean firstTime = true;
-
-
-
     private boolean trainingMode = false;
     private MouthView mouthView;
     private Classifier classifier;
@@ -75,120 +68,149 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        // Create our Preview view and set it as the content of our activity.
         try{
-
-            getFile("lr.properties");
-            String[] vocabularies = getAssets().list("vocabularies");
-            for (String vocabulary : vocabularies) {
-                getFile("vocabularies/" + vocabulary);
-            }
+            preferences = getPreferences(MODE_PRIVATE);
+            setTrainingMode(preferences.getBoolean("trainingModePref", false));
             setContentView(R.layout.main);
             settingsFragment = new SettingsFragment(this);
-            preferences = getPreferences(MODE_PRIVATE);
             tts = new TextToSpeech(this, this);
-            String defVoice = getResources().getString(R.string.male);
-            String voiceType = preferences.getString("voiceTypePref", defVoice);
-            if(!defVoice.equals(voiceType)){
-                tts.setLanguage(Locale.US);
-            }
             mouthView = new MouthView(this);
             cameraPreview = new CameraPreview(this, mouthView);
             FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
             previewLayout.addView(cameraPreview);
             previewLayout.addView(mouthView);
             output = (TextView) findViewById(R.id.output);
-            String defFE = getResources().getString(R.string.noStickers);
-            String FEType = preferences.getString("featureExtractorPref", defFE);
-            if(defFE.equals(FEType)){
-                initNoStickersExtractor();
-            }
-            else {
-                initStickersExtractor();
-            }
-            final AsyncTask<Void, Void, Void> initClassifierTask = new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    String defClassifier = getResources().getString(R.string.dtw);
-                    String classifierType = preferences.getString("featureExtractorPref", defClassifier);
-                    if(defClassifier.equals(classifierType)){
-                        initDTWClassifier();
-                    }
-                    else{
-                        initMLPClassifier();
-                    }
-                    return null;
-                }
-            };
-            initClassifierTask.execute(null);
+            final AsyncTask<Boolean, Void, Void> initFeatureExtractorTask = asyncInitFeatureExtractor();
             recordButton = (ImageButton) findViewById(R.id.recordButton);
             recordButton.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            recordButton.setImageResource(R.drawable.stop);
-                            sample = new Sample("live");
-                            isRecording.set(!isRecording.get());
-                            if(isRecording.get()){
-                                if(firstTime){
-                                    try {
-                                        initClassifierTask.get();
-                                    } catch (InterruptedException e) {
-                                        handleException(e);
-                                    } catch (ExecutionException e) {
-                                        handleException(e);
-                                    }
-                                    firstTime = !firstTime;
-                                }
-                            } else {
-                                recordButton.setImageResource(R.drawable.record);
-                                String ans = "hello";//classifier.test(LipReading.normelize(sample, sfn, cn, tn));
-                                ans = makePretty(ans);
-                                output.setText(ans);
-                                speakOut();
-                                if(trainingMode){
-                                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            switch (which){
-                                                case DialogInterface.BUTTON_POSITIVE:
-                                                    sample.setLabel(output.getText().toString());
-                                                    //upload sample
-                                                    break;
-
-                                                case DialogInterface.BUTTON_NEGATIVE:
-                                                    AlertDialog.Builder builder = new AlertDialog.Builder(LipReadingActivity.this);
-                                                    builder.setTitle(getString(R.string.correctWordQustion));
-                                                    final List<String> words = new Vector<String>(Constants.VOCABULARY);
-                                                    words.remove(output.getText().toString().toLowerCase());
-                                                    for (int i = 0; i < words.size(); i++) {
-                                                        words.set(i, makePretty(words.get(i)));
-                                                    }
-                                                    builder.setItems(words.toArray(new String[words.size()]), new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int item) {
-                                                            sample.setLabel(words.get(item).toLowerCase());
-                                                            //upload sample
-                                                        }
-                                                    });
-                                                    AlertDialog alert = builder.create();
-                                                    alert.show();
-
-                                                    break;
-                                            }
-
-                                        }
-                                    };
-
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(LipReadingActivity.this);
-                                    builder.setMessage(getString(R.string.wasCorrectQuestion)).setPositiveButton(getString(R.string.yes), dialogClickListener)
-                                            .setNegativeButton(getString(R.string.no), dialogClickListener).show();
-                                }
-                            }
+                            onRecordButtonPressed(initFeatureExtractorTask);
                         }
                     }
             );
         } catch (Exception e) {
             handleException(e);
+        }
+    }
+
+    private void onRecordButtonPressed(AsyncTask<Boolean, Void, Void> initFeatureExtractorTask) {
+        recordButton.setImageResource(R.drawable.stop);
+        isRecording.set(!isRecording.get());
+        if(isRecording.get()){
+            sample = new Sample("live");
+        } else {
+            onStopButtonPressed(initFeatureExtractorTask);
+        }
+    }
+
+    private void onStopButtonPressed(AsyncTask<Boolean, Void, Void> initFeatureExtractorTask) {
+        recordButton.setImageResource(R.drawable.record);
+        if(firstTime){
+            onFirstTimeStopButtonPressed(initFeatureExtractorTask);
+        }
+        String ans = "hello";//classifier.test(LipReading.normelize(sample, sfn, cn, tn));
+        ans = makePretty(ans);
+        output.setText(ans);
+        speakOut();
+        if(trainingMode){
+            onStopButtonPressedInTrainingMode();
+        }
+    }
+
+    private void onStopButtonPressedInTrainingMode() {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        sample.setLabel(output.getText().toString());
+                        //upload sample
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        onWrongRecognitionButtonPressed();
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(LipReadingActivity.this);
+        builder.setMessage(getString(R.string.wasCorrectQuestion)).setPositiveButton(getString(R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(R.string.no), dialogClickListener).show();
+    }
+
+    private void onWrongRecognitionButtonPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.correctWordQustion));
+        final List<String> words = new Vector<String>(Constants.VOCABULARY);
+        words.remove(output.getText().toString().toLowerCase());
+        for (int i = 0; i < words.size(); i++) {
+            words.set(i, makePretty(words.get(i)));
+        }
+        builder.setItems(words.toArray(new String[words.size()]), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                sample.setLabel(words.get(item).toLowerCase());
+                //upload sample
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void onFirstTimeStopButtonPressed(AsyncTask<Boolean, Void, Void> initFeatureExtractorTask) {
+        try {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getString(R.string.loadingClassifier));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    progressDialog.show();
+                }
+            });
+            initFeatureExtractorTask.get();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                }
+            });
+
+        } catch (Exception e) {
+            handleException(e);
+        }
+        firstTime = !firstTime;
+    }
+
+    private AsyncTask<Boolean, Void, Void> asyncInitFeatureExtractor() {
+        final AsyncTask<Boolean, Void, Void> initClassifierTask = new AsyncTask<Boolean, Void, Void>() {
+            @Override
+            protected Void doInBackground(Boolean... params) {
+                initFeatureExtractor();
+                String defClassifier = getResources().getString(R.string.dtw);
+                String classifierType = preferences.getString("classifierPref", defClassifier);
+                if(defClassifier.equals(classifierType)){
+                    initDTWClassifier();
+                }
+                else{
+                    initMLPClassifier();
+                }
+
+                return null;
+            }
+        };
+        initClassifierTask.execute(true);
+        return initClassifierTask;
+    }
+
+    private void initFeatureExtractor() {
+        String defFE = getResources().getString(R.string.noStickers);
+        String FEType = preferences.getString("featureExtractorPref", defFE);
+        if(defFE.equals(FEType)){
+            initNoStickersExtractor();
+        }
+        else {
+            initStickersExtractor();
         }
     }
 
@@ -199,7 +221,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     public String makePretty(String ans) {
         ans = ans.replaceAll(" i ", " I ");
         ans = ans.replaceAll(" i'", " I'");
-        ans = ans.substring(0,1).toUpperCase() + ans.substring(1, ans.length());
+        ans = ans.substring(0,1).toUpperCase(Locale.US) + ans.substring(1, ans.length());
         return ans;
     }
 
@@ -226,8 +248,14 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-
-            int result = tts.setLanguage(Locale.UK);
+            int result;
+            String defVoice = getResources().getString(R.string.male);
+            String voiceType = preferences.getString("voiceTypePref", defVoice);
+            if(!defVoice.equals(voiceType)){
+                result = tts.setLanguage(Locale.US);
+            } else {
+                result = tts.setLanguage(Locale.UK);
+            }
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
@@ -242,12 +270,12 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     @Override
     public boolean onKeyDown(int keycode, KeyEvent event ) {
         if(keycode == KeyEvent.KEYCODE_MENU){
-            launchPrefs();
+            launchSettings();
         }
         return super.onKeyDown(keycode,event);
     }
 
-    private void launchPrefs() {
+    private void launchSettings() {
         FragmentTransaction transaction = getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, settingsFragment);
         transaction.addToBackStack( null );
@@ -290,13 +318,9 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     public void onDestroy(){
         super.onDestroy();
         tts.shutdown();
-        mouthView.shutdown();
         if(featureExtractor instanceof NoMoreStickersFeatureExtractor)
             ((NoMoreStickersFeatureExtractor)featureExtractor).shutdown();
     }
-
-
-
 
 
     protected void initStickersExtractor() {
@@ -315,7 +339,6 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             // Load the classifier file from Java resources.
             // cvLoad must get file path so I copy it from assets to external storage and delete it later
             File externalClassifier = getFile("haarcascade_mcs_mouth.xml");
-
             // Preload the opencv_objdetect module to work around a known bug.
             Loader.load(opencv_objdetect.class);
             featureExtractor = new NoMoreStickersFeatureExtractor();
@@ -327,7 +350,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             }
             ((NoMoreStickersFeatureExtractor) featureExtractor).setClassifier(classifier);
             ((NoMoreStickersFeatureExtractor) featureExtractor).setStorage(opencv_core.CvMemStorage.create());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             handleException(e);
         }
@@ -353,8 +376,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                 manager.getUriForDownloadedFile(id);
             }
             classifier = new TimeWarperClassifier();
-            classifier.train(Utils.getTrainingSetFromZip(
-                    trainingSetFilePath));
+            classifier.train(Utils.getTrainingSetFromZip(trainingSetFilePath));
 
         }catch (Exception e){
             e.printStackTrace();

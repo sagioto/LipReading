@@ -19,10 +19,10 @@ public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 		List<Integer> frameCoordinates = new Vector<Integer>();
 		List<Future<List<Integer>>> futuresList = new Vector<Future<List<Integer>>>();
 
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.UPPER_STICKER_MIN, StickerColorConfiguration.UPPER_STICKER_MAX)));
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LOWER_STICKER_MIN, StickerColorConfiguration.LOWER_STICKER_MAX)));
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LEFT_STICKER_MIN, StickerColorConfiguration.LEFT_STICKER_MAX)));
-		futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.RIGHT_STICKER_MIN, StickerColorConfiguration.RIGHT_STICKER_MAX)));
+        futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.RIGHT_STICKER_MIN, StickerColorConfiguration.RIGHT_STICKER_MAX)));
+        futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LEFT_STICKER_MIN, StickerColorConfiguration.LEFT_STICKER_MAX)));
+        futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.UPPER_STICKER_MIN, StickerColorConfiguration.UPPER_STICKER_MAX)));
+        futuresList.add(threadPool.submit(new CoordinateGetter(img, StickerColorConfiguration.LOWER_STICKER_MIN, StickerColorConfiguration.LOWER_STICKER_MAX)));
 
 		for (Future<List<Integer>> future : futuresList) {
 			frameCoordinates.addAll(future.get());
