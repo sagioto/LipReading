@@ -1,6 +1,6 @@
 language: java
 before_install:
-  - uname -a
+  - apt-get install ia32-libs sun-java6-jdk -qq
   - wget https://javacv.googlecode.com/files/javacv-0.4-cppjars.zip
   - unzip javacv-0.4-cppjars.zip
   - unzip -o javacv-cppjars/opencv-2.4.4-linux-x86_64.jar
