@@ -1,7 +1,7 @@
 language: java
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install ia32-libs
+  - sudo apt-get update -qq
+  - sudo apt-get install libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 libsdl1.2debian:i386
   - wget https://javacv.googlecode.com/files/javacv-0.4-cppjars.zip
   - unzip javacv-0.4-cppjars.zip
   - unzip -o javacv-cppjars/opencv-2.4.4-linux-x86_64.jar
