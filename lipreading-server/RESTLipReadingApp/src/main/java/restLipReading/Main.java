@@ -3,11 +3,12 @@ package restLipReading;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
 import org.glassfish.grizzly.http.server.HttpServer;
+
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.core.UriBuilder;
 
 
 public class Main {
@@ -19,13 +20,14 @@ public class Main {
             try {
                 return Integer.parseInt(httpPort);
             } catch (NumberFormatException e) {
+                System.out.print("Couldn't parse port from property");
             }
         }
         return defaultPort;
     }
 
     private static URI getBaseURI() {
-        return UriBuilder.fromUri("http://0.0.0.0/").port(getPort(9998)).build();
+        return UriBuilder.fromUri("http://localhost/").port(getPort(9998)).build();
     }
 
     public static final URI BASE_URI = getBaseURI();

@@ -1,24 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>RESTLipReading</groupId>
-    <artifactId>RESTLipReadingApp</artifactId>
+    <groupId>edu.lipreading</groupId>
+    <artifactId>lipreading-server</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>RESTLipReadingApp</name>
+
+    <name>lipreading-server</name>
+
+    <parent>
+        <groupId>edu.lipreading</groupId>
+        <artifactId>LipReading</artifactId>
+        <version>3.0.0</version>
+    </parent>
+
     <dependencies>
-         <dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-grizzly2</artifactId>
             <version>${jersey-version}</version>
         </dependency>
-        <!-- uncomment this to get JSON support:
+        <!-- uncomment this to get JSON support:-->
          <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
             <version>${jersey-version}</version>
         </dependency>
-        -->
         <!-- uncomment this to get Fastinfoset support:
          <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -53,6 +65,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -81,10 +94,18 @@
             </plugin>
         </plugins>
     </build>
+
     <properties>
         <jersey-version>1.8</jersey-version>
     </properties>
+
     <repositories>
+        <repository>
+            <id>snapshot-repository.java.net</id>
+            <name>Java.net Snapshot Repository for Maven</name>
+            <url>https://maven.java.net/content/repositories/snapshots/</url>
+            <layout>default</layout>
+        </repository>
         <repository>
             <id>glassfish.java.net</id>
             <name>GlassFish Maven Repository</name>

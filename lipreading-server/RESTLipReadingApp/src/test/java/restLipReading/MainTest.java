@@ -1,12 +1,11 @@
 
 package restLipReading;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-
-import com.sun.jersey.core.header.MediaTypes;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.header.MediaTypes;
 import junit.framework.TestCase;
+import org.glassfish.grizzly.http.server.HttpServer;
 
 
 public class MainTest extends TestCase {
@@ -41,9 +40,25 @@ public class MainTest extends TestCase {
     /**
      * Test to see that the message "Got it!" is sent in the response.
      */
-    public void _testMyResource() {
-        String responseMsg = r.path("myresource").get(String.class);
+    public void testMyResource() {
+        String responseMsg = r.path("/lipreading").get(String.class);
         assertEquals("Got it!", responseMsg);
+    }
+
+    /**
+     * Test classification
+     */
+    public void testClassify() {
+        SampleJson sample = new SampleJson();
+        sample.setHeight(600);
+        sample.setWidth(800);
+        sample.setId("test_sample_1");
+        sample.setLabel("Hello");
+        sample.setMatrix(new byte[][]{});
+        sample.setOriginalMatrixSize(0);
+
+        SampleJson response = r.path("/lipreading").post(SampleJson.class, sample);
+        assertEquals(sample.getId(), response.getId());
     }
 
     /**
