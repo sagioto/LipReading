@@ -3,9 +3,8 @@ package edu.lipreading.classification;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 
-import edu.lipreading.normalization.SkippedFramesNormalizer;
-import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,8 +17,9 @@ import edu.lipreading.Utils;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
-import edu.lipreading.vision.ColoredStickersFeatureExtractor;
+import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
 public class MultiLayerPerceptronClassifierTest {
 
@@ -56,12 +56,7 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@BeforeClass
 	public static void loadClassifierModel() throws Exception{
-        String userDir = System.getProperty("user.dir");
-        if(userDir.contains("-core"))
-            userDir = userDir.substring(0, userDir.lastIndexOf(System.getProperty("file.separator")));
-        String modelFilePath = userDir + "/lipreading-android/assets/yesnohello2.model";
-        FileInputStream modelInputStream = new FileInputStream(new File(modelFilePath));
-        mpClassifier = new MultiLayerPerceptronClassifier(modelInputStream);
+        mpClassifier = new MultiLayerPerceptronClassifier(new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream());
         mpClassifier.setVocabulary(Utils.readFile("vocabularies/primitive.txt"));
 	}
 	

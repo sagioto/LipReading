@@ -192,17 +192,7 @@ public class Utils {
     }
 
     public static List<String> readFile(String resource){
-        String string;
-        if(isAndroid()){
-            try {
-                string = convertStreamToString(new FileInputStream(resource));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else{
-            string = convertStreamToString(ClassLoader.getSystemResourceAsStream(resource));
-        }
+        String string = convertStreamToString(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
         return Arrays.asList(string.toLowerCase().split("\n"));
     }
 

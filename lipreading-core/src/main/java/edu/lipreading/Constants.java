@@ -13,21 +13,9 @@ public class Constants {
     static {
         InputStream is;
         String propertiesFileName = "lr.properties";
-        String androidPathPrefix = "/storage/sdcard0/Android/data/edu.lipreading/files/";
         try {
-            if(Utils.isAndroid()){
-                is = new FileInputStream(androidPathPrefix + "properties/" + propertiesFileName);
-
-            }
-            else{
-                is = ClassLoader.getSystemResourceAsStream(propertiesFileName);
-            }
-
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFileName);
             LIP_READING_PROPS.load(is);
-            if(Utils.isAndroid()){
-                LIP_READING_PROPS.setProperty("DEFAULT_VOCABULARY_FILE",
-                        androidPathPrefix + "txt/" + LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
-            }
             is.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

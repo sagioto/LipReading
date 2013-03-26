@@ -30,8 +30,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // underlying surface is created and destroyed.
         holder = getHolder();
         holder.addCallback(this);
-        // deprecated setting, but required on Android versions prior to 3.0
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -71,21 +69,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         Camera.Parameters parameters = camera.getParameters();
-        Display display = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        switch(display.getRotation()){
-            case Surface.ROTATION_0:
-                camera.setDisplayOrientation(90);
-                break;
-            case Surface.ROTATION_270:
-                camera.setDisplayOrientation(180);
-                break;
-            case Surface.ROTATION_90:
-            case Surface.ROTATION_180:
-        }
-
+        camera.setDisplayOrientation(90);
 
         if (previewCallback != null) {
             camera.setPreviewCallbackWithBuffer(previewCallback);
+            parameters.setPreviewSize(352, 288);
             Camera.Size size = parameters.getPreviewSize();
             byte[] data =
                     new byte[size.width * size.height * ImageFormat.getBitsPerPixel(parameters.getPreviewFormat())/8];

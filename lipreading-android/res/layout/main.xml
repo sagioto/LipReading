@@ -4,7 +4,6 @@
     android:layout_height="fill_parent">
     <TextView
         android:id="@+id/output"
-        android:editable="false"
         android:textSize="30sp"
         android:gravity="center"
         android:layout_width="fill_parent"
