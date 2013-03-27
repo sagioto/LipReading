@@ -18,7 +18,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>lipreading-core</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -34,7 +34,6 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
-            <version>${jersey-version}</version>
         </dependency>
         <!-- uncomment this to get Fastinfoset support:
          <dependency>
@@ -66,7 +65,6 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>${jersey-version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -94,10 +92,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <jersey-version>1.8</jersey-version>
-    </properties>
 
     <repositories>
         <repository>
