@@ -18,17 +18,18 @@ import android.widget.TextView;
 import com.googlecode.javacpp.Loader;
 import com.googlecode.javacv.cpp.opencv_core;
 import com.googlecode.javacv.cpp.opencv_objdetect;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.classification.TimeWarperClassifier;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,9 +53,11 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private Classifier classifier;
     private Sample sample = new Sample("android");
     private AbstractFeatureExtractor featureExtractor;
-
     private SettingsFragment settingsFragment;
     private SharedPreferences preferences;
+    private Client client = Client.create();
+    private WebResource resource = client.resource("");
+    private int sentSampleId = -1;
 
 
     /**
@@ -108,7 +111,22 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         if(firstTime){
             onFirstTimeStopButtonPressed(initFeatureExtractorTask);
         }
-        String ans = "hello";//classifier.test(LipReading.normelize(sample, sfn, cn, tn));
+        SamplePacket toSend = Utils.getPacketFromSample(sample);
+        String response = "";
+        try{
+        response = resource.path("/lipreading")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .header("training", isTrainingMode())
+                .post(String.class, toSend);
+        }  catch (UniformInterfaceException ue) {
+            handleRequstError(ue);
+        }
+        if("".equals(response)){
+            showErrorMessage("Didn't get classification from server");
+        }
+        String[] split = response.split(",");
+        String ans = split[0];
+        sentSampleId = Integer.parseInt(split[1]);
         ans = makePretty(ans);
         output.setText(ans);
         speakOut();
@@ -117,14 +135,29 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         }
     }
 
+    private void handleRequstError(UniformInterfaceException ue) {
+        ClientResponse clientResponse = ue.getResponse();
+        String entity = clientResponse.getEntity(String.class);
+        showErrorMessage("got status " + clientResponse.getStatus() + "\nand entity: " + entity);
+    }
+
     private void onStopButtonPressedInTrainingMode() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        sample.setLabel(output.getText().toString());
-                        //upload sample
+                        try{
+                            String response = resource
+                                    .path("/lipreading")
+                                    .type(MediaType.APPLICATION_JSON_TYPE)
+                                    .header("id", sentSampleId)
+                                    .put(String.class, output.getText().toString());
+                            if(!"OK".equals(response))
+                                showErrorMessage("Something went wrong with training");
+                        }  catch (UniformInterfaceException ue) {
+                            handleRequstError(ue);
+                        }
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -213,7 +246,10 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     }
 
     private void handleException(Exception e) {
-        new AlertDialog.Builder(this).setMessage(e.getMessage()).create().show();
+        showErrorMessage(e.getMessage());
+    }
+    private void showErrorMessage(String message) {
+        new AlertDialog.Builder(this).setMessage(message).create().show();
     }
 
     public String makePretty(String ans) {
