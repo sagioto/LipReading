@@ -29,6 +29,10 @@
             <version>${javacv.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>lipreading-core</artifactId>
             <version>${project.version}</version>
