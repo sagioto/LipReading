@@ -67,8 +67,6 @@
                     <groupId>com.googlecode.javacv</groupId>
                     <artifactId>javacv</artifactId>
                 </exclusion>
-
-                <!--for debugging-->
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
@@ -77,10 +75,10 @@
                     <groupId>net.imagej</groupId>
                     <artifactId>ij</artifactId>
                 </exclusion>
-                <!--<exclusion>
-                    <groupId>com.thoughtworks.xstream</groupId>
-                    <artifactId>xstream</artifactId>
-                </exclusion>-->
+                <exclusion>
+                    <groupId>nz.ac.waikato.cms.weka</groupId>
+                    <artifactId>weka-dev</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>net.sf.opencsv</groupId>
                     <artifactId>opencsv</artifactId>

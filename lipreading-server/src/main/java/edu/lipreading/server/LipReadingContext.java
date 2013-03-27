@@ -1,0 +1,76 @@
+package edu.lipreading.server;
+
+import edu.lipreading.LipReading;
+import edu.lipreading.Sample;
+import edu.lipreading.classification.Classifier;
+import edu.lipreading.classification.MultiLayerPerceptronClassifier;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
+import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: Sagi
+ * Date: 28/03/13
+ * Time: 00:09
+ */
+public class LipReadingContext {
+    private static final int TRAIN_EACH = 100;
+    private static Classifier classifier;
+    static {
+        try {
+            InputStream modelFileInputStream = new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream();
+            classifier = new MultiLayerPerceptronClassifier(modelFileInputStream);
+            modelFileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private static final Normalizer cn = new CenterNormalizer();
+    private static final Normalizer tn = new LinearStretchTimeNormalizer();
+    private static final Normalizer sfn = new SkippedFramesNormalizer();
+    private static final AtomicInteger counter = new AtomicInteger(0);
+    private static final ConcurrentMap<Integer, Sample> instances = new ConcurrentHashMap<Integer, Sample>();
+
+    public static Sample normalize(Sample sample){
+        return LipReading.normelize(sample, cn, sfn, tn);
+    }
+
+    public static String classify(Sample sample){
+        return classifier.test(sample);
+    }
+
+    public static int put(Sample sample){
+        int count = count();
+        instances.put(count, sample);
+        if(count % TRAIN_EACH == 0){
+            startTraining();
+        }
+        return count;
+    }
+
+    public static void startTraining() {
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                classifier.train(new Vector<Sample>(instances.values()));
+            }
+        }).start();
+    }
+
+    public static Sample get(int id){
+        return instances.get(id);
+    }
+
+    private static int count(){
+        return counter.getAndIncrement();
+    }
+}

@@ -80,9 +80,10 @@ public class MultiLayerPerceptronClassifier implements Classifier{
         for (Sample sample : trainingSet) {
             instances.add(sampleToInstance(sample));
         }
-        this.classifier = new MultilayerPerceptron();
         try {
-            classifier.buildClassifier(instances);
+            MultilayerPerceptron multilayerPerceptron = new MultilayerPerceptron();
+            multilayerPerceptron.buildClassifier(instances);
+            this.classifier = multilayerPerceptron;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -47,31 +47,25 @@ public class MainTest extends TestCase {
     /**
      * Test to see that the message "Got it!" is sent in the response.
      */
-    public void testMyResource() {
+    /*public void testGet() {
         String responseMsg = r.path("/lipreading").get(String.class);
         assertEquals("Got it!", responseMsg);
-    }
+    }*/
 
     /**
      * Test classification
      */
     public void testClassify() {
         SamplePacket sample = new SamplePacket();
-        sample.setHeight(600);
-        sample.setWidth(800);
-        sample.setId("test_sample_1");
-        sample.setLabel("no");
-        sample.setMatrix(new int[4][50]);
-        sample.setOriginalMatrixSize(0);
         Sample s = null;
         try {
             s = (Sample) XStream.read(new URL("https://dl.dropbox.com/u/7091414/No31-18.29.10-24.02.2013.xml").openStream());
             sample = Utils.getPacketFromSample(s);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
-        String response = r.path("/lipreading").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
-        assertEquals((s.getLabel() + ", 0").toLowerCase(), response.toLowerCase());
+        String response = r.path("/lipreading/samples").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
+        assertEquals((s.getLabel() + ",0").toLowerCase(), response.toLowerCase());
     }
 
     /**
