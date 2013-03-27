@@ -57,4 +57,6 @@ public class Constants {
     public static final short LEFT_VECTOR_INDEX = 2;
     public static final short RIGHT_VECTOR_INDEX = 3;
 
+    public static final String SERVER_IP = LIP_READING_PROPS.getProperty("SERVER_IP");
+
 }
