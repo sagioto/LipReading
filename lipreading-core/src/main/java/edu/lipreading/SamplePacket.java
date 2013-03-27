@@ -1,4 +1,4 @@
-package edu.lipreading.server;
+package edu.lipreading;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -9,15 +9,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 23:59
  */
 @XmlRootElement
-public class SampleJson {
+public class SamplePacket {
     private String id;
-    private byte[][] matrix;
+    private int[][] matrix;
     private int width;
     private int height;
     private String label;
     private int originalMatrixSize;
 
-    public SampleJson() {
+    public SamplePacket() {
         super();
     }
 
@@ -29,11 +29,11 @@ public class SampleJson {
         this.id = id;
     }
 
-    public byte[][] getMatrix() {
+    public int[][] getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(byte[][] matrix) {
+    public void setMatrix(int[][] matrix) {
         this.matrix = matrix;
     }
 

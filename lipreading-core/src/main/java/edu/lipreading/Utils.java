@@ -255,4 +255,42 @@ public class Utils {
     static boolean isAndroid() {
         return System.getProperty("java.vm.vendor").toLowerCase().contains("android");
     }
+
+    public static Sample getSampleFromPacket(SamplePacket sp) {
+        Sample sample = new Sample();
+        sample.setHeight(sp.getHeight());
+        sample.setWidth(sp.getWidth());
+        sample.setOriginalMatrixSize(sp.getOriginalMatrixSize());
+        sample.setId(sp.getId());
+        sample.setLabel(sp.getLabel());
+
+        for(int i=0; i<sp.getMatrix().length; i++) {
+            Vector<Integer> vec = new Vector<Integer>();
+            for(int j=0; j<sp.getMatrix()[i].length; j++) {
+                vec.add(sp.getMatrix()[i][j]);
+            }
+            sample.getMatrix().add(vec);
+        }
+
+        return sample;
+    }
+
+    public static SamplePacket getPacketFromSample(Sample s) {
+        SamplePacket sample = new SamplePacket();
+        sample.setHeight(s.getHeight());
+        sample.setWidth(s.getWidth());
+        sample.setLabel(s.getLabel());
+        sample.setId(s.getId());
+        sample.setOriginalMatrixSize(s.getOriginalMatrixSize());
+
+        int[][] matrix = new int[s.getMatrix().size()][];
+        for(int i=0; i<matrix.length; i++) {
+            matrix[i] = new int[s.getMatrix().get(i).size()];
+            for(int j=0; j<matrix[i].length; j++) {
+                matrix[i][j] = s.getMatrix().get(i).get(j);
+            }
+        }
+        sample.setMatrix(matrix);
+        return sample;
+    }
 }

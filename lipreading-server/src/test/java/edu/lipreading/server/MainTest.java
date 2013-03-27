@@ -4,8 +4,15 @@ package edu.lipreading.server;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.header.MediaTypes;
+import edu.lipreading.Sample;
+import edu.lipreading.SamplePacket;
+import edu.lipreading.Utils;
 import junit.framework.TestCase;
 import org.glassfish.grizzly.http.server.HttpServer;
+import weka.core.xml.XStream;
+
+import javax.ws.rs.core.MediaType;
+import java.net.URL;
 
 
 public class MainTest extends TestCase {
@@ -49,16 +56,22 @@ public class MainTest extends TestCase {
      * Test classification
      */
     public void testClassify() {
-        SampleJson sample = new SampleJson();
+        SamplePacket sample = new SamplePacket();
         sample.setHeight(600);
         sample.setWidth(800);
         sample.setId("test_sample_1");
-        sample.setLabel("Hello");
-        sample.setMatrix(new byte[][]{});
+        sample.setLabel("no");
+        sample.setMatrix(new int[4][50]);
         sample.setOriginalMatrixSize(0);
-
-        SampleJson response = r.path("/lipreading").post(SampleJson.class, sample);
-        assertEquals(sample.getId(), response.getId());
+        Sample s = null;
+        try {
+            s = (Sample) XStream.read(new URL("https://dl.dropbox.com/u/7091414/No31-18.29.10-24.02.2013.xml").openStream());
+            sample = Utils.getPacketFromSample(s);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        String response = r.path("/lipreading").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
+        assertEquals((s.getLabel() + ", 0").toLowerCase(), response.toLowerCase());
     }
 
     /**
@@ -71,4 +84,5 @@ public class MainTest extends TestCase {
                 
         assertTrue(serviceWadl.length() > 0);
     }
+
 }

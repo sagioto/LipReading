@@ -3,6 +3,8 @@ package edu.lipreading.server;
 
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
+import edu.lipreading.SamplePacket;
+import edu.lipreading.Utils;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
@@ -35,7 +37,6 @@ public class LipReadingResource {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
-    // TODO: update the class to suit your needs
     
     // The Java method will process HTTP GET requests
     @GET 
@@ -47,19 +48,26 @@ public class LipReadingResource {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public SampleJson classify(SampleJson sample) {
-        return sample;
-    }
-
-    @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String classify(Sample sample){
-        int id = counter.getAndIncrement();
-        instances.put(id, sample);
+    @Produces(MediaType.TEXT_PLAIN)
+    public String classify(@DefaultValue("false") @HeaderParam("training") boolean training, SamplePacket sp) {
+        Sample sample = Utils.getSampleFromPacket(sp);
+        int id = -1;
+        if(training) {
+            id = counter.getAndIncrement();
+            instances.put(id, sample);
+        }
         return classifier.test(LipReading.normelize(sample, sfn, cn, tn)) + ", " + id;
     }
+
+//    @POST
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public String classify(Sample sample){
+//        int id = counter.getAndIncrement();
+//        instances.put(id, sample);
+//        return classifier.test(LipReading.normelize(sample, sfn, cn, tn)) + ", " + id;
+//    }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -71,4 +79,5 @@ public class LipReadingResource {
         //addSampleToArff(sample);
         return "OK";
     }
+
 }
