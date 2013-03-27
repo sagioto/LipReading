@@ -53,6 +53,7 @@ public class LipReadingResource {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String classify(Sample sample){
         int id = counter.getAndIncrement();
@@ -61,6 +62,7 @@ public class LipReadingResource {
     }
 
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String train(int id , String label){
         Sample sample = instances.remove(id);
