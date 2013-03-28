@@ -10,12 +10,12 @@ import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
 
 
-@Path("/lipreading/samples/")
+@Path("/lipreading/samples")
 public class SampleResource {
     private static final Logger log = Logger.getLogger(new Object(){}.getClass().getEnclosingClass().getSimpleName());
 
     @GET
-    @Path("/lipreading/samples/{id}")
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket get(@PathParam("id")int id) {
         log.info("got get request with id: " + id);
@@ -44,7 +44,7 @@ public class SampleResource {
     }
 
     @DELETE
-    @Path("/lipreading/samples/{id}")
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket remove(@PathParam("id")int id) {

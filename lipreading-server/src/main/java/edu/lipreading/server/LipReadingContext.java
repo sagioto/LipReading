@@ -2,7 +2,6 @@ package edu.lipreading.server;
 
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
-import edu.lipreading.SamplePacket;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
