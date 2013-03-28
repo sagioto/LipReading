@@ -114,7 +114,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         SamplePacket toSend = Utils.getPacketFromSample(sample);
         String response = "";
         try{
-        response = resource.path("/lipreading")
+        response = resource.path("/lipreading/samples")
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .header("training", isTrainingMode())
                 .post(String.class, toSend);
@@ -148,13 +148,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         try{
-                            String response = resource
-                                    .path("/lipreading")
-                                    .type(MediaType.APPLICATION_JSON_TYPE)
-                                    .header("id", sentSampleId)
-                                    .put(String.class, output.getText().toString());
-                            if(!"OK".equals(response))
-                                showErrorMessage("Something went wrong with training");
+                            putLabel(output.getText().toString().toLowerCase());
                         }  catch (UniformInterfaceException ue) {
                             handleRequstError(ue);
                         }
@@ -171,6 +165,15 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                 .setNegativeButton(getString(R.string.no), dialogClickListener).show();
     }
 
+    private void putLabel(String label) {
+        String response = resource.path("/lipreading/samples")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .header("id", sentSampleId)
+                .put(String.class, label);
+        if(!"OK".equals(response))
+            showErrorMessage("Something went wrong with training");
+    }
+
     private void onWrongRecognitionButtonPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.correctWordQustion));
@@ -181,8 +184,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         }
         builder.setItems(words.toArray(new String[words.size()]), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-                sample.setLabel(words.get(item).toLowerCase());
-                //upload sample
+                putLabel(words.get(item).toLowerCase());
             }
         });
         AlertDialog alert = builder.create();

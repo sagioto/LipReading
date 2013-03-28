@@ -15,6 +15,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -45,10 +46,14 @@ public class LipReadingContext {
     private static final ConcurrentMap<Integer, Sample> instances = new ConcurrentHashMap<Integer, Sample>();
 
     public static Sample normalize(Sample sample){
+        if(log.isLoggable(Level.FINEST))
+            log.finest("normalizing sample with sample id:" + sample.getId());
         return LipReading.normelize(sample, cn, sfn, tn);
     }
 
     public static String classify(Sample sample){
+        if(log.isLoggable(Level.FINEST))
+            log.finest("classifying sample with sample id:" + sample.getId());
         return classifier.test(sample);
     }
 
@@ -58,19 +63,26 @@ public class LipReadingContext {
         if((count % TRAIN_EACH == 0) && (count != 0)){
             startTraining();
         }
+        if(log.isLoggable(Level.FINEST))
+            log.finest("adding sample with id:" + count + " to training set");
         return count;
     }
 
     public static void startTraining() {
+
         new Thread(new Runnable(){
             @Override
             public void run() {
+                log.info("starting classifier training with " + instances.size() + " samples in training set...");
                 classifier.train(new Vector<Sample>(instances.values()));
+                log.info("finished classifier training");
             }
         }).start();
     }
 
     public static Sample get(int id){
+        if(log.isLoggable(Level.FINEST))
+            log.finest("getting sample with id:" + id+ " to training set");
         return instances.get(id);
     }
 
@@ -79,6 +91,8 @@ public class LipReadingContext {
     }
 
     public static Sample remove(int id) {
+        if(log.isLoggable(Level.FINEST))
+            log.finest("removing sample with id:" + id+ " to training set");
         return instances.remove(id);
     }
 }

@@ -18,7 +18,7 @@ public class SampleResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket get(@PathParam("id")int id) {
-        log.info("got get request with id: " + id);
+        log.info("got GET request with id: " + id);
         return Utils.getPacketFromSample(LipReadingContext.get(id));
     }
 
@@ -32,6 +32,7 @@ public class SampleResource {
         if(training) {
             id = LipReadingContext.put(sample);
         }
+        log.info("got POST request with training: " + training + " returning id: " + id);
         return LipReadingContext.classify(LipReadingContext.normalize(sample)) + "," + id;
     }
 
@@ -39,6 +40,7 @@ public class SampleResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String train(@HeaderParam("id")int id , String label){
+        log.info("got PUT request with id: " + id + " and label: " + label);
         LipReadingContext.get(id).setLabel(label);
         return "OK";
     }
@@ -48,12 +50,14 @@ public class SampleResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket remove(@PathParam("id")int id) {
+        log.info("got DELETE request with id: " + id);
         return Utils.getPacketFromSample(LipReadingContext.remove(id));
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String startTraining(){
+        log.info("got GET request for start training");
         LipReadingContext.startTraining();
         return "OK";
     }
