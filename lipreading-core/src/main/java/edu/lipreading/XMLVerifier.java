@@ -1,11 +1,11 @@
 package edu.lipreading;
 
+import weka.core.xml.XStream;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
-import weka.core.xml.XStream;
 
 public class XMLVerifier {
 
