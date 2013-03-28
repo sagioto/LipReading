@@ -1,6 +1,7 @@
 
 package edu.lipreading.server;
 
+import com.sun.jersey.api.NotFoundException;
 import edu.lipreading.Sample;
 import edu.lipreading.SamplePacket;
 import edu.lipreading.Utils;
@@ -19,7 +20,13 @@ public class SampleResource {
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket get(@PathParam("id")int id) {
         log.info("got GET request with id: " + id);
-        return Utils.getPacketFromSample(LipReadingContext.get(id));
+        Sample s = LipReadingContext.get(id);
+        if(s == null){
+            String message = "sample with id:" + id + ", is not found";
+            log.severe(message);
+            throw new NotFoundException(message);
+        }
+        return Utils.getPacketFromSample(s);
     }
 
 
@@ -41,7 +48,13 @@ public class SampleResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String train(@HeaderParam("id")int id , String label){
         log.info("got PUT request with id: " + id + " and label: " + label);
-        LipReadingContext.get(id).setLabel(label);
+        Sample sample = LipReadingContext.get(id);
+        if(sample == null){
+            String message = "sample with id:" + id + ", is not found";
+            log.severe(message);
+            throw new NotFoundException(message);
+        }
+        sample.setLabel(label);
         return "OK";
     }
 
@@ -51,7 +64,13 @@ public class SampleResource {
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket remove(@PathParam("id")int id) {
         log.info("got DELETE request with id: " + id);
-        return Utils.getPacketFromSample(LipReadingContext.remove(id));
+        Sample sample = LipReadingContext.remove(id);
+        if(sample == null){
+            String message = "sample with id:" + id + ", is not found";
+            log.severe(message);
+            throw new NotFoundException(message);
+        }
+        return Utils.getPacketFromSample(sample);
     }
 
     @GET

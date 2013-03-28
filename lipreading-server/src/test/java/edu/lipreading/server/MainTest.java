@@ -2,6 +2,7 @@
 package edu.lipreading.server;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.header.MediaTypes;
 import edu.lipreading.Sample;
@@ -18,7 +19,7 @@ import java.net.URL;
 public class MainTest extends TestCase {
 
     private HttpServer httpServer;
-    
+
     private WebResource r;
 
     public MainTest(String testName) {
@@ -28,8 +29,8 @@ public class MainTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
-        //start the Grizzly2 web container 
+
+        //start the Grizzly2 web container
         httpServer = Main.startServer();
 
         // create the client
@@ -76,7 +77,43 @@ public class MainTest extends TestCase {
 
         sp = r.path("/lipreading/samples/" + 0).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(SamplePacket.class);
         assertEquals("no", sp.getLabel().toLowerCase());
+
     }
+
+    public void testFalseGet() {
+        try{
+            r.path("/lipreading/samples/" + 0).get(SamplePacket.class);
+            assertFalse("should have got exception", true);
+        } catch (UniformInterfaceException e){
+            assertEquals(404, e.getResponse().getStatus());
+        }
+    }
+
+
+    public void testFalseTrain() {
+        try{
+            r.path("/lipreading/samples")
+                    .type(MediaType.APPLICATION_JSON_TYPE)
+                    .header("id", 0)
+                    .put(String.class, "something");
+            assertFalse("should have got exception", true);
+        } catch (UniformInterfaceException e){
+            assertEquals(404, e.getResponse().getStatus());
+        }
+    }
+
+    public void testFalseRemove() {
+        try{
+            r.path("/lipreading/samples/" + 0)
+                    .type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .delete(SamplePacket.class);
+            assertFalse("should have got exception", true);
+        } catch (UniformInterfaceException e){
+            assertEquals(404, e.getResponse().getStatus());
+        }
+    }
+
 
     /**
      * Test if a WADL document is available at the relative path
