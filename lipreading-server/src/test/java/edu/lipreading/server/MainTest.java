@@ -44,13 +44,6 @@ public class MainTest extends TestCase {
         httpServer.stop();
     }
 
-    /**
-     * Test to see that the message "Got it!" is sent in the response.
-     */
-    /*public void testGet() {
-        String responseMsg = r.path("/lipreading").get(String.class);
-        assertEquals("Got it!", responseMsg);
-    }*/
 
     /**
      * Test classification
@@ -66,6 +59,16 @@ public class MainTest extends TestCase {
         }
         String response = r.path("/lipreading/samples").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
         assertEquals((s.getLabel() + ",0").toLowerCase(), response.toLowerCase());
+
+        response = r.path("/lipreading/samples").type(MediaType.APPLICATION_JSON_TYPE).header("id", 0).put(String.class, sample);
+        assertEquals("OK", response);
+
+        /*TODO: check why these don't pass
+        SamplePacket sp = r.path("/lipreading/samples").queryParam("id", "0").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).get(SamplePacket.class);
+        assertEquals("no", sp.getLabel().toLowerCase());
+
+        sp = r.path("/lipreading/samples").queryParam("id", "0").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(SamplePacket.class);
+        assertEquals("no", sp.getLabel().toLowerCase());*/
     }
 
     /**

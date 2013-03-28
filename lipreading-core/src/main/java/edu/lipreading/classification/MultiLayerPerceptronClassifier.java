@@ -3,14 +3,13 @@ package edu.lipreading.classification;
 import edu.lipreading.Constants;
 import edu.lipreading.Sample;
 import weka.classifiers.functions.MultilayerPerceptron;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.SerializationHelper;
+import weka.core.*;
 import weka.core.converters.ArffLoader;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MultiLayerPerceptronClassifier implements Classifier{
@@ -76,7 +75,8 @@ public class MultiLayerPerceptronClassifier implements Classifier{
     @Override
     public void train(List<Sample> trainingSet) {
         this.samples = trainingSet;
-        Instances instances = new Instances("dataset", null, trainingSet.size());
+        ArrayList<Attribute> list = Collections.list(sampleToInstance(trainingSet.get(0)).enumerateAttributes());
+        Instances instances = new Instances("dataset", list, trainingSet.size());
         for (Sample sample : trainingSet) {
             instances.add(sampleToInstance(sample));
         }

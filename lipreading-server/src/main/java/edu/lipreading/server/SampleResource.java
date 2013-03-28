@@ -7,16 +7,21 @@ import edu.lipreading.Utils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.logging.Logger;
 
-// The Java class will be hosted at the URI path "/lipreading"
+
 @Path("/lipreading/samples/")
 public class SampleResource {
+    private static final Logger log = Logger.getLogger(new Object(){}.getClass().getEnclosingClass().getSimpleName());
 
     @GET
+    @Path("/lipreading/samples/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public SamplePacket get(@PathParam("id")int id) {
+        log.info("got get request with id: " + id);
         return Utils.getPacketFromSample(LipReadingContext.get(id));
     }
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -38,14 +43,13 @@ public class SampleResource {
         return "OK";
     }
 
-    /*
-    TODO: find a way to also post an already labeled and normalized sample like in our xmls
-    @POST
+    @DELETE
+    @Path("/lipreading/samples/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public int addToTrainingSet(SamplePacket sp){
-        return LipReadingContext.put(Utils.getSampleFromPacket(sp));
-    }*/
+    @Produces(MediaType.APPLICATION_JSON)
+    public SamplePacket remove(@PathParam("id")int id) {
+        return Utils.getPacketFromSample(LipReadingContext.remove(id));
+    }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)

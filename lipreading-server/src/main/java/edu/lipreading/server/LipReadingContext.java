@@ -2,6 +2,7 @@ package edu.lipreading.server;
 
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
+import edu.lipreading.SamplePacket;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
@@ -15,6 +16,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,12 +26,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class LipReadingContext {
     private static final int TRAIN_EACH = 100;
+    private static final Logger log = Logger.getLogger(new Object(){}.getClass().getEnclosingClass().getSimpleName());
     private static Classifier classifier;
     static {
         try {
+            log.info("starting MLP classifier...");
             InputStream modelFileInputStream = new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream();
             classifier = new MultiLayerPerceptronClassifier(modelFileInputStream);
             modelFileInputStream.close();
+            log.info("finished reading model file");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,7 +56,7 @@ public class LipReadingContext {
     public static int put(Sample sample){
         int count = count();
         instances.put(count, sample);
-        if(count % TRAIN_EACH == 0){
+        if((count % TRAIN_EACH == 0) && (count != 0)){
             startTraining();
         }
         return count;
@@ -72,5 +77,9 @@ public class LipReadingContext {
 
     private static int count(){
         return counter.getAndIncrement();
+    }
+
+    public static Sample remove(int id) {
+        return instances.remove(id);
     }
 }
