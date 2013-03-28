@@ -57,7 +57,7 @@ public class LipReadingResource {
             id = counter.getAndIncrement();
             instances.put(id, sample);
         }
-        return classifier.test(LipReading.normelize(sample, sfn, cn, tn)) + ", " + id;
+        return classifier.test(LipReading.normelize(sample, sfn, cn, tn)) + "," + id;
     }
 
 //    @POST
@@ -71,8 +71,14 @@ public class LipReadingResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String train(int id , String label){
+    @Produces(MediaType.TEXT_PLAIN)
+    public String updateSample(@DefaultValue("-1") @HeaderParam("id") int id, String label) {
+        if(id==-1) {
+            return "OK";
+        }
+        if(!instances.containsKey(id)) {
+            return "404";
+        }
         Sample sample = instances.remove(id);
         sample.setLabel(label);
         //add as line arff file

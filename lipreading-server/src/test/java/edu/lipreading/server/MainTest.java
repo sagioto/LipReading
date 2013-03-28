@@ -56,13 +56,7 @@ public class MainTest extends TestCase {
      * Test classification
      */
     public void testClassify() {
-        SamplePacket sample = new SamplePacket();
-        sample.setHeight(600);
-        sample.setWidth(800);
-        sample.setId("test_sample_1");
-        sample.setLabel("no");
-        sample.setMatrix(new int[4][50]);
-        sample.setOriginalMatrixSize(0);
+        SamplePacket sample = null;
         Sample s = null;
         try {
             s = (Sample) XStream.read(new URL("https://dl.dropbox.com/u/7091414/No31-18.29.10-24.02.2013.xml").openStream());
@@ -71,7 +65,29 @@ public class MainTest extends TestCase {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         String response = r.path("/lipreading").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
-        assertEquals((s.getLabel() + ", 0").toLowerCase(), response.toLowerCase());
+        assertEquals((s.getLabel() + ",0").toLowerCase(), response.toLowerCase());
+
+        response = r.path("/lipreading").type(MediaType.APPLICATION_JSON_TYPE).header("training", false).post(String.class, sample);
+        assertEquals((s.getLabel() + ",-1").toLowerCase(), response.toLowerCase());
+    }
+
+    public void testPut() {
+        SamplePacket sample = null;
+        Sample s;
+        try {
+            s = (Sample) XStream.read(new URL("https://dl.dropbox.com/u/7091414/No31-18.29.10-24.02.2013.xml").openStream());
+            sample = Utils.getPacketFromSample(s);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        String response = r.path("/lipreading").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
+
+        String[] split = response.split(",");
+        String label = split[0];
+        int id = Integer.valueOf(split[1]);
+
+        response = r.path("/lipreading").type(MediaType.APPLICATION_JSON_TYPE).header("id", id).put(String.class, label);
+        assertEquals("OK", response);
     }
 
     /**
