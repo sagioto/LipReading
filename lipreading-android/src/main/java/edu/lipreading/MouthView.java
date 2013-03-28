@@ -1,30 +1,21 @@
 package edu.lipreading;
 
-import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
-import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
-import static com.googlecode.javacv.cpp.opencv_core.cvFlip;
-import static com.googlecode.javacv.cpp.opencv_core.cvTranspose;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.View;
+import com.googlecode.javacv.cpp.opencv_core.*;
 
-import com.googlecode.javacv.cpp.opencv_core.CvSize;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
-import weka.gui.scripting.GroovyScript;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import static com.googlecode.javacv.cpp.opencv_core.*;
 
 public class MouthView extends View implements Camera.PreviewCallback {
     public static final int SUBSAMPLING_FACTOR = 2;

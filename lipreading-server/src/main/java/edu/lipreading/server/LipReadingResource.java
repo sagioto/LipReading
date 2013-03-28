@@ -1,89 +1,11 @@
-
 package edu.lipreading.server;
 
-import edu.lipreading.LipReading;
-import edu.lipreading.Sample;
-import edu.lipreading.SamplePacket;
-import edu.lipreading.Utils;
-import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.MultiLayerPerceptronClassifier;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-// The Java class will be hosted at the URI path "/lipreading"
-@Path("/lipreading")
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dagan
+ * Date: 28/03/13
+ * Time: 11:45
+ * To change this template use File | Settings | File Templates.
+ */
 public class LipReadingResource {
-    private Classifier classifier;
-    private Normalizer cn = new CenterNormalizer();
-    private Normalizer tn = new LinearStretchTimeNormalizer();
-    private Normalizer sfn = new SkippedFramesNormalizer();
-    private AtomicInteger counter = new AtomicInteger(0);
-    private Map<Integer, Sample> instances = new HashMap<Integer, Sample>();
-
-
-    public LipReadingResource() {
-        try {
-            classifier = new MultiLayerPerceptronClassifier(new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream());
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-    
-    // The Java method will process HTTP GET requests
-    @GET 
-    // The Java method will produce content identified by the MIME Media
-    // type "text/plain"
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String classify(@DefaultValue("false") @HeaderParam("training") boolean training, SamplePacket sp) {
-        Sample sample = Utils.getSampleFromPacket(sp);
-        int id = -1;
-        if(training) {
-            id = counter.getAndIncrement();
-            instances.put(id, sample);
-        }
-        return classifier.test(LipReading.normelize(sample, sfn, cn, tn)) + "," + id;
-    }
-
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public String classify(Sample sample){
-//        int id = counter.getAndIncrement();
-//        instances.put(id, sample);
-//        return classifier.test(LipReading.normelize(sample, sfn, cn, tn)) + ", " + id;
-//    }
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String updateSample(@DefaultValue("-1") @HeaderParam("id") int id, String label) {
-        if(id==-1) {
-            return "OK";
-        }
-        if(!instances.containsKey(id)) {
-            return "404";
-        }
-        Sample sample = instances.remove(id);
-        sample.setLabel(label);
-        //add as line arff file
-        //addSampleToArff(sample);
-        return "OK";
-    }
-
 }
