@@ -56,7 +56,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     private SettingsFragment settingsFragment;
     private SharedPreferences preferences;
     private Client client = Client.create();
-    private WebResource resource = client.resource("");
+    private WebResource resource = client.resource(Constants.SERVER_URL);
     private int sentSampleId = -1;
 
 
