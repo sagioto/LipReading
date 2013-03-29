@@ -58,5 +58,8 @@ public class Constants {
     public static final short RIGHT_VECTOR_INDEX = 3;
 
     public static final String SERVER_IP = LIP_READING_PROPS.getProperty("SERVER_IP");
+    public static final String SERVER_PORT = LIP_READING_PROPS.getProperty("SERVER_PORT");
+
+    public static final String SERVER_URL = "http://" + SERVER_IP + ":" + SERVER_PORT ;
 
 }
