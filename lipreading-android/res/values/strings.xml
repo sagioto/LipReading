@@ -33,5 +33,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="wasCorrectQuestion">Was this right?</string>
-    <string name="loadingClassifier">Loading Classifier...</string>
+    <string name="loadingClassifier">Loading Classifier…</string>
 </resources>
