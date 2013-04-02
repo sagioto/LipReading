@@ -31,18 +31,18 @@ public class MainTest extends TestCase {
         super.setUp();
 
         //start the Grizzly2 web container
-        //httpServer = Main.startServer();
+        httpServer = Main.startServer();
 
         // create the client
         Client c = Client.create();
-        r = c.resource("http://lip-reading.appspot.com/"/*Main.BASE_URI*/);
+        r = c.resource(Main.BASE_URI/*"http://lip-reading.appspot.com/"*/);
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        //httpServer.stop();
+        httpServer.stop();
     }
 
     /**
