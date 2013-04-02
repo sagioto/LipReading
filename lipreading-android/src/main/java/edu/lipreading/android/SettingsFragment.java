@@ -1,4 +1,4 @@
-package edu.lipreading;
+package edu.lipreading.android;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,6 +11,7 @@ import android.preference.PreferenceScreen;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import edu.lipreading.Constants;
 
 import java.util.List;
 import java.util.Locale;

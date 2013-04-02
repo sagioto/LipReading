@@ -1,4 +1,4 @@
-package edu.lipreading;
+package edu.lipreading.android;
 
 import android.app.*;
 import android.content.Context;
@@ -22,6 +22,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import edu.lipreading.Constants;
+import edu.lipreading.Sample;
+import edu.lipreading.SamplePacket;
+import edu.lipreading.Utils;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.classification.TimeWarperClassifier;
@@ -30,9 +34,7 @@ import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
 import javax.ws.rs.core.MediaType;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -81,7 +83,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             previewLayout.addView(cameraPreview);
             previewLayout.addView(mouthView);
             output = (TextView) findViewById(R.id.output);
-            final AsyncTask<Boolean, Void, Void> initFeatureExtractorTask = asyncInitFeatureExtractor();
+            final AsyncTask<Boolean, Void, Void> initFeatureExtractorTask = asyncInitFeatureExtractorAndClassifier();
             recordButton = (ImageButton) findViewById(R.id.recordButton);
             recordButton.setOnClickListener(
                     new View.OnClickListener() {
@@ -119,7 +121,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                 .header("training", isTrainingMode())
                 .post(String.class, toSend);
         }  catch (UniformInterfaceException ue) {
-            handleRequstError(ue);
+            handleRequestError(ue);
         }
         if("".equals(response)){
             showErrorMessage("Didn't get classification from server");
@@ -135,7 +137,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         }
     }
 
-    private void handleRequstError(UniformInterfaceException ue) {
+    private void handleRequestError(UniformInterfaceException ue) {
         ClientResponse clientResponse = ue.getResponse();
         String entity = clientResponse.getEntity(String.class);
         showErrorMessage("got status " + clientResponse.getStatus() + "\nand entity: " + entity);
@@ -150,7 +152,7 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
                         try{
                             putLabel(output.getText().toString().toLowerCase());
                         }  catch (UniformInterfaceException ue) {
-                            handleRequstError(ue);
+                            handleRequestError(ue);
                         }
                         break;
 
@@ -166,9 +168,8 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
     }
 
     private void putLabel(String label) {
-        String response = resource.path("/lipreading/samples")
+        String response = resource.path("/lipreading/samples/" + sentSampleId)
                 .type(MediaType.APPLICATION_JSON_TYPE)
-                .header("id", sentSampleId)
                 .put(String.class, label);
         if(!"OK".equals(response))
             showErrorMessage("Something went wrong with training");
@@ -196,18 +197,18 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setMessage(getString(R.string.loadingClassifier));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            runOnUiThread(new Runnable() {
+            /*runOnUiThread(new Runnable() {
                 public void run() {
                     progressDialog.show();
                 }
-            });
+            });*/
             initFeatureExtractorTask.get();
-            runOnUiThread(new Runnable() {
+            /*runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     progressDialog.dismiss();
                 }
-            });
+            });*/
 
         } catch (Exception e) {
             handleException(e);
@@ -215,35 +216,38 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
         firstTime = !firstTime;
     }
 
-    private AsyncTask<Boolean, Void, Void> asyncInitFeatureExtractor() {
-        final AsyncTask<Boolean, Void, Void> initClassifierTask = new AsyncTask<Boolean, Void, Void>() {
+    private AsyncTask<Boolean, Void, Void> asyncInitFeatureExtractorAndClassifier() {
+        final AsyncTask<Boolean, Void, Void> asyncTask = new AsyncTask<Boolean, Void, Void>() {
             @Override
             protected Void doInBackground(Boolean... params) {
                 initFeatureExtractor();
-                String defClassifier = getResources().getString(R.string.dtw);
-                String classifierType = preferences.getString("classifierPref", defClassifier);
-                if(defClassifier.equals(classifierType)){
-                    initDTWClassifier();
-                }
-                else{
-                    initMLPClassifier();
-                }
-
+                //initClassifier();
                 return null;
             }
         };
-        initClassifierTask.execute(true);
-        return initClassifierTask;
+        asyncTask.execute(true);
+        return asyncTask;
+    }
+
+    private void initClassifier() {
+        String defClassifier = getResources().getString(R.string.mlp);
+        String classifierType = preferences.getString("classifierPref", defClassifier);
+        if(defClassifier.equals(classifierType)){
+            initMLPClassifier();
+        }
+        else{
+            initDTWClassifier();
+        }
     }
 
     private void initFeatureExtractor() {
-        String defFE = getResources().getString(R.string.stickers);
+        String defFE = getResources().getString(R.string.noStickers);
         String FEType = preferences.getString("featureExtractorPref", defFE);
         if(defFE.equals(FEType)){
-            initNoStickersExtractor();
+            initStickersExtractor();
         }
         else {
-            initStickersExtractor();
+            initNoStickersExtractor();
         }
     }
 
@@ -398,7 +402,6 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             return;
         }
         try{
-
             String fileNameFromUrl = Utils.getFileNameFromUrl(Constants.DEFAULT_TRAINING_SET_ZIP);
             String trainingSetFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     .getAbsolutePath() + "/" + fileNameFromUrl;
@@ -425,12 +428,12 @@ public class LipReadingActivity extends Activity implements TextToSpeech.OnInitL
             return;
         }
         try {
-            /*String [] modelParts = getAssets().list("model");
+            String [] modelParts = getAssets().list("model");
             Vector<InputStream> streamList = new Vector<InputStream>();
             for (String part : modelParts) {
                 streamList.add(getAssets().open("model/" + part));
             }
-            classifier = new MultiLayerPerceptronClassifier(new SequenceInputStream(streamList.elements()));*/
+            classifier = new MultiLayerPerceptronClassifier(new SequenceInputStream(streamList.elements()));
         } catch (Exception e) {
             e.printStackTrace();
             handleException(e);

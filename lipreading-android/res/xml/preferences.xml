@@ -19,13 +19,15 @@
             android:summary="@string/vocabularyDesc"
             android:key="vocabularyPref"/>
         <ListPreference
+            android:selectable="false"
             android:title="@string/classifier"
             android:summary="@string/classifierDesc"
-            android:defaultValue="@string/dtw"
+            android:defaultValue="@string/mlp"
             android:entryValues="@array/classifierType"
             android:entries="@array/classifierType"
             android:key="classifierPref" />
         <ListPreference
+            android:selectable="false"
             android:title="@string/featureExtractor"
             android:summary="@string/featureExtractorDesc"
             android:defaultValue="@string/noStickers"

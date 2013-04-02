@@ -1,4 +1,4 @@
-package edu.lipreading;
+package edu.lipreading.android;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -75,8 +75,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             camera.setPreviewCallbackWithBuffer(previewCallback);
             parameters.setPreviewSize(352, 288);
             Camera.Size size = parameters.getPreviewSize();
-            byte[] data =
-                    new byte[size.width * size.height * ImageFormat.getBitsPerPixel(parameters.getPreviewFormat())/8];
+            byte[] data = new byte[size.width * size.height * ImageFormat.getBitsPerPixel(parameters.getPreviewFormat())/8];
             camera.addCallbackBuffer(data);
         }
         camera.setParameters(parameters);

@@ -1,4 +1,4 @@
-package edu.lipreading;
+package edu.lipreading.android;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,9 +11,6 @@ import com.googlecode.javacv.cpp.opencv_core.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
 
@@ -31,14 +28,14 @@ public class MouthView extends View implements Camera.PreviewCallback {
     private int imageHeight;
     private int dataStride;
     private int imageStride;
-    private ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    /*private ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread("Feature-Extractor-Driver");
             thread.setDaemon(true);
             return thread;
         }
-    });
+    });*/
 
 
     public MouthView(Context context) throws IOException {
@@ -50,7 +47,9 @@ public class MouthView extends View implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        executor.submit(new featureExtractorDriver(data, camera));
+        processImageNoSkip(data, 352, 288);
+        camera.addCallbackBuffer(data);
+        /*executor.submit(new featureExtractorDriver(data, camera));*/
     }
 
     protected void processImage(byte[] data, int width, int height) {
@@ -78,6 +77,67 @@ public class MouthView extends View implements Camera.PreviewCallback {
             }
             LipReadingActivity lrActivity = (LipReadingActivity)context;
             points = lrActivity.getFeatureExtractor().getPoints(rotated);
+            if(lrActivity.isRecording())
+                lrActivity.getSample().getMatrix().add(points);
+            postInvalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void processImageNoSkip(byte[] data, int width, int height) {
+        if (image == null || image.width() != width || image.height() != height) {
+            image = IplImage.create(width , height, 12, 3);
+            imageWidth = image.width();
+            imageHeight = image.height();
+            dataStride = width;
+            imageStride = image.widthStep();
+        }
+
+        ByteBuffer imageBuffer = image.getByteBuffer();
+        imageBuffer.put(data);
+        try {
+            IplImage rotated = rotateImage(image);
+            if((scaleX == 0 || scaleY == 0) && rotated != null){
+                scaleX = (float)getWidth() / rotated.width();
+                scaleY = (float)getHeight() / rotated.height();
+            }
+            LipReadingActivity lrActivity = (LipReadingActivity)context;
+            points = lrActivity.getFeatureExtractor().getPoints(rotated);
+            if(lrActivity.isRecording())
+                lrActivity.getSample().getMatrix().add(points);
+            postInvalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    protected void processImageNoRotate(byte[] data, int width, int height) {
+        int f = 1;
+        if (image == null || image.width() != width / f || image.height() != height / f) {
+            image = IplImage.create(height / f, width / f, 12, 3);
+            imageWidth = image.width();
+            imageHeight = image.height();
+            dataStride = f * width;
+            imageStride = image.widthStep();
+        }
+        ByteBuffer imageBuffer = image.getByteBuffer();
+        for (int y = 0; y < imageHeight; y++) {
+            int dataLine = y * dataStride;
+            int imageLine = y * imageStride;
+            for (int x = 1; x <= imageWidth; x++) {
+                imageBuffer.put(imageLine + x - 1, data[((height - x) * width) + y]);
+            }
+        }
+        try {
+
+            if((scaleX == 0 || scaleY == 0) && image != null){
+                scaleX = (float)getWidth() / image.width();
+                scaleY = (float)getHeight() / image.height();
+            }
+            LipReadingActivity lrActivity = (LipReadingActivity)context;
+            points = lrActivity.getFeatureExtractor().getPoints(image);
             if(lrActivity.isRecording())
                 lrActivity.getSample().getMatrix().add(points);
             postInvalidate();
