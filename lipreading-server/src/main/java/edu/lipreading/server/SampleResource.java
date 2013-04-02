@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.logging.Logger;
 
 
-@Path("/lipreading/samples")
+@Path("/samples")
 public class SampleResource {
     private static final Logger log = Logger.getLogger(new Object(){}.getClass().getEnclosingClass().getSimpleName());
 
@@ -22,7 +22,7 @@ public class SampleResource {
         log.info("got GET request with id: " + id);
         Sample s = LipReadingContext.get(id);
         if(s == null){
-            String message = "sample with id:" + id + ", is not found";
+            String message = "sample with id:" + id + " is not found";
             log.severe(message);
             throw new NotFoundException(message);
         }
@@ -50,7 +50,7 @@ public class SampleResource {
         log.info("got PUT request with id: " + id + " and label: " + label);
         Sample sample = LipReadingContext.get(id);
         if(sample == null){
-            String message = "sample with id:" + id + ", is not found";
+            String message = "sample with id:" + id + " is not found";
             log.severe(message);
             throw new NotFoundException(message);
         }
@@ -66,7 +66,7 @@ public class SampleResource {
         log.info("got DELETE request with id: " + id);
         Sample sample = LipReadingContext.remove(id);
         if(sample == null){
-            String message = "sample with id:" + id + ", is not found";
+            String message = "sample with id:" + id + " is not found";
             log.severe(message);
             throw new NotFoundException(message);
         }

@@ -8,6 +8,7 @@ import com.sun.jersey.core.header.MediaTypes;
 import edu.lipreading.Sample;
 import edu.lipreading.SamplePacket;
 import edu.lipreading.Utils;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.glassfish.grizzly.http.server.HttpServer;
 import weka.core.xml.XStream;
@@ -42,7 +43,7 @@ public class MainTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        httpServer.stop();
+        //httpServer.stop();
     }
 
     /**
@@ -66,23 +67,28 @@ public class MainTest extends TestCase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String response = r.path("/lipreading/samples").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
+        try{
+        String response = r.path("samples").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
         assertEquals((s.getLabel() + ",0").toLowerCase(), response.toLowerCase());
 
-        response = r.path("/lipreading/samples").type(MediaType.APPLICATION_JSON_TYPE).header("id", 0).put(String.class, sample.getLabel());
+        response = r.path("/samples").type(MediaType.APPLICATION_JSON_TYPE).header("id", 0).put(String.class, sample.getLabel());
         assertEquals("OK", response);
 
-        SamplePacket sp = r.path("/lipreading/samples/" + 0).get(SamplePacket.class);
+        SamplePacket sp = r.path("/samples/" + 0).get(SamplePacket.class);
         assertEquals("no", sp.getLabel().toLowerCase());
 
-        sp = r.path("/lipreading/samples/" + 0).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(SamplePacket.class);
+        sp = r.path("/samples/" + 0).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(SamplePacket.class);
         assertEquals("no", sp.getLabel().toLowerCase());
-
+        }
+        catch (UniformInterfaceException e){
+            e.printStackTrace();
+            assertFalse("got exception", true);
+        }
     }
 
     public void testFalseGet() {
         try{
-            r.path("/lipreading/samples/" + 0).get(SamplePacket.class);
+            r.path("/samples/" + 0).get(SamplePacket.class);
             assertFalse("should have got exception", true);
         } catch (UniformInterfaceException e){
             assertEquals(404, e.getResponse().getStatus());
@@ -92,7 +98,7 @@ public class MainTest extends TestCase {
 
     public void testFalseTrain() {
         try{
-            r.path("/lipreading/samples")
+            r.path("/samples")
                     .type(MediaType.APPLICATION_JSON_TYPE)
                     .header("id", 0)
                     .put(String.class, "something");
@@ -104,7 +110,7 @@ public class MainTest extends TestCase {
 
     public void testFalseRemove() {
         try{
-            r.path("/lipreading/samples/" + 0)
+            r.path("/samples/" + 0)
                     .type(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .delete(SamplePacket.class);
