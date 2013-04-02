@@ -8,6 +8,9 @@ import edu.lipreading.Utils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -44,9 +47,10 @@ public class SampleResource {
     }
 
     @PUT
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String train(@HeaderParam("id")int id , String label){
+    public String train(@PathParam("id")int id , String label){
         log.info("got PUT request with id: " + id + " and label: " + label);
         Sample sample = LipReadingContext.get(id);
         if(sample == null){
@@ -73,11 +77,23 @@ public class SampleResource {
         return Utils.getPacketFromSample(sample);
     }
 
-    @GET
+    @PUT
     @Produces(MediaType.TEXT_PLAIN)
     public String startTraining(){
-        log.info("got GET request for start training");
+        log.info("got PUT request for start training");
         LipReadingContext.startTraining();
         return "OK";
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public SamplePacket[] list(){
+        log.info("got GET request for listing all samples");
+        Map<Integer, Sample> sampleMap = LipReadingContext.list();
+        List<SamplePacket> samplePacketList = new ArrayList<SamplePacket>();
+        for (Sample sample : sampleMap.values()) {
+            samplePacketList.add(Utils.getPacketFromSample(sample));
+        }
+        return samplePacketList.toArray(new SamplePacket[samplePacketList.size()]);
     }
 }

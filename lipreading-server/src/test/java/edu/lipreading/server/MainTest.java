@@ -8,7 +8,6 @@ import com.sun.jersey.core.header.MediaTypes;
 import edu.lipreading.Sample;
 import edu.lipreading.SamplePacket;
 import edu.lipreading.Utils;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.glassfish.grizzly.http.server.HttpServer;
 import weka.core.xml.XStream;
@@ -32,11 +31,11 @@ public class MainTest extends TestCase {
         super.setUp();
 
         //start the Grizzly2 web container
-        httpServer = Main.startServer();
+        //httpServer = Main.startServer();
 
         // create the client
         Client c = Client.create();
-        r = c.resource(Main.BASE_URI);
+        r = c.resource("http://lip-reading.appspot.com/"/*Main.BASE_URI*/);
     }
 
     @Override
@@ -70,14 +69,15 @@ public class MainTest extends TestCase {
         try{
         String response = r.path("samples").type(MediaType.APPLICATION_JSON_TYPE).header("training", true).post(String.class, sample);
         assertEquals((s.getLabel() + ",0").toLowerCase(), response.toLowerCase());
+        int id = Integer.parseInt(response.split(",")[1]);
 
-        response = r.path("/samples").type(MediaType.APPLICATION_JSON_TYPE).header("id", 0).put(String.class, sample.getLabel());
+        response = r.path("/samples/" + id).type(MediaType.APPLICATION_JSON_TYPE).put(String.class, sample.getLabel());
         assertEquals("OK", response);
 
-        SamplePacket sp = r.path("/samples/" + 0).get(SamplePacket.class);
+        SamplePacket sp = r.path("/samples/" + id).get(SamplePacket.class);
         assertEquals("no", sp.getLabel().toLowerCase());
 
-        sp = r.path("/samples/" + 0).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(SamplePacket.class);
+        sp = r.path("/samples/" + id).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(SamplePacket.class);
         assertEquals("no", sp.getLabel().toLowerCase());
         }
         catch (UniformInterfaceException e){
@@ -98,9 +98,8 @@ public class MainTest extends TestCase {
 
     public void testFalseTrain() {
         try{
-            r.path("/samples")
+            r.path("/samples/" + 0)
                     .type(MediaType.APPLICATION_JSON_TYPE)
-                    .header("id", 0)
                     .put(String.class, "something");
             assertFalse("should have got exception", true);
         } catch (UniformInterfaceException e){

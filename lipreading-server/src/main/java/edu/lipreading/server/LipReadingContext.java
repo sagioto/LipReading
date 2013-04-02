@@ -11,6 +11,8 @@ import edu.lipreading.normalization.SkippedFramesNormalizer;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -94,5 +96,9 @@ public class LipReadingContext {
         if(log.isLoggable(Level.FINEST))
             log.finest("removing sample with id:" + id+ " to training set");
         return instances.remove(id);
+    }
+
+    public static Map<Integer, Sample> list(){
+        return new HashMap<Integer, Sample>(instances);
     }
 }
