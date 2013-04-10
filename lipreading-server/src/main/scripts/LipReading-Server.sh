@@ -1,3 +1,3 @@
 #!/bin/bash
 PATH=$PATH:$PWD/bin
-java -jar bin/lipreading-server-*.jar &
+java -jar -Xss2M bin/lipreading-server-*.jar &
