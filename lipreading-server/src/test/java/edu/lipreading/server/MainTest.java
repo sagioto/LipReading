@@ -61,7 +61,7 @@ public class MainTest extends TestCase {
         SamplePacket sample = new SamplePacket();
         Sample s = null;
         try {
-            s = (Sample) XStream.read(new URL("https://dl.dropbox.com/u/7091414/No31-18.29.10-24.02.2013.xml").openStream());
+            s = (Sample) XStream.read(new URL("https://dl.dropboxusercontent.com/u/7091414/No31-18.29.10-24.02.2013.xml").openStream());
             sample = Utils.getPacketFromSample(s);
         } catch (Exception e) {
             e.printStackTrace();
