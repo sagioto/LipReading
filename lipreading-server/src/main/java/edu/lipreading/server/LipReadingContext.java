@@ -33,7 +33,7 @@ public class LipReadingContext {
     static {
         try {
             log.info("starting MLP classifier...");
-            InputStream modelFileInputStream = new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream();
+            InputStream modelFileInputStream = new URL("https://dl.dropboxusercontent.com/u/7091414/yesnohelloAll-MLP-CV10F.model").openStream();
             classifier = new MultiLayerPerceptronClassifier(modelFileInputStream);
             modelFileInputStream.close();
             log.info("finished reading model file");
