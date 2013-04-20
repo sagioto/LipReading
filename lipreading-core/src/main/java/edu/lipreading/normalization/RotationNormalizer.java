@@ -5,11 +5,12 @@ import edu.lipreading.Sample;
 import java.util.List;
 
 /**
- * @author Dagan This class is designed to perform a linear transformation on a
- *         Sample object so the Sample is aligned against X,Y axis. This
- *         Normalizer assumes rotation is smaller than 45 degrees. It will only
- *         transform the sample if the angle is larger than the rotation
- *         threshold.
+ * This class is designed to perform a linear transformation on a
+ * Sample object so the Sample is aligned against X,Y axis. This
+ * Normalizer assumes rotation is smaller than 45 degrees. It will only
+ * transform the sample if the angle is larger than the rotation
+ * threshold.
+ * @author Dagan
  */
 public class RotationNormalizer implements Normalizer {
 
