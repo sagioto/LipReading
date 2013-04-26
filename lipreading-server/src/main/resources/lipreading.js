@@ -1,6 +1,7 @@
 
 var isRecording = false;
 var sample;
+var sampleId;
 
 var classifierUrl = "/samples";
 
@@ -25,21 +26,23 @@ points.height = height;
 
 ws.onopen = function () {
 	console.log("Openened connection to websocket");
-	}
+}
 ws.onmessage = function (msg) {
 		pointsCtx.clearRect(0, 0, points.width, points.height);
 		pointsCtx.fillStyle="#00FF00";
 		if(msg.data !== "null"){
 			var coordinates = msg.data.split(",");
 			coordinates.pop();
-			for(var i = 0; i < 8; i++) { coordinates[i] = parseInt(coordinates[i]); }
-			for(var i = 0; i < 8; i +=2){
-				var x = coordinates[i];
-				var y = coordinates[i + 1];
-				pointsCtx.fillRect(x - 2, y - 2, 4, 4);
-			}
 			if(isRecording){
-				sample.matrix.push(coordinates);
+                sample.matrix.push({"item" : coordinates});
+            }
+            var coords = [];
+            coords.length = 8;
+			for(var i = 0; i < 8; i++) { coords[i] = parseInt(coordinates[i]); }
+			for(var i = 0; i < 8; i +=2){
+				var x = coords[i];
+				var y = coords[i + 1];
+				pointsCtx.fillRect(x - 2, y - 2, 4, 4);
 			}
 		}
 		
@@ -92,15 +95,16 @@ function record() {
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-				var ans = xmlhttp.responseText;
-				output.innerHTML = ans;
+				var ans = xmlhttp.responseText.split(",");
+				output.innerHTML = ans[0];
+				sampleId = parseInt(ans[1]);
 				output.style.display = 'inline';
 				audio.src = "http://translate.google.com/translate_tts?tl=en&q=" + 
-					encodeURIComponent(ans.toLowerCase());
+					encodeURIComponent(ans[0].toLowerCase());
 				audio .play();
 			}
 		};
-		xmlhttp.open("POST", classifierUrl, false);
+		xmlhttp.open("POST", classifierUrl, true);
 		xmlhttp.setRequestHeader("Content-type","application/json");
 		xmlhttp.setRequestHeader("training","false");
 		xmlhttp.send(JSON.stringify(sample));
@@ -110,8 +114,8 @@ function record() {
 function dataURItoBlob(dataURI) {
     var binary = atob(dataURI.split(',')[1]);
     var array = [];
-    for(var i = 0; i < binary.length; i++)
-	{
+    for(var i = 0; i < binary.length; i++){
         array.push(binary.charCodeAt(i));
-    }return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+    }
+    return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
 }
