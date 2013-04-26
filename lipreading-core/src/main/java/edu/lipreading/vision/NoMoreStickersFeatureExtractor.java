@@ -42,6 +42,9 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 import edu.lipreading.Constants;
 import edu.lipreading.Utils;
 
+/**
+ * This FeatureExtractor extracts lip coordinates automatically by identifying user lips.
+ */
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int RECT_VERTICAL_JUMP = 10;
 	private static final int RECT_FRAME_THRESHOLD = 5;

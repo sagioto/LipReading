@@ -10,13 +10,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ *  This abstract class purpose is to extract user`s lip coordinates from video.
+ *  The classes that extend AbstractFeatureExtractor will extract 4 point of user lip:
+ *  - Coordinate of right connection between upper and lower lips.
+ *  - Coordinate of left connection between upper and lower lips.
+ *  - Coordinate of middle upper lip.
+ *  - Coordinate of middle lower lip.
+ */
 public abstract class AbstractFeatureExtractor {
 	protected FrameGrabber grabber;
 	private Sample sample;
 	private boolean output = false;
 	private boolean gui = true;
 
-
+    /**
+     * Gets source name and returns Sample data type contains lip coordinates
+     * @param source url of video file or live camera
+     * @return Sample contains lip coordinate
+     * @throws Exception
+     */
 	public Sample extract(String source) throws Exception {
 		grabber = getGrabber(source);
 		grabber.start();
@@ -89,8 +102,21 @@ public abstract class AbstractFeatureExtractor {
 		return getSample();
 	}
 
+    /**
+     * Gets an IplImage and List represents coordinates of 4 positions of lips and paint these coordinates on frame
+     * @param grabbed video frame
+     * @param frameCoordinates coordinates of lips to paint
+     */
 	abstract public void paintCoordinates(IplImage grabbed, List<Integer> frameCoordinates);
 
+    /**
+     * Gets IplImage (video frame) and extract lip coordinates in this frame
+     * @param grabbed
+     * @return List of 8 numbers representing X,Y coordinates of each location(Right, Left, Upper, Lower)
+     * @throws Exception
+     * @precondition grabbed != null
+     * @postcondition List<Integer> coordinates of lip. If no lip found, than 0 is return instead of coordinate
+     */
 	abstract public List<Integer> getPoints(IplImage grabbed) throws Exception;
 
 	public Sample getSample() {

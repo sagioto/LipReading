@@ -1,5 +1,6 @@
 package edu.lipreading.server;
 
+import edu.lipreading.Constants;
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
 import edu.lipreading.classification.Classifier;
@@ -33,7 +34,7 @@ public class LipReadingContext {
     static {
         try {
             log.info("starting MLP classifier...");
-            InputStream modelFileInputStream = new URL("https://dl.dropbox.com/u/8720454/test3/yesnohello2.model").openStream();
+            InputStream modelFileInputStream = new URL(Constants.MPC_MODEL_URL).openStream();
             classifier = new MultiLayerPerceptronClassifier(modelFileInputStream);
             modelFileInputStream.close();
             log.info("finished reading model file");

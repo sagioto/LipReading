@@ -4,6 +4,11 @@ import edu.lipreading.Sample;
 
 import java.util.List;
 
+/**
+ * This normalizer class intends to normalize the given Sample coordinates to be around (0,0).
+ * The center point of Sample`s lip coordinates will be (0,0) after normalization.
+ *
+ */
 public class CenterNormalizer implements Normalizer{
 
     protected static final int X_INDEX = 0;
