@@ -3,6 +3,7 @@ package edu.lipreading.server;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyWebContainerFactory;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
@@ -45,6 +46,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         // Grizzly 2 initialization
         HttpServer httpServer = startServer();
+        StaticHttpHandler staticHttpHandler =
+                new StaticHttpHandler(System.getProperty("user.dir") + "/lipreading-server/src/main/resources");
+        httpServer.getServerConfiguration().addHttpHandler(staticHttpHandler, "/reader");
+
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...",
                 BASE_URI));
