@@ -87,6 +87,14 @@
                     <groupId>com.googlecode.soundlibs</groupId>
                     <artifactId>jlayer</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.aggregate</groupId>
+                    <artifactId>jetty-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.aggregate</groupId>
+                    <artifactId>jetty-servlet</artifactId>
+                </exclusion>
 
             </exclusions>
 

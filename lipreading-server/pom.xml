@@ -39,6 +39,14 @@
                     <groupId>com.googlecode.javacv</groupId>
                     <artifactId>javacv</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.aggregate</groupId>
+                    <artifactId>jetty-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.aggregate</groupId>
+                    <artifactId>jetty-servlet</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
