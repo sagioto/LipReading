@@ -78,7 +78,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 			preferences.edit().putBoolean(key, trainingModePref).apply();
 		} else if(key.equals(getString(R.string.voiceTypePref))){
 			String defaultVoice = getResources().getString(R.string.male);
-			String voiceTypePref = sharedPreferences.getString(getString(R.string.trainingModePref), defaultVoice);
+			String voiceTypePref = sharedPreferences.getString(getString(R.string.voiceTypePref), defaultVoice);
 			if(defaultVoice.equals(voiceTypePref)){
 				this.context.getTts().setLanguage(Locale.UK);
 			} else {
