@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
     protected static FrameGrabber grabber;
     protected static String sampleName;
     private LipReaderPanel lipReaderPanel;
+    //private StickersConfigPanel videoConfigPanel;
     private VideoConfigPanel videoConfigPanel;
     private FileLipReaderPanel fileLipReaderPanel;
     private TrainingPanel trainingPanel;
@@ -87,15 +88,15 @@ public class MainFrame extends JFrame {
         fileLipReaderPanel = new FileLipReaderPanel();
         lipReaderPanel = new LipReaderPanel();
         videoConfigPanel = new VideoConfigPanel();
+        VideoConfigPanel.ConfigEvent event = new Event();
+        videoConfigPanel.addActionEventListener(event);
         tabbedPane.addTab("Read From File", null, fileLipReaderPanel, "Read from a file in the file system or a URL");
         tabbedPane.addTab("Live Read", null, lipReaderPanel, "Read from the camera");
-        tabbedPane.addTab("Sticker Configuration", null, videoConfigPanel, "Adjust the stickers' colors");
+        tabbedPane.addTab("Configurations", null, videoConfigPanel, "Set application configurations");
 
         trainingPanel = new TrainingPanel();
         tabbedPane.addTab("Training", null, trainingPanel, "Train the reader");
-        fileLipReaderPanel.setVisible(true);
-        videoConfigPanel.setVisible(false);
-        lipReaderPanel.setVisible(false);
+
         tabbedPane.addChangeListener(new ChangeListener(){
 
             @Override
@@ -147,5 +148,18 @@ public class MainFrame extends JFrame {
         contentPane.add(tabbedPane);
     }
 
+
+    public class Event implements VideoConfigPanel.ConfigEvent{
+
+        @Override
+        public void changeSettings(int fe) {
+            System.out.println("Event" + fe);
+            //fileLipReaderPanel
+            lipReaderPanel.setFeatureExtractor(fe);
+            trainingPanel.setFeatureExtractor(fe);
+            fileLipReaderPanel.setFeatureExtractor(fe);
+
+        }
+    }
 
 }

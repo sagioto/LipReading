@@ -1,6 +1,6 @@
 package edu.lipreading.gui;
 
-import edu.lipreading.gui.VideoConfigPanel.StickerEvent;
+import edu.lipreading.gui.StickersConfigPanel.StickerEvent;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
