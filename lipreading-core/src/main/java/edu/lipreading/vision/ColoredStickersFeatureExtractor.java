@@ -12,6 +12,10 @@ import java.util.concurrent.Future;
 import static com.googlecode.javacv.cpp.opencv_core.*;
 import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
+/**
+ * This FeatureExtractor extracts lip coordinates according to colored stickers on user lips.
+ * Stickers colors can be configured in Video Configuration tab in UI
+ */
 public class ColoredStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 

@@ -155,7 +155,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
                 image = grabbed.getBufferedImage();
                 canvas.setImage(image);
                 canvas.paint(null);
-                recordedSample.getMatrix().add(stickersExtractor.getPoints(grabbed));
+                recordedSample.getMatrix().add(featureExtractor.getPoints(grabbed));
             }
             stopVideo();
             canvas.setImage(null);

@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This Classifier uses Weka Neural Network MultilayerPerceptron classifier to train and classify Samples.
+ */
 public class MultiLayerPerceptronClassifier implements Classifier{
     private static final int INSTANCE_SIZE = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + Constants.SAMPLE_ROW_SHIFT;
     private List<String> vocabulary = Constants.VOCABULARY;

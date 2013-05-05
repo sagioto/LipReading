@@ -14,6 +14,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <artifactId>jetty-all</artifactId>
+            <version>8.1.10.v20130312</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>8.1.10.v20130312</version>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.javacv</groupId>
             <artifactId>javacv</artifactId>
             <version>${javacv.version}</version>

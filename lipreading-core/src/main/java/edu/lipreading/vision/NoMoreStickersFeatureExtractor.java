@@ -16,6 +16,9 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_FIND_BIGGEST_OB
 import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -39,6 +42,9 @@ import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 import edu.lipreading.Constants;
 import edu.lipreading.Utils;
 
+/**
+ * This FeatureExtractor extracts lip coordinates automatically by identifying user lips.
+ */
 public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	private static final int RECT_VERTICAL_JUMP = 10;
 	private static final int RECT_FRAME_THRESHOLD = 5;
@@ -144,7 +150,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	}
 
 
-    public List<Integer> getPointsSingleThreaded(IplImage grabbed) throws Exception {
+   /* public List<Integer> getPointsSingleThreaded(IplImage grabbed) throws Exception {
         int roiFix = grabbed.height() / -32;
 		sideConfidence = grabbed.width() / 128;
 		lowerConfidence = grabbed.height() / 128;
@@ -175,6 +181,11 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		final CvMat mat = grabbed.asCvMat();
 
         List<Integer> frameCoordinates = new Vector<Integer>();
+        frameCoordinates.add(r.x());
+        frameCoordinates.add(r.x() + r.width());
+        frameCoordinates.add(r.y());
+        frameCoordinates.add(r.y() + r.height());
+        return frameCoordinates;
         double[][] h = getH(mat);
         double[][] l = getL(mat);
         double[][] lmini = Lmini(l);
@@ -198,7 +209,7 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 		cvResetImageROI(grabbed);
 		//cvRectangle(grabbed, cvPoint(x, y), cvPoint(x+r.width(), y+r.height()), CvScalar.GREEN, 1, CV_AA, 0);
 		return frameCoordinates;
-	}
+	}*/
 
 	private void init() throws Exception {
 		Loader.load(opencv_objdetect.class);
@@ -373,10 +384,10 @@ public class NoMoreStickersFeatureExtractor extends AbstractFeatureExtractor{
 	 }
 
 	 public static void main(String ... args) throws Exception{
-		 NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
+		/* NoMoreStickersFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
 		 //fe.setOutput(true);
 		 fe.extract( null );
-		 fe.shutdown();
-	 }
+		 fe.shutdown();*/
+     }
 
 }

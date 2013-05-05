@@ -1,189 +1,146 @@
 package edu.lipreading.gui;
 
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import edu.lipreading.vision.StickerColorConfiguration;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.Vector;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvFlip;
+import static java.awt.Color.WHITE;
 
-public class VideoConfigPanel extends VideoCapturePanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private Vector<Sticker> stickers;
-
-	/**
-	 * Create the panel.
-	 */
-	public VideoConfigPanel() {
-		super();
-		canvas.setBackground(UIManager.getColor("InternalFrame.inactiveTitleGradient"));
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				for (Sticker sticker : stickers){				 
-					if (sticker.isClicked(arg0.getPoint())){
-						//TODO Add semaphore that only one sticker can be clicked each time:
-						sticker.setColor(Color.gray); // TODO - Color in better colors
-						repaint();
-						canvas.addStickerEventListener(sticker);
-						break;
+public class VideoConfigPanel extends JPanel {
+    private StickersConfigPanel stickersConfigPanel;
+    private JRadioButton rdbtnAutoLipIdentification;
+    private JRadioButton rdbtnColoredStickersBased;
+    private ConfigEvent actionListener;
 
 
-					}
+    public VideoConfigPanel() {
+        setBackground(WHITE);
+        setLayout(null);
 
-				}
+        JLabel lblNewLabel = new JLabel("Choose operation mode:");
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+        lblNewLabel.setBounds(10, 11, 213, 14);
+        lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        add(lblNewLabel);
+
+        JRadioButton rdbtnWorkLocally = new JRadioButton("Work locally");
+        rdbtnWorkLocally.setBackground(WHITE);
+        rdbtnWorkLocally.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //TODO
+            }
+        });
+        rdbtnWorkLocally.setBounds(10, 32, 268, 23);
+        add(rdbtnWorkLocally);
+        rdbtnWorkLocally.setSelected(true);
+
+        JRadioButton rdbtnWorkWithServer = new JRadioButton("Work with remote server (requiers fast internet connection)");
+        rdbtnWorkWithServer.setSelected(true);
+        rdbtnWorkWithServer.setBackground(WHITE);
+        rdbtnWorkWithServer.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+        rdbtnWorkWithServer.setBounds(289, 32, 332, 23);
+        rdbtnWorkWithServer.setEnabled(false);
+        add(rdbtnWorkWithServer);
+
+        ButtonGroup rBtnGroup = new ButtonGroup();
+        rBtnGroup.add(rdbtnWorkLocally);
+        rBtnGroup.add(rdbtnWorkWithServer);
+
+        JSeparator separator = new JSeparator();
+        separator.setBounds(0, 67, 708, 2);
+        add(separator);
+
+        JLabel lblVideoLipIdentification = new JLabel("Video lip detection mode:");
+        lblVideoLipIdentification.setFont(new Font("Tahoma", Font.BOLD, 11));
+        lblVideoLipIdentification.setHorizontalAlignment(SwingConstants.LEFT);
+        lblVideoLipIdentification.setBounds(10, 76, 194, 14);
+        add(lblVideoLipIdentification);
+
+        rdbtnAutoLipIdentification = new JRadioButton("Auto lip detection");
+        rdbtnAutoLipIdentification.setSelected(true);
+        rdbtnAutoLipIdentification.setBackground(WHITE);
+        rdbtnAutoLipIdentification.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                stickersConfigPanel.setFeatureExtractor(edu.lipreading.gui.Constants.NO_STICKERS_FE);
+                actionListener.changeSettings(edu.lipreading.gui.Constants.NO_STICKERS_FE);
+                try {
+                    ((VideoCapturePanel)stickersConfigPanel).stopVideo();
+                } catch (Exception e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                stickersConfigPanel.setVisible(false);
+            }
+        });
+        rdbtnAutoLipIdentification.setBounds(10, 97, 268, 23);
+        add(rdbtnAutoLipIdentification);
+
+        rdbtnColoredStickersBased = new JRadioButton("Colored stickers based lip detection");
+        rdbtnColoredStickersBased.setBackground(WHITE);
+        rdbtnColoredStickersBased.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                stickersConfigPanel.setFeatureExtractor(edu.lipreading.gui.Constants.STICKERS_FE);
+                actionListener.changeSettings(edu.lipreading.gui.Constants.STICKERS_FE);
+                stickersConfigPanel.setVisible(true);
+                try {
+                    ((VideoCapturePanel)stickersConfigPanel).startVideo();
+                } catch (Exception e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        });
+        rdbtnColoredStickersBased.setBounds(289, 97, 332, 23);
+        add(rdbtnColoredStickersBased);
+
+        ButtonGroup rBtnGroup2= new ButtonGroup();
+        rBtnGroup2.add(rdbtnAutoLipIdentification);
+        rBtnGroup2.add(rdbtnColoredStickersBased);
+
+        JSeparator separator2 = new JSeparator();
+        separator2.setBounds(0, 125, 708, 2);
+        add(separator2);
+
+        stickersConfigPanel = new StickersConfigPanel();
+        stickersConfigPanel.setBounds(0, 130, 708, 398);
+        add(stickersConfigPanel);
+        stickersConfigPanel.setVisible(false);
+
+    }
+
+    public void stopVideo() {
+        if (rdbtnColoredStickersBased.isSelected()){
+            try {
+                stickersConfigPanel.stopVideo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //To change body of created methods use File | Settings | File Templates.
+    }
+
+    public void startVideo() {
+        if (rdbtnColoredStickersBased.isSelected()){
+            try {
+                stickersConfigPanel.startVideo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //To change body of created methods use File | Settings | File Templates.
+    }
 
 
-			}
-		});
-		setBackground(Color.WHITE);
-		initStickers();
-		canvas.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				Point mousePoint = arg0.getPoint();
-				BufferedImage scaledImg = UIUtils.resizeImage(image, canvas.getWidth(), canvas.getHeight());
-				int stickerRGB = scaledImg.getRGB((int)mousePoint.getX(), (int)mousePoint.getY());
+    // Listener interface
+    public interface ConfigEvent {
+        void changeSettings(int s);
+    }
 
-				Color c = new Color(stickerRGB);
-
-				if (canvas.stickerListener !=null){
-					canvas.stickerListener.ClickedOnColor(c);
-				}
-
-			}
-		});
-		setLayout(null);
-
-		canvas.setBounds(331, 10, 375, 303);
-
-		JLabel lblNewLabel = new JLabel("Click on left sticker and then click on its real position in the right video");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setForeground(Color.GRAY);
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
-		lblNewLabel.setBounds(10, 389, 696, 59);
-		add(lblNewLabel);
-
-		JLabel lipsPic = new JLabel("");
-		lipsPic.setIcon(new ImageIcon(getClass().getResource(Constants.LIP_IMAGE_FILE_PATH)));
-		lipsPic.setBounds(64, 107, 168, 104);
-		add(lipsPic);
-
-	}
-
-
-
-	public void paint(Graphics g)  
-	{  
-		super.paint(g);
-		for (Sticker sticker : stickers){				 
-			g.drawOval(sticker.x, sticker.y, sticker.radius, sticker.radius);
-			g.setColor(sticker.color);
-			g.fillOval(sticker.x, sticker.y, sticker.radius, sticker.radius);
-		}
-	}
-
-	private void initStickers()
-	{
-		stickers = new Vector<Sticker>();
-		stickers.add(new Sticker(136, 102, 20, Color.red, StickerLocation.UPPER));
-		stickers.add(new Sticker(64, 147, 20, Color.green, StickerLocation.RIGHT));
-		stickers.add(new Sticker(220, 147, 20, Color.blue, StickerLocation.LEFT));
-		stickers.add(new Sticker(136, 203, 20, Color.yellow, StickerLocation.LOWER));	   
-
-	}
-
-
-
-	public class Sticker implements StickerEvent
-	{
-		private int x, y, radius;
-		private Color color;
-		private StickerLocation stickerLocation;
-
-		public Sticker(int x, int y, int radius, Color c, StickerLocation stickerLocation){
-			this.x = x;
-			this.y = y;
-			this.radius = radius;
-			this.color = c;
-			this.stickerLocation = stickerLocation;
-		}
-
-		public boolean isClicked(Point point) {
-			return (Math.pow((point.x-x), 2) + Math.pow((point.y - y),2)) < Math.pow(radius, 2);
-		}
-
-		public void setColor(Color c){
-			this.color = c;
-		}
-
-		@Override
-		public void ClickedOnColor(Color c) {
-
-			// Update general stickers colors:
-			switch (this.stickerLocation) {
-			case UPPER:
-				StickerColorConfiguration.UPPER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-				StickerColorConfiguration.UPPER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-				break;
-			case LOWER:
-				StickerColorConfiguration.LOWER_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-				StickerColorConfiguration.LOWER_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-				break;
-			case LEFT:
-				StickerColorConfiguration.LEFT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-				StickerColorConfiguration.LEFT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-				break;
-			case RIGHT:
-				StickerColorConfiguration.RIGHT_STICKER_MAX = new CvScalar(c.getBlue() + 20, c.getGreen() + 20, c.getRed() + 20,0);
-				StickerColorConfiguration.RIGHT_STICKER_MIN = new CvScalar(c.getBlue() - 20, c.getGreen() - 20, c.getRed() - 20,0);
-				break;
-			default:
-				break;
-			}
-
-			setColor(c);
-			repaint();
-			canvas.addStickerEventListener(null);
-		}
-
-	}
-
-	// Listener interface
-	public interface StickerEvent {
-		void ClickedOnColor(Color c);
-	}
-
-	@Override
-	protected void getVideoFromSource() throws com.googlecode.javacv.FrameGrabber.Exception {
-		try {
-
-			IplImage grabbed;
-			while(!threadStop.get()){
-				synchronized (threadStop) {
-					if((grabbed = grabber.grab()) == null)
-						break;
-				}
-				List<Integer> frameCoordinates = stickersExtractor.getPoints(grabbed);
-				stickersExtractor.paintCoordinates(grabbed, frameCoordinates);
-                cvFlip(grabbed, grabbed, 1);
-				image = grabbed.getBufferedImage();
-				canvas.setImage(image);
-				canvas.paint(null);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    public void addActionEventListener(ConfigEvent listener)
+    {
+        actionListener = listener;
+    }
 }

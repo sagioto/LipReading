@@ -1,32 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <TextView
-        android:id="@+id/output"
-        android:textSize="30sp"
-        android:gravity="center"
+    android:layout_height="fill_parent" >
+    <org.opencv.android.NativeCameraView
+        android:layout_width="match_parent"
+        android:id="@+id/lip_reading_surface_view" android:layout_height="match_parent" opencv:show_fps="false" opencv:camera_id="front">
+    </org.opencv.android.NativeCameraView>
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/output"
-        android:layout_centerHorizontal="true"
-        android:textColor="#33B5E5" />
-    <ImageButton
-        android:id="@+id/recordButton"
-        android:src="@drawable/record"
-        android:contentDescription="@string/recordButtonDescription"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_alignParentBottom="true"/>
-    <!--android:layout_width="wrap_content"
-        android:background="@null"
-        android:layout_centerHorizontal="true"-->
-    <FrameLayout
-        android:id="@+id/previewLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/output"
-        android:layout_alignRight="@+id/output"
-        android:layout_above="@+id/recordButton"
-        android:layout_alignLeft="@+id/output" />
+        android:layout_height="fill_parent" >
+    <TextView android:id="@+id/output" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_centerHorizontal="true" android:background="@drawable/output_shape" android:gravity="center" android:text="@string/output" android:textColor="#33B5E5" android:textSize="30sp"/>
+    <ImageButton android:id="@+id/recordButton" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" android:background="@drawable/record_shape" android:contentDescription="@string/recordButtonDescription" android:src="@drawable/record"/>
 </RelativeLayout>
+</FrameLayout>

@@ -123,7 +123,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                     break;
                 }
             }
-            List<Integer> points = stickersExtractor.getPoints(grabbed);
+            List<Integer> points = featureExtractor.getPoints(grabbed);
             if (recording)
             {
                 recordedSample.getMatrix().add(points);
@@ -160,7 +160,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                 }
             }
             if((points != null) && showLipsIdentification){
-                stickersExtractor.paintCoordinates(grabbed, points);
+                featureExtractor.paintCoordinates(grabbed, points);
             }
             cvFlip(grabbed, grabbed, 1);
             if(recording)

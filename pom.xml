@@ -15,7 +15,6 @@
     <modules>
         <module>lipreading-core</module>
         <module>lipreading-gui</module>
-        <module>lipreading-android</module>
         <module>lipreading-server</module>
     </modules>
 

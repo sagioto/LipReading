@@ -1,0 +1,52 @@
+body {
+	background-color: #D6EBFF;
+}
+
+
+#video {
+	display: none;
+	width: 320px;
+	height: 240px;
+}
+
+#rec {	
+	border-radius: 10px;
+}
+
+#main {
+	width: 100%;
+	text-align: center;
+}
+
+.lr {
+	display: inline-block;
+}
+
+#output{
+	font-size: 2em;
+	display: none;
+}
+
+#container{
+	width: 340px; /*+20 for the border of canvases*/
+	height: 260px; /*+20 for the border of canvases*/
+	margin: 0 auto;
+    position: relative;
+}
+
+#canvas,
+#points {
+	border:10px solid black;
+	border-radius: 10px;	
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+footer{
+	font-family: arial;
+	font-size: 0.8em;
+	float: center;
+	position: absolute;
+	bottom: 0px;
+}

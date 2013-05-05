@@ -5,6 +5,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Utils;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
+import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class VideoCapturePanel extends JPanel {
     protected BufferedImage image = null;
     protected VideoCanvas canvas;
     protected FrameGrabber grabber = null;
-    protected AbstractFeatureExtractor stickersExtractor;
+    protected AbstractFeatureExtractor featureExtractor;
     protected Thread videoGrabber;
     protected final AtomicBoolean threadStop;
     protected JProgressBar progressBar = new JProgressBar();
@@ -33,7 +34,7 @@ public class VideoCapturePanel extends JPanel {
      * Create the panel.
      */
     public VideoCapturePanel() {
-        stickersExtractor = new ColoredStickersFeatureExtractor();
+        featureExtractor = new NoMoreStickersFeatureExtractor();
         canvas = new VideoCanvas();
         canvas.setBackground(Color.LIGHT_GRAY);
 
@@ -49,7 +50,7 @@ public class VideoCapturePanel extends JPanel {
         if (grabber == null)
         {
             try{
-                grabber = stickersExtractor.getGrabber(videoInput);
+                grabber = featureExtractor.getGrabber(videoInput);
             }catch (Exception e){
                 if(grabber != null){
                     grabber.stop();
@@ -123,7 +124,7 @@ public class VideoCapturePanel extends JPanel {
             Utils.get(videoInput, progressBar);
             videoInput = Utils.getFileNameFromUrl(videoInput);
         }
-        grabber = stickersExtractor.getGrabber(videoInput);
+        grabber = featureExtractor.getGrabber(videoInput);
     }
 
 
@@ -133,5 +134,18 @@ public class VideoCapturePanel extends JPanel {
     }
 
 
+    public void setFeatureExtractor(int TYPE){
+        switch (TYPE){
+            case Constants.NO_STICKERS_FE:
+                featureExtractor = new NoMoreStickersFeatureExtractor();
+                break;
+            case Constants.STICKERS_FE:
+                featureExtractor = new ColoredStickersFeatureExtractor();
+                break;
+            default:
+                featureExtractor = new NoMoreStickersFeatureExtractor();
+                break;
+        }
+    }
 
 }

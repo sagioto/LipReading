@@ -8,14 +8,17 @@
 
     <string name="settingsTitle">Lip Reading Settings</string>
 
+    <string name="trainingModePref">trainingModePref</string>
     <string name="trainingMode">Training Mode</string>
     <string name="trainingModeDesc">If checked will ask you if recognition was correct, if it wasn\'t it will ask what the correct word was</string>
 
+    <string name="voiceTypePref">voiceTypePref</string>
     <string name="voiceType">Voice Type</string>
     <string name="voiceTypeDesc">Choose the type of voice output</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
 
+    <string name="vocabularyPref">vocabularyPref</string>
     <string name="vocabulary">What can I say?</string>
     <string name="vocabularyDesc">The list of words that can be recognized</string>
 
@@ -34,4 +37,11 @@
     <string name="no">No</string>
     <string name="wasCorrectQuestion">Was this right?</string>
     <string name="loadingClassifier">Loading Classifier…</string>
+    <string name="settings">Settings</string>
+    
+    <string name="serverPref">serverPref</string>
+    <string name="serverTitle">Server Host and Port</string>
+    <string name="serverDesc">Specify the URL or host name plus the port of the classifier server eg: 192.168.0.1:9999 or www.example.com:9999</string>
+    <string name="serverDef">168.144.43.43:9998</string>
+    
 </resources>

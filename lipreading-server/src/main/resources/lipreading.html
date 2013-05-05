@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Lip Reading</title>
+		<link href="main.css" type="text/css" rel="stylesheet" />
+	</head>
+	<body>
+		<div id="main">
+			<div class="lr">
+				<img src="img/LipReading.png" alt="Lip Reading" title="It Will Read Your Lips"/>
+			</div>
+			<br>
+			<div id="container" class="lr">
+				<canvas id="canvas" style="z-index: 0;"></canvas>
+				<canvas id="points" style="z-index: 1;" title="Webcam Output"></canvas>
+			</div>
+			<br>
+			<div class="lr">
+				<button id="rec" title="Record" autofocus="true" onclick="record()">
+					<img src="img/record.png" />
+				</button>
+			</div>
+			<br>
+			<div id="output" class="lr" style="font-family: arial;">Output</div>
+		</div>
+		<video autoplay id="vid" style="display:none;"></video>
+		<audio id="audio" type="audio/mpeg"></audio>
+		<script src="lipreading.js"></script>
+		<a href="http://github.com/sagioto/LipReading" target="blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</body>
+	<!--<footer>
+		View the <a href="http://github.com/sagioto/LipReading" target="blank">source code</a>
+	</footer>-->
+</html>
