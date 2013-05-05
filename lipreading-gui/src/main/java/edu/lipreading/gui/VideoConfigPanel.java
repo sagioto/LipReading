@@ -55,13 +55,13 @@ public class VideoConfigPanel extends JPanel {
         separator.setBounds(0, 67, 708, 2);
         add(separator);
 
-        JLabel lblVideoLipIdentification = new JLabel("Video lip identification mode:");
+        JLabel lblVideoLipIdentification = new JLabel("Video lip detection mode:");
         lblVideoLipIdentification.setFont(new Font("Tahoma", Font.BOLD, 11));
         lblVideoLipIdentification.setHorizontalAlignment(SwingConstants.LEFT);
         lblVideoLipIdentification.setBounds(10, 76, 194, 14);
         add(lblVideoLipIdentification);
 
-        rdbtnAutoLipIdentification = new JRadioButton("Auto lip identification ");
+        rdbtnAutoLipIdentification = new JRadioButton("Auto lip detection");
         rdbtnAutoLipIdentification.setSelected(true);
         rdbtnAutoLipIdentification.setBackground(WHITE);
         rdbtnAutoLipIdentification.addActionListener(new ActionListener() {
@@ -79,7 +79,7 @@ public class VideoConfigPanel extends JPanel {
         rdbtnAutoLipIdentification.setBounds(10, 97, 268, 23);
         add(rdbtnAutoLipIdentification);
 
-        rdbtnColoredStickersBased = new JRadioButton("Colored stickers based lip identification");
+        rdbtnColoredStickersBased = new JRadioButton("Colored stickers based lip detection");
         rdbtnColoredStickersBased.setBackground(WHITE);
         rdbtnColoredStickersBased.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
