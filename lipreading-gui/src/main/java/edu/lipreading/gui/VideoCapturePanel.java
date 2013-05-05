@@ -5,6 +5,7 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.Utils;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
+import edu.lipreading.vision.EyesFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class VideoCapturePanel extends JPanel {
     protected VideoCanvas canvas;
     protected FrameGrabber grabber = null;
     protected AbstractFeatureExtractor featureExtractor;
+    protected AbstractFeatureExtractor eyesFeatureExtractor;
     protected Thread videoGrabber;
     protected final AtomicBoolean threadStop;
     protected JProgressBar progressBar = new JProgressBar();
@@ -35,6 +37,7 @@ public class VideoCapturePanel extends JPanel {
      */
     public VideoCapturePanel() {
         featureExtractor = new NoMoreStickersFeatureExtractor();
+        eyesFeatureExtractor = new EyesFeatureExtractor();
         canvas = new VideoCanvas();
         canvas.setBackground(Color.LIGHT_GRAY);
 

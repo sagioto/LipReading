@@ -123,9 +123,18 @@ public class LipReaderPanel extends VideoCapturePanel {
                     break;
                 }
             }
+
             List<Integer> points = featureExtractor.getPoints(grabbed);
             if (recording)
             {
+                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null){
+                    List<Integer> eyesCoordinates = eyesFeatureExtractor.getPoints(grabbed);
+                    if (eyesCoordinates != null){ // If eyes were found
+                        recordedSample.setLeftEye(new Point(eyesCoordinates.get(0).intValue(), eyesCoordinates.get(1).intValue()));
+                        recordedSample.setRightEye(new Point(eyesCoordinates.get(2).intValue(), eyesCoordinates.get(3).intValue()));
+                        eyesFeatureExtractor.paintCoordinates(grabbed, eyesCoordinates);
+                    }
+                }
                 recordedSample.getMatrix().add(points);
                 if (isRecordingToFile()){
                     if (recorder == null){

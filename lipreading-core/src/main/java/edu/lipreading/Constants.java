@@ -30,6 +30,8 @@ public class Constants {
 
     public static final String HAAR_CASCADE_MOUTH_FILE = LIP_READING_PROPS.getProperty("HAAR_CASCADE_MOUTH_FILE");
 
+    public static final String HAAR_CASCADE_EYES_FILE = LIP_READING_PROPS.getProperty("HAAR_CASCADE_EYES_FILE");
+
     public static final List<String> VOCABULARY = Utils.readFile(LIP_READING_PROPS.getProperty("DEFAULT_VOCABULARY_FILE"));
 
     public static final int FRAMES_COUNT = Integer.valueOf(LIP_READING_PROPS.getProperty("FRAMES_COUNT"));

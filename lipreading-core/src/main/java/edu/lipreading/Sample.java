@@ -1,5 +1,6 @@
 package edu.lipreading;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Vector;
 
@@ -11,6 +12,8 @@ public class Sample {
     private int height;
     private String label;
     private int originalMatrixSize;
+    private Point leftEye;
+    private Point rightEye;
     
 	public Sample(String id, List<List<Integer>> matrix) {
 		super();
@@ -136,4 +139,19 @@ public class Sample {
 		return null;
 	}
 
+    public Point getLeftEye() {
+        return leftEye;
+    }
+
+    public void setLeftEye(Point leftEye) {
+        this.leftEye = leftEye;
+    }
+
+    public Point getRightEye() {
+        return rightEye;
+    }
+
+    public void setRightEye(Point rightEye) {
+        this.rightEye = rightEye;
+    }
 }
