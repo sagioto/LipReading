@@ -26,7 +26,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class Utils {
-
+    public static final int X_INDEX = 0;
+    public static final int Y_INDEX = 1;
 
     /**
      * this function will download the file from the url into the filename specified
@@ -292,5 +293,19 @@ public class Utils {
         }
         sample.setMatrix(matrix);
         return sample;
+    }
+
+
+    public static int[] getCenter(List<Integer> vector) {
+        int[] center = {0,0};
+        for (int i = 0; i < vector.size(); i++) {
+            if(i % 2 == 0)
+                center[X_INDEX] += vector.get(i);
+            else
+                center[Y_INDEX] += vector.get(i);
+        }
+        center[X_INDEX] = (int)Math.round(((double)center[X_INDEX]) / (vector.size() / 2));
+        center[Y_INDEX] = (int)Math.round(((double)center[Y_INDEX]) / (vector.size() / 2));
+        return center;
     }
 }
