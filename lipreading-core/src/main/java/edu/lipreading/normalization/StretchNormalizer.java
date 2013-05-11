@@ -10,8 +10,8 @@ public class StretchNormalizer extends CenterNormalizer {
     // TODO TBD:
     private static final int OUT_UP_X = 1000;
     private static final int OUT_LOWER_X = 0;
-    private static final int OUT_UP_Y = 700;
-    private static final int OUT_LOWER_Y = 400;
+    private static final int OUT_UP_Y = 1000;
+    private static final int OUT_LOWER_Y = 0;
 
 
     @Override
@@ -34,12 +34,13 @@ public class StretchNormalizer extends CenterNormalizer {
 
             for (int i = 0; i < vector.size(); i++) {
                 if(i % 2 == 0){
-                    vector.set(i, vector.get(i)- center[Utils.X_INDEX]);
                     int outValX = (int) (((vector.get(i)-inLowerBoundX)*outRangeX) + OUT_LOWER_X);
+                    vector.set(i, outValX);
                 }
-                else
-                    vector.set(i, vector.get(i)- center[Utils.Y_INDEX]);
-                int outValX = (int) (((vector.get(i)-inLowerBoundY)*outRangeY) + OUT_LOWER_Y);
+                else  {
+                    int outValY = (int) (((vector.get(i)-inLowerBoundY)*outRangeY) + OUT_LOWER_Y);
+                    vector.set(i, outValY);
+                }
             }
         }
         return sample;

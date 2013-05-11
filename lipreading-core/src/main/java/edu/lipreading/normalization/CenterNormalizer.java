@@ -3,6 +3,7 @@ package edu.lipreading.normalization;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -16,13 +17,20 @@ public class CenterNormalizer implements Normalizer{
 
     @Override
     public Sample normalize(Sample sample) {
-        for (List<Integer> vector : sample.getMatrix()) {
+
+        for (int i=0; i< sample.getMatrix().size(); i++) {
+            List<Integer> vector = sample.getMatrix().get(i);
             int[] center = Utils.getCenter(vector);
-            for (int i = 0; i < vector.size(); i++) {
-                 if(i % 2 == 0)
-                    vector.set(i, vector.get(i)- center[Utils.X_INDEX]);
+
+            if (i==0){ //If first frame - normalize also eyes
+                sample.setLeftEye(new Point((int)sample.getLeftEye().getX() - center[Utils.X_INDEX], (int)sample.getLeftEye().getY() - center[Utils.Y_INDEX]));
+                sample.setRightEye(new Point((int)sample.getRightEye().getX() - center[Utils.X_INDEX], (int)sample.getRightEye().getY() - center[Utils.Y_INDEX]));
+            }
+            for (int j = 0; j < vector.size(); j++) {
+                 if(j % 2 == 0)
+                    vector.set(j, vector.get(j)- center[Utils.X_INDEX]);
                 else
-                    vector.set(i, vector.get(i)- center[Utils.Y_INDEX]);
+                    vector.set(j, vector.get(j)- center[Utils.Y_INDEX]);
             }
         }
         return sample;
