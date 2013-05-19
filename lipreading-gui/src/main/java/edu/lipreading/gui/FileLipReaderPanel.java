@@ -1,8 +1,6 @@
 package edu.lipreading.gui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.SystemColor;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -153,6 +151,17 @@ public class FileLipReaderPanel extends VideoCapturePanel {
 
             while((grabbed = grabber.grab()) != null && !threadStop.get()){
                 image = grabbed.getBufferedImage();
+
+                // Eyes detection:
+                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null){
+                    List<Integer> eyesCoordinates = eyesFeatureExtractor.getPoints(grabbed);
+                    if (eyesCoordinates != null){ // If eyes were found
+                        recordedSample.setLeftEye(new Point(eyesCoordinates.get(0).intValue(), eyesCoordinates.get(1).intValue()));
+                        recordedSample.setRightEye(new Point(eyesCoordinates.get(2).intValue(), eyesCoordinates.get(3).intValue()));
+                        eyesFeatureExtractor.paintCoordinates(grabbed, eyesCoordinates);
+                    }
+                }
+
                 canvas.setImage(image);
                 canvas.paint(null);
                 recordedSample.getMatrix().add(featureExtractor.getPoints(grabbed));

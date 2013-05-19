@@ -29,8 +29,9 @@ public class LipReaderPanel extends VideoCapturePanel {
      */
     private static final long serialVersionUID = 1L;
     protected JLabel lblOutput;
-    private boolean recording;
+    protected boolean recording;
     protected JButton btnRecord;
+    protected JButton btnCancelRecord;
     protected Sample recordedSample;
     private String sampleName;
     private String label;
@@ -39,6 +40,7 @@ public class LipReaderPanel extends VideoCapturePanel {
     private boolean recordToFile = false;
     protected String videoFilePath;
     protected boolean showLipsIdentification = true;
+    private boolean cancelSaveToFile = false;
 
     /**
      * Create the panel.
@@ -73,10 +75,12 @@ public class LipReaderPanel extends VideoCapturePanel {
                         recorder = null;
                         setVideoFilePath(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
                         setRecordingToFile(true);
+                        setCancelSaveToFile(false);
                     }
 
                     lblOutput.setText("");
                     recording = true;
+                    btnCancelRecord.setVisible(true);
                 }
                 else // Button should stop recording
                 {
@@ -99,6 +103,13 @@ public class LipReaderPanel extends VideoCapturePanel {
         btnRecord.setBorderPainted(false);
         btnRecord.setBounds(332, 382, 50, 48);
         this.add(btnRecord);
+
+        btnCancelRecord = new JButton("");
+        btnCancelRecord.setBounds(495, 403, 12,12);
+
+        if (!Beans.isDesignTime())
+            btnCancelRecord.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.CANCEL_IMAGE_FILE_PATH)));
+        btnCancelRecord.setVisible(false);
 
         lblOutput = new JLabel("Output Label");
         lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
@@ -123,9 +134,18 @@ public class LipReaderPanel extends VideoCapturePanel {
                     break;
                 }
             }
+
             List<Integer> points = featureExtractor.getPoints(grabbed);
             if (recording)
             {
+                List<Integer> eyesCoordinates = null;
+                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null){
+                    eyesCoordinates = eyesFeatureExtractor.getPoints(grabbed);
+                    if (eyesCoordinates != null){ // If eyes were found
+                        recordedSample.setLeftEye(new Point(eyesCoordinates.get(0), eyesCoordinates.get(1)));
+                        recordedSample.setRightEye(new Point(eyesCoordinates.get(2), eyesCoordinates.get(3)));
+                    }
+                }
                 recordedSample.getMatrix().add(points);
                 if (isRecordingToFile()){
                     if (recorder == null){
@@ -152,11 +172,16 @@ public class LipReaderPanel extends VideoCapturePanel {
                     }
                     recorder.record(grabbed);
                 }
+                if (eyesCoordinates != null && showLipsIdentification){
+                    eyesFeatureExtractor.paintCoordinates(grabbed, eyesCoordinates);
+                }
             }
-            else{
-                if (recorder != null && !isRecordingToFile()){ //TODO Fix
-                    recorder.stop();
-                    recorder = null;
+            else if (recorder != null && !isRecordingToFile()) {
+                recorder.stop();
+                recorder = null;
+                if (cancelSaveToFile) {
+                    File file = new File(videoFilePath);
+                    file.delete();
                 }
             }
             if((points != null) && showLipsIdentification){
@@ -217,7 +242,8 @@ public class LipReaderPanel extends VideoCapturePanel {
         File folder = new File(folderPath);
         if (!folder.exists())
             folder.mkdirs();
-        videoFilePath = (folder.getAbsolutePath() + "/" + fileName + ".MOV").replace(' ', '-'); //TODO Extract file type to properties file
+        String fileNameNoSpaces = fileName.replace(' ', '-');
+        videoFilePath = (folder.getAbsolutePath() + "/" + fileNameNoSpaces + ".MOV"); //TODO Extract file type to properties file
     }
 
     public void stopRecordingVideo(){
@@ -253,5 +279,9 @@ public class LipReaderPanel extends VideoCapturePanel {
 
     protected void setRecordingToFile(boolean recordToFile) {
         this.recordToFile = recordToFile;
+    }
+
+    public void setCancelSaveToFile(boolean toSaveInFile) {
+        this.cancelSaveToFile = toSaveInFile;
     }
 }

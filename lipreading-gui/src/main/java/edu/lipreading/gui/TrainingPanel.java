@@ -41,11 +41,14 @@ public class TrainingPanel extends LipReaderPanel {
 		btnRecord.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if (!isRecording()){
+				if (!isRecording()){ // If Start Recording
 					setSampleName(getLabel() + (counters.get(getLabel().toLowerCase()).addAndGet(1)), getLabel());
 					if (chckbxSaveVideo.isSelected())
 						recordedVideoFilePath = txtPath.getText() + "/Videos";
 				}
+                else {
+                    btnCancelRecord.setVisible(false);
+                }
 
 			}
 		});
@@ -53,8 +56,29 @@ public class TrainingPanel extends LipReaderPanel {
 		btnRecord.setBounds(327, 403, 45, 45);
 		remove(lblOutput);
 
+        btnCancelRecord.addActionListener((new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                recording = false;
 
-		chooseLabel = new JComboBox<String>();
+                btnRecord.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.RECORD_IMAGE_FILE_PATH)));
+
+                // Stop saving video file
+                if (isRecordingToFile())
+                {
+                    recordedVideoFilePath = "";
+                    setCancelSaveToFile(true);
+                    setRecordingToFile(false);
+                }
+                counters.get(getLabel().toLowerCase()).getAndDecrement();
+                btnCancelRecord.setVisible(false);
+
+            }
+        }));
+        btnCancelRecord.setToolTipText("Ignore this recorded video");
+        add(btnCancelRecord);
+
+        chooseLabel = new JComboBox<String>();
 		chooseLabel.setMaximumRowCount(6);
 		for (String word : Constants.VOCABULARY) {
 			chooseLabel.addItem(word.substring(0, 1).toUpperCase() + word.substring(1, word.length()));
@@ -115,6 +139,8 @@ public class TrainingPanel extends LipReaderPanel {
                             "Wrong input",
                             JOptionPane.WARNING_MESSAGE);
                 }
+
+
                 if (!error) {
                     setLabel((String) chooseLabel.getSelectedItem());
                     currentInstanceNum = 0;
@@ -248,4 +274,5 @@ public class TrainingPanel extends LipReaderPanel {
 		lblRecordsLeft.setVisible(!b);
 		lblRecordedSample.setVisible(!b);
 	}
+
 }
