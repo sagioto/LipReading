@@ -2,8 +2,7 @@ package edu.lipreading;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import weka.core.xml.XStream;
 import edu.lipreading.classification.Classifier;
@@ -57,6 +56,32 @@ public class LipReading {
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-csv") + 1]);
             Utils.dataSetToCSV(trainingSet, args[argsAsList.lastIndexOf("-csv") + 2]);
         }
+        else if(argsAsList.contains("-arffs")) {
+            List<Sample> bigDataSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arffs") + 1]);
+
+            Map<String, List<Sample>> dataSetMap = new HashMap<String, List<Sample>>();
+            for(Sample sample : bigDataSet) {
+                if(!dataSetMap.containsKey(sample.getLabel())) {
+                    dataSetMap.put(sample.getLabel(), new Vector<Sample>());
+                }
+                dataSetMap.get(sample.getLabel()).add(sample);
+            }
+            int maxSize = Integer.MIN_VALUE;
+            for(List<Sample> samples : dataSetMap.values()) {
+                if(samples.size() > maxSize) {
+                    maxSize = samples.size();
+                }
+            }
+            for(int i=5; i<=maxSize; i+=5) { //step up starting from 5
+                List<Sample> smallDataSet = createRandomDataSet(dataSetMap, i);
+                //TODO for each smallDataSet - create ARFF, train using CV, and save the model and results.
+                String arffFile = args[argsAsList.lastIndexOf("-arffs") + 2];
+                new File(arffFile).mkdirs();
+                arffFile = arffFile + "\\" + args[argsAsList.lastIndexOf("-arffs") + 3] + i + ".arff";
+                System.out.println(arffFile);
+                Utils.dataSetToARFF(smallDataSet, arffFile);
+            }
+        }
         else if(argsAsList.contains("-arff")){
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
             Utils.dataSetToARFF(trainingSet, args[argsAsList.lastIndexOf("-arff") + 2]);
@@ -64,6 +89,24 @@ public class LipReading {
         System.exit(0);
     }
 
+    private static List<Sample> createRandomDataSet(Map<String, List<Sample>> dataSetMap, int instancesPerWord) {
+        List<Sample> smallDataSet = new Vector<Sample>();
+        for(List<Sample> samples : dataSetMap.values()) {
+            List<Sample> toAdd = new Vector<Sample>();
+            if(samples.size() < instancesPerWord) {
+                toAdd.addAll(samples);
+            } else {
+                while(toAdd.size() < instancesPerWord) {
+                    int index = (int) (Math.random() * samples.size());
+                    if(!toAdd.contains(samples.get(index))) {
+                        toAdd.add(samples.get(index));
+                    }
+                }
+            }
+            smallDataSet.addAll(toAdd);
+        }
+        return smallDataSet;
+    }
 
 
     private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile, Normalizer... normalizers) throws Exception {
