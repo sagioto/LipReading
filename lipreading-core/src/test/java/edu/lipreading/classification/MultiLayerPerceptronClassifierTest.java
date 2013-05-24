@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
+import edu.lipreading.vision.EyesFeatureExtractor;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -45,7 +46,8 @@ public class MultiLayerPerceptronClassifierTest {
 		Normalizer cn = new CenterNormalizer();
 		Normalizer tn = new LinearStretchTimeNormalizer();
         Normalizer sfn = new SkippedFramesNormalizer();
-		AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
+//        AbstractFeatureExtractor fee = new EyesFeatureExtractor();
+        AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
 		Sample sample = LipReading.normelize(fe.extract(Utils.getFileNameFromUrl(url)), sfn, cn, tn);
 		String ans = mpClassifier.test(sample);
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);

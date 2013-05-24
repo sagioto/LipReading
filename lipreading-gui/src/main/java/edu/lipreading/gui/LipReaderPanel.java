@@ -146,7 +146,9 @@ public class LipReaderPanel extends VideoCapturePanel {
                         recordedSample.setRightEye(new Point(eyesCoordinates.get(2), eyesCoordinates.get(3)));
                     }
                 }
-                recordedSample.getMatrix().add(points);
+                if(points != null) {
+                    recordedSample.getMatrix().add(points);
+                }
                 if (isRecordingToFile()){
                     if (recorder == null){
                         File videoFile = new File(videoFilePath);

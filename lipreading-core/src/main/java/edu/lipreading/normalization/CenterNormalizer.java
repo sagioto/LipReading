@@ -22,7 +22,7 @@ public class CenterNormalizer implements Normalizer{
             List<Integer> vector = sample.getMatrix().get(i);
             int[] center = Utils.getCenter(vector);
 
-            if (i==0){ //If first frame - normalize also eyes
+            if (i==0 && sample.getLeftEye() != null && sample.getRightEye() != null){ //If first frame - normalize also eyes
                 sample.setLeftEye(new Point((int)sample.getLeftEye().getX() - center[Utils.X_INDEX], (int)sample.getLeftEye().getY() - center[Utils.Y_INDEX]));
                 sample.setRightEye(new Point((int)sample.getRightEye().getX() - center[Utils.X_INDEX], (int)sample.getRightEye().getY() - center[Utils.Y_INDEX]));
             }
