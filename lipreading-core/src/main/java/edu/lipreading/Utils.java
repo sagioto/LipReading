@@ -156,7 +156,7 @@ public class Utils {
         samplesStrings.add(title);
         Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
         for (Sample sample : trainingSet) {
-            sample = LipReading.normelize(sample, sfn, cn, tn);
+            sample = LipReading.normalize(sample, sfn, cn, tn);
             samplesStrings.add(sample.toCSV());
         }
         writer.writeAll(samplesStrings);

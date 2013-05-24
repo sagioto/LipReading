@@ -119,7 +119,7 @@ public class LipReading {
         }
         Classifier classifier = new MultiLayerPerceptronClassifier(new FileInputStream(modelFile));
         Sample sample = fe.extract(testFile);
-        sample = normelize(sample, normalizers);
+        sample = normalize(sample, normalizers);
         System.out.println("got the word: " +
                 classifier.test(sample));
     }
@@ -130,7 +130,7 @@ public class LipReading {
             File sampleFile = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
             if(sampleFile.isFile() && sampleFile.getName().contains("MOV")) {
                 Sample sample = fe.extract(sampleFile.getAbsolutePath());
-                sample = normelize(sample, normalizers);
+                sample = normalize(sample, normalizers);
                 XStream.write(sampleName.split("\\.")[0] + ".xml", sample);
             }
         }
@@ -138,7 +138,7 @@ public class LipReading {
 
 
 
-    public static Sample normelize(Sample sample, Normalizer... normalizers) {
+    public static Sample normalize(Sample sample, Normalizer... normalizers) {
         for (Normalizer normalizer : normalizers) {
             sample = normalizer.normalize(sample);
         }

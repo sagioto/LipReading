@@ -1,6 +1,5 @@
 package edu.lipreading.server;
 
-import edu.lipreading.Constants;
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
 import edu.lipreading.classification.Classifier;
@@ -51,7 +50,7 @@ public class LipReadingContext {
     public static Sample normalize(Sample sample){
         if(log.isLoggable(Level.FINEST))
             log.finest("normalizing sample with sample id:" + sample.getId());
-        return LipReading.normelize(sample, cn, sfn, tn);
+        return LipReading.normalize(sample, cn, sfn, tn);
     }
 
     public static String classify(Sample sample){
