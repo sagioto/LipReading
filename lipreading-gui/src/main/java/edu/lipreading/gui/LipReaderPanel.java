@@ -2,13 +2,17 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.cpp.avutil;
+import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
 import edu.lipreading.Utils;
 import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.TimeWarperClassifier;
+import edu.lipreading.classification.MultiLayerPerceptronClassifier;
+import edu.lipreading.classification.WekaClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -140,6 +144,9 @@ public class LipReaderPanel extends VideoCapturePanel {
             {
                 List<Integer> eyesCoordinates = null;
                 if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null){
+                    //when initializing eyes location set resolution fields too
+                    recordedSample.setHeight(grabber.getImageHeight());
+                    recordedSample.setWidth(grabber.getImageWidth());
                     eyesCoordinates = eyesFeatureExtractor.getPoints(grabbed);
                     if (eyesCoordinates != null){ // If eyes were found
                         recordedSample.setLeftEye(new Point(eyesCoordinates.get(0), eyesCoordinates.get(1)));
@@ -169,8 +176,6 @@ public class LipReaderPanel extends VideoCapturePanel {
                                     JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-                        recordedSample.setHeight(grabber.getImageHeight());
-                        recordedSample.setWidth(grabber.getImageWidth());
                     }
                     recorder.record(grabbed);
                 }
@@ -203,10 +208,14 @@ public class LipReaderPanel extends VideoCapturePanel {
         List<Sample> trainingSet;
         try {
             trainingSet = TrainingSet.get();
-            Normalizer normalizer = new CenterNormalizer();
-            Classifier classifier = new TimeWarperClassifier();
-            classifier.train(trainingSet);
-            final String outputText = classifier.test(normalizer.normalize(recordedSample));
+
+            String mpcModel = Constants.MPC_MODEL;
+            Classifier classifier = new MultiLayerPerceptronClassifier(mpcModel);
+
+            Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
+
+//            classifier.train(trainingSet);
+            final String outputText = classifier.test(LipReading.normalize(recordedSample, sfn, cn, tn));
             lblOutput.setText(outputText);
             new Thread(new Runnable() {
                 @Override
