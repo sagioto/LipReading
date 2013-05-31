@@ -74,7 +74,6 @@ public class LipReading {
             }
             for(int i=5; i<=maxSize; i+=5) { //step up starting from 5
                 List<Sample> smallDataSet = createRandomDataSet(dataSetMap, i);
-                //TODO for each smallDataSet - create ARFF, train using CV, and save the model and results.
                 String arffFile = args[argsAsList.lastIndexOf("-arffs") + 2];
                 new File(arffFile).mkdirs();
                 arffFile = arffFile + "\\" + args[argsAsList.lastIndexOf("-arffs") + 3] + i + ".arff";
@@ -139,6 +138,9 @@ public class LipReading {
 
 
     public static Sample normalize(Sample sample, Normalizer... normalizers) {
+        if (sample.getOriginalMatrixSize() == 0) {
+            sample.setOriginalMatrixSize(sample.getMatrix().size());
+        }
         for (Normalizer normalizer : normalizers) {
             sample = normalizer.normalize(sample);
         }

@@ -76,7 +76,7 @@ public class Utils {
     }
 
     public static void textToSpeech(String text) throws Exception{
-        text = text.replace(" ", "+");
+        text = text.replace(" ", "+").trim();
         HttpClient httpclient = new DefaultHttpClient();
         String stringURL = "http://translate.google.com/translate_tts?ie=utf-8&tl=en&q=" + text;
         URLDecoder.decode(stringURL, "ISO-8859-1");
