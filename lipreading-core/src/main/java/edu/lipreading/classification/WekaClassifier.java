@@ -21,8 +21,8 @@ import java.util.List;
  */
 public abstract class WekaClassifier implements Classifier {
     private static final int INSTANCE_SIZE = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + Constants.SAMPLE_ROW_SHIFT;
-    private List<String> vocabulary = Constants.VOCABULARY;
-    private AbstractClassifier classifier;
+    protected List<String> vocabulary = Constants.VOCABULARY;
+    protected AbstractClassifier classifier;
     private List<Sample> samples;
 
     public WekaClassifier(InputStream modelFileInputStream) throws Exception {
@@ -40,6 +40,7 @@ public abstract class WekaClassifier implements Classifier {
         double ans = -1;
         try {
             Instance sampleToInstance = sampleToInstance(test);
+
             ans = classifier.classifyInstance(sampleToInstance);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -47,7 +48,7 @@ public abstract class WekaClassifier implements Classifier {
         return vocabulary.get((int) ans);
     }
 
-    private Instance sampleToInstance(Sample sample) {
+    protected Instance sampleToInstance(Sample sample) {
         Instance instance = new DenseInstance(INSTANCE_SIZE);
         instance.setMissing(0);
         instance.setValue(1, sample.getOriginalMatrixSize());
