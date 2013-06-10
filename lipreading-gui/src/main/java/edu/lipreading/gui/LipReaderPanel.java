@@ -7,8 +7,7 @@ import edu.lipreading.Sample;
 import edu.lipreading.TrainingSet;
 import edu.lipreading.Utils;
 import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.MultiLayerPerceptronClassifier;
-import edu.lipreading.classification.WekaClassifier;
+import edu.lipreading.classification.SVMClassifier;
 import edu.lipreading.normalization.CenterNormalizer;
 import edu.lipreading.normalization.LinearStretchTimeNormalizer;
 import edu.lipreading.normalization.Normalizer;
@@ -37,13 +36,13 @@ public class LipReaderPanel extends VideoCapturePanel {
     protected JButton btnRecord;
     protected JButton btnCancelRecord;
     protected Sample recordedSample;
-    private String sampleName;
-    private String label;
     protected String recordedVideoFilePath;
     protected FFmpegFrameRecorder recorder = null;
-    private boolean recordToFile = false;
     protected String videoFilePath;
     protected boolean showLipsIdentification = true;
+    private String sampleName;
+    private String label;
+    private boolean recordToFile = false;
     private boolean cancelSaveToFile = false;
 
     /**
@@ -75,7 +74,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                     recordedSample.setLabel(label);
 
 
-                    if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()){
+                    if (recordedVideoFilePath != null && !recordedVideoFilePath.isEmpty()) {
                         recorder = null;
                         setVideoFilePath(recordedVideoFilePath, sampleId.replaceAll("[:/]", "."));//TODO Change
                         setRecordingToFile(true);
@@ -85,16 +84,14 @@ public class LipReaderPanel extends VideoCapturePanel {
                     lblOutput.setText("");
                     recording = true;
                     btnCancelRecord.setVisible(true);
-                }
-                else // Button should stop recording
+                } else // Button should stop recording
                 {
                     recording = false;
 
                     btnRecord.setIcon(new ImageIcon(getClass().getResource(Constants.RECORD_IMAGE_FILE_PATH)));
 
                     // Stop saving video file
-                    if (isRecordingToFile())
-                    {
+                    if (isRecordingToFile()) {
                         recordedVideoFilePath = "";
                         setRecordingToFile(false);
                     }
@@ -109,7 +106,7 @@ public class LipReaderPanel extends VideoCapturePanel {
         this.add(btnRecord);
 
         btnCancelRecord = new JButton("");
-        btnCancelRecord.setBounds(495, 403, 12,12);
+        btnCancelRecord.setBounds(495, 403, 12, 12);
 
         if (!Beans.isDesignTime())
             btnCancelRecord.setIcon(new ImageIcon(getClass().getResource(edu.lipreading.gui.Constants.CANCEL_IMAGE_FILE_PATH)));
@@ -123,7 +120,6 @@ public class LipReaderPanel extends VideoCapturePanel {
         this.add(lblOutput);
 
 
-
         canvas.setBounds(129, 10, 456, 362);
 
 
@@ -132,35 +128,34 @@ public class LipReaderPanel extends VideoCapturePanel {
     @Override
     protected void getVideoFromSource() throws Exception {
         IplImage grabbed;
-        while(!threadStop.get()){
+        while (!threadStop.get()) {
             synchronized (threadStop) {
-                if((grabbed = grabber.grab()) == null) {
+                if ((grabbed = grabber.grab()) == null) {
                     break;
                 }
             }
 
             List<Integer> points = featureExtractor.getPoints(grabbed);
-            if (recording)
-            {
+            if (recording) {
                 List<Integer> eyesCoordinates = null;
-                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null){
+                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null) {
                     //when initializing eyes location set resolution fields too
                     recordedSample.setHeight(grabber.getImageHeight());
                     recordedSample.setWidth(grabber.getImageWidth());
                     eyesCoordinates = eyesFeatureExtractor.getPoints(grabbed);
-                    if (eyesCoordinates != null){ // If eyes were found
+                    if (eyesCoordinates != null) { // If eyes were found
                         recordedSample.setLeftEye(new Point(eyesCoordinates.get(0), eyesCoordinates.get(1)));
                         recordedSample.setRightEye(new Point(eyesCoordinates.get(2), eyesCoordinates.get(3)));
                     }
                 }
-                if(points != null) {
+                if (points != null) {
                     recordedSample.getMatrix().add(points);
                 }
-                if (isRecordingToFile()){
-                    if (recorder == null){
+                if (isRecordingToFile()) {
+                    if (recorder == null) {
                         File videoFile = new File(videoFilePath);
                         videoFile.createNewFile();
-                        recorder = new FFmpegFrameRecorder(videoFile,  grabber.getImageWidth(),grabber.getImageHeight());
+                        recorder = new FFmpegFrameRecorder(videoFile, grabber.getImageWidth(), grabber.getImageHeight());
                         recorder.setVideoCodec(13);
                         recorder.setFormat("MOV");
                         recorder.setPixelFormat(avutil.AV_PIX_FMT_YUV420P);
@@ -179,11 +174,10 @@ public class LipReaderPanel extends VideoCapturePanel {
                     }
                     recorder.record(grabbed);
                 }
-                if (eyesCoordinates != null && showLipsIdentification){
+                if (eyesCoordinates != null && showLipsIdentification) {
                     eyesFeatureExtractor.paintCoordinates(grabbed, eyesCoordinates);
                 }
-            }
-            else if (recorder != null && !isRecordingToFile()) {
+            } else if (recorder != null && !isRecordingToFile()) {
                 recorder.stop();
                 recorder = null;
                 if (cancelSaveToFile) {
@@ -191,11 +185,11 @@ public class LipReaderPanel extends VideoCapturePanel {
                     file.delete();
                 }
             }
-            if((points != null) && showLipsIdentification){
+            if ((points != null) && showLipsIdentification) {
                 featureExtractor.paintCoordinates(grabbed, points);
             }
             cvFlip(grabbed, grabbed, 1);
-            if(recording)
+            if (recording)
                 cvCircle(grabbed, new CvPoint(20, 20), 8, CvScalar.RED, -1, 1, 0);
             image = grabbed.getBufferedImage();
             canvas.setImage(image);
@@ -210,7 +204,7 @@ public class LipReaderPanel extends VideoCapturePanel {
             trainingSet = TrainingSet.get();
 
             String mpcModel = Constants.MPC_MODEL;
-            Classifier classifier = new MultiLayerPerceptronClassifier(mpcModel);
+            Classifier classifier = new SVMClassifier(mpcModel);
 
             Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
 
@@ -228,8 +222,7 @@ public class LipReaderPanel extends VideoCapturePanel {
                 }
             }).start();
             lblOutput.setText(outputText);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -248,8 +241,7 @@ public class LipReaderPanel extends VideoCapturePanel {
         return recording;
     }
 
-
-    protected void setVideoFilePath(String folderPath, String fileName){
+    protected void setVideoFilePath(String folderPath, String fileName) {
         File folder = new File(folderPath);
         if (!folder.exists())
             folder.mkdirs();
@@ -257,8 +249,8 @@ public class LipReaderPanel extends VideoCapturePanel {
         videoFilePath = (folder.getAbsolutePath() + "/" + fileNameNoSpaces + ".MOV"); //TODO Extract file type to properties file
     }
 
-    public void stopRecordingVideo(){
-        if (isRecordingToFile()){
+    public void stopRecordingVideo() {
+        if (isRecordingToFile()) {
             try {
                 recorder.stop();
                 setRecordingToFile(false);
@@ -269,11 +261,11 @@ public class LipReaderPanel extends VideoCapturePanel {
         }
     }
 
-    public void stopVideo(){
+    public void stopVideo() {
         synchronized (threadStop) {
             threadStop.set(true);
             try {
-                if (grabber != null){
+                if (grabber != null) {
                     grabber.stop();
                 }
             } catch (com.googlecode.javacv.FrameGrabber.Exception e) {
