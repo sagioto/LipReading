@@ -45,7 +45,8 @@ public class SVMClassifier extends WekaClassifier {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return vocabulary.get((int) ans);
+        return ((SMO)classifier).classAttributeNames()[((int) ans)];
+        //return vocabulary.get((int) ans);
     }
 
     private int getMax(double[] dists) {
