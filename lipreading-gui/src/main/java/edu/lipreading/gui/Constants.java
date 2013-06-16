@@ -29,6 +29,6 @@ public class Constants {
     public static final int NO_STICKERS_FE = 0;
     public static final int STICKERS_FE = 1;
 
-    public static final String MPC_MODEL = LIP_READING_PROPS.getProperty("MPC_MODEL");
+    public static final String CLASSIFIER_MODEL = LIP_READING_PROPS.getProperty("CLASSIFIER_MODEL");
 
 }

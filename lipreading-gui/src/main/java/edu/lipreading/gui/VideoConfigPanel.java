@@ -9,7 +9,6 @@ import static java.awt.Color.WHITE;
 
 public class VideoConfigPanel extends JPanel {
     private StickersConfigPanel stickersConfigPanel;
-    private JRadioButton rdbtnAutoLipIdentification;
     private JRadioButton rdbtnColoredStickersBased;
     private ConfigEvent actionListener;
 
@@ -61,7 +60,7 @@ public class VideoConfigPanel extends JPanel {
         lblVideoLipIdentification.setBounds(10, 76, 194, 14);
         add(lblVideoLipIdentification);
 
-        rdbtnAutoLipIdentification = new JRadioButton("Auto lip detection");
+        JRadioButton rdbtnAutoLipIdentification = new JRadioButton("Auto lip detection");
         rdbtnAutoLipIdentification.setSelected(true);
         rdbtnAutoLipIdentification.setBackground(WHITE);
         rdbtnAutoLipIdentification.addActionListener(new ActionListener() {
@@ -69,7 +68,7 @@ public class VideoConfigPanel extends JPanel {
                 stickersConfigPanel.setFeatureExtractor(edu.lipreading.gui.Constants.NO_STICKERS_FE);
                 actionListener.changeSettings(edu.lipreading.gui.Constants.NO_STICKERS_FE);
                 try {
-                    ((VideoCapturePanel)stickersConfigPanel).stopVideo();
+                    stickersConfigPanel.stopVideo();
                 } catch (Exception e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -87,7 +86,7 @@ public class VideoConfigPanel extends JPanel {
                 actionListener.changeSettings(edu.lipreading.gui.Constants.STICKERS_FE);
                 stickersConfigPanel.setVisible(true);
                 try {
-                    ((VideoCapturePanel)stickersConfigPanel).startVideo();
+                    stickersConfigPanel.startVideo();
                 } catch (Exception e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

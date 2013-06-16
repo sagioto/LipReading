@@ -1,6 +1,7 @@
 package edu.lipreading.gui;
 
-import com.googlecode.javacv.FrameGrabber;
+import edu.lipreading.classification.Classifier;
+import edu.lipreading.classification.SVMClassifier;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,13 +16,13 @@ public class MainFrame extends JFrame {
      *
      */
     private static final long serialVersionUID = 1L;
-    protected static FrameGrabber grabber;
-    protected static String sampleName;
     private LipReaderPanel lipReaderPanel;
     //private StickersConfigPanel videoConfigPanel;
     private VideoConfigPanel videoConfigPanel;
     private FileLipReaderPanel fileLipReaderPanel;
     private TrainingPanel trainingPanel;
+
+    protected static Classifier classifier;
 
     /**
      * Launch the application.
@@ -146,6 +147,22 @@ public class MainFrame extends JFrame {
 
         });
         contentPane.add(tabbedPane);
+    }
+
+    public static Classifier getClassifier() {
+        if(classifier == null) {
+            System.out.println("Initializing classifier");
+            String model = Constants.CLASSIFIER_MODEL;
+            System.out.println("Model used: " + model);
+            try {
+                classifier = new SVMClassifier(model);
+                System.out.println("Classifier Initialized successfully from model");
+            } catch (Exception e) {
+                System.out.println("Error when initializing classifier");
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        return classifier;
     }
 
 

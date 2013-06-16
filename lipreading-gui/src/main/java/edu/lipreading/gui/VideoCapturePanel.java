@@ -2,7 +2,15 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import edu.lipreading.LipReading;
+import edu.lipreading.Sample;
 import edu.lipreading.Utils;
+import edu.lipreading.classification.Classifier;
+import edu.lipreading.classification.SVMClassifier;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
+import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import edu.lipreading.vision.EyesFeatureExtractor;
@@ -29,8 +37,6 @@ public class VideoCapturePanel extends JPanel {
     protected Thread videoGrabber;
     protected final AtomicBoolean threadStop;
     protected JProgressBar progressBar = new JProgressBar();
-
-
 
     /**
      * Create the panel.
@@ -151,4 +157,9 @@ public class VideoCapturePanel extends JPanel {
         }
     }
 
+    public String classify(Sample recordedSample) {
+        Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
+        String outputText = MainFrame.getClassifier().test(LipReading.normalize(recordedSample, sfn, cn, tn));
+        return outputText;
+    }
 }

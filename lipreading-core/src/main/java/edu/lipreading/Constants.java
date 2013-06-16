@@ -22,7 +22,7 @@ public class Constants {
 
     }
 
-    public static final String MPC_MODEL_URL = LIP_READING_PROPS.getProperty("MPC_MODEL");
+    public static final String MPC_MODEL_URL = LIP_READING_PROPS.getProperty("CLASSIFIER_MODEL");
 
     public static final String DEFAULT_TRAINING_SET_ZIP = LIP_READING_PROPS.getProperty("DEFAULT_TRAINING_SET_ZIP");
 

@@ -2,16 +2,8 @@ package edu.lipreading.gui;
 
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.cpp.avutil;
-import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
-import edu.lipreading.TrainingSet;
 import edu.lipreading.Utils;
-import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.SVMClassifier;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -199,17 +191,8 @@ public class LipReaderPanel extends VideoCapturePanel {
 
     protected void handleRecordedSample() {
         //TODO - Extract to thread:
-        List<Sample> trainingSet;
         try {
-            trainingSet = TrainingSet.get();
-
-            String mpcModel = Constants.MPC_MODEL;
-            Classifier classifier = new SVMClassifier(mpcModel);
-
-            Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
-
-//            classifier.train(trainingSet);
-            final String outputText = classifier.test(LipReading.normalize(recordedSample, sfn, cn, tn));
+            final String outputText = classify(recordedSample);
             lblOutput.setText(outputText);
             new Thread(new Runnable() {
                 @Override

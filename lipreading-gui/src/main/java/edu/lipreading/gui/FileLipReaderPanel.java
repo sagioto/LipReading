@@ -1,5 +1,12 @@
 package edu.lipreading.gui;
 
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import edu.lipreading.Sample;
+import edu.lipreading.Utils;
+import weka.core.xml.XStream;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,28 +15,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.filechooser.FileFilter;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-
-import edu.lipreading.Sample;
-import edu.lipreading.TrainingSet;
-import edu.lipreading.Utils;
-import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.TimeWarperClassifier;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.Normalizer;
-
 /**
  * @author Dor Leitman
- *
  */
 
 public class FileLipReaderPanel extends VideoCapturePanel {
@@ -38,13 +25,13 @@ public class FileLipReaderPanel extends VideoCapturePanel {
      *
      */
     private static final long serialVersionUID = 1L;
+    final JFileChooser fileChooser = new JFileChooser();
     private JLabel lblOutput;
     private JButton btnRecord;
-    private Classifier classifier;
-    private Normalizer normalizer;
     private JTextPane txtFilePath;
     private Sample recordedSample;
-    final JFileChooser fileChooser = new JFileChooser();
+    private Thread classifierThread;
+    private String[] videoExtensions = {".mov", ".mpeg", ".mpg", ".wmv", ".mp4", ".3gp", ".avi", ".mkv"};
 
     /**
      * Create the panel.
@@ -55,7 +42,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         setBackground(Color.WHITE);
         setLayout(null);
 
-        fileChooser.setFileFilter(new VideoFileFilter());
+        fileChooser.addChoosableFileFilter(new CustomFileFilter("Video files", true, videoExtensions));
+        fileChooser.addChoosableFileFilter(new CustomFileFilter("XML Sample files", true, ".xml"));
 
         lblOutput = new JLabel("");
         lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
@@ -73,12 +61,6 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         txtFilePath.setBounds(204, 337, 320, 20);
         add(txtFilePath);
 
-        List<Sample> trainingSet = TrainingSet.get();
-
-        classifier = new TimeWarperClassifier();
-        classifier.train(trainingSet);
-        normalizer = new CenterNormalizer();
-
         final String recordButtonText = "Read Lips From File";
         btnRecord = new JButton(recordButtonText);
         btnRecord.addActionListener(new ActionListener() {
@@ -88,24 +70,36 @@ public class FileLipReaderPanel extends VideoCapturePanel {
                 btnRecord.setText("Downloading File...");
                 lblOutput.setText("");
 
-                Thread videoGrabberThread = new Thread(new Runnable()
-                {
-                    public void run()
-                    {
-                        setVideoInput(txtFilePath.getText());
-                        try {
-                            initGrabber();
-                        } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        recordedSample = new Sample(txtFilePath.getText());
+                Thread videoGrabberThread = new Thread(new Runnable() {
+                    public void run() {
+                        if (!txtFilePath.getText().endsWith(".xml")) {
+                            setVideoInput(txtFilePath.getText());
+                            try {
+                                initGrabber();
+                            } catch (Exception e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            recordedSample = new Sample(txtFilePath.getText());
 
-                        try {
-                            startVideo();
-                        } catch (Exception e) {
-                            btnRecord.setEnabled(true);
-                            btnRecord.setText(recordButtonText);
+
+                            try {
+                                startVideo();
+                            } catch (Exception e) {
+                                btnRecord.setEnabled(true);
+                                btnRecord.setText(recordButtonText);
+                            }
+                        } else {
+                            try {
+                                recordedSample = (Sample) XStream.read(txtFilePath.getText());
+                                classifierThread = new ClassifierThread();
+                                classifierThread.start();
+                            } catch (Exception e) {
+                                btnRecord.setEnabled(true);
+                                btnRecord.setText(recordButtonText);
+                                System.out.println("Error parsing XML");
+                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            }
                         }
                     }
                 });
@@ -129,7 +123,7 @@ public class FileLipReaderPanel extends VideoCapturePanel {
             public void mouseClicked(MouseEvent arg0) {
                 int returnVal = fileChooser.showOpenDialog(FileLipReaderPanel.this);
 
-                if (returnVal == JFileChooser.APPROVE_OPTION){
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
                     txtFilePath.setText(fileChooser.getSelectedFile().getPath());
                     progressBar.setVisible(false);
                 }
@@ -149,15 +143,15 @@ public class FileLipReaderPanel extends VideoCapturePanel {
         try {
             IplImage grabbed;
 
-            while((grabbed = grabber.grab()) != null && !threadStop.get()){
+            while ((grabbed = grabber.grab()) != null && !threadStop.get()) {
                 image = grabbed.getBufferedImage();
 
                 // Eyes detection:
-                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null){
+                if (recordedSample.getLeftEye() == null || recordedSample.getRightEye() == null) {
                     List<Integer> eyesCoordinates = eyesFeatureExtractor.getPoints(grabbed);
-                    if (eyesCoordinates != null){ // If eyes were found
-                        recordedSample.setLeftEye(new Point(eyesCoordinates.get(0).intValue(), eyesCoordinates.get(1).intValue()));
-                        recordedSample.setRightEye(new Point(eyesCoordinates.get(2).intValue(), eyesCoordinates.get(3).intValue()));
+                    if (eyesCoordinates != null) { // If eyes were found
+                        recordedSample.setLeftEye(new Point(eyesCoordinates.get(0), eyesCoordinates.get(1)));
+                        recordedSample.setRightEye(new Point(eyesCoordinates.get(2), eyesCoordinates.get(3)));
                         eyesFeatureExtractor.paintCoordinates(grabbed, eyesCoordinates);
                     }
                 }
@@ -171,11 +165,51 @@ public class FileLipReaderPanel extends VideoCapturePanel {
             canvas.paint(null);
 
 
-            Thread classifierThread = new Thread(new Runnable() {
+            classifierThread.start();
 
+        } catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            grabber.stop();
+        }
+    }
+
+    class CustomFileFilter extends FileFilter {
+        private String description = "";
+        private String[] extensions;
+        private boolean directories = false;
+
+        public CustomFileFilter(String description, boolean directories, String... extensions) {
+            this.description = description;
+            this.extensions = extensions;
+            this.directories = directories;
+        }
+
+        public boolean accept(File file) {
+
+
+            String filename = file.getName().toLowerCase();
+            if(file.isDirectory() && directories) {
+                return true;
+            }
+            for(String extension : extensions) {
+                if(filename.endsWith(extension)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
+    private class ClassifierThread extends Thread {
+        public ClassifierThread() {
+            super(new Runnable() {
                 public void run() {
-                    recordedSample = normalizer.normalize(recordedSample);
-                    final String outputText = classifier.test(recordedSample);
+                    final String outputText = classify(recordedSample);
                     lblOutput.setText(outputText);
                     new Thread(new Runnable() {
                         @Override
@@ -189,33 +223,8 @@ public class FileLipReaderPanel extends VideoCapturePanel {
                     }).start();
                     btnRecord.setText("Read Lips From File");
                     btnRecord.setEnabled(true);
-
                 }
             });
-            classifierThread.start();
-
-        } catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            grabber.stop();
-        }
-    }
-
-    class VideoFileFilter extends FileFilter {
-        public boolean accept(File file) {
-            String filename = file.getName().toLowerCase();
-            return filename.endsWith(".mov") ||
-                    filename.endsWith(".mpeg") ||
-                    filename.endsWith(".mpg") ||
-                    filename.endsWith(".wmv") ||
-                    filename.endsWith(".mp4") ||
-                    filename.endsWith(".3gp") ||
-                    filename.endsWith(".avi") ||
-                    filename.endsWith(".mkv") ||
-                    file.isDirectory();
-        }
-        public String getDescription() {
-            return "video files";
         }
     }
 }
