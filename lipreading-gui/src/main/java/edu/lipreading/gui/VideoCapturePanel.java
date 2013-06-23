@@ -5,12 +5,6 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
-import edu.lipreading.classification.Classifier;
-import edu.lipreading.classification.SVMClassifier;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import edu.lipreading.vision.EyesFeatureExtractor;
@@ -28,6 +22,7 @@ public class VideoCapturePanel extends JPanel {
      *
      */
     private static final long serialVersionUID = 1L;
+    protected final AtomicBoolean threadStop;
     protected String videoInput = null;
     protected BufferedImage image = null;
     protected VideoCanvas canvas;
@@ -35,7 +30,6 @@ public class VideoCapturePanel extends JPanel {
     protected AbstractFeatureExtractor featureExtractor;
     protected AbstractFeatureExtractor eyesFeatureExtractor;
     protected Thread videoGrabber;
-    protected final AtomicBoolean threadStop;
     protected JProgressBar progressBar = new JProgressBar();
 
     /**
@@ -56,16 +50,15 @@ public class VideoCapturePanel extends JPanel {
     }
 
     public void startVideo() throws Exception {
-        if (grabber == null)
-        {
-            try{
+        if (grabber == null) {
+            try {
                 grabber = featureExtractor.getGrabber(videoInput);
-            }catch (Exception e){
-                if(grabber != null){
+            } catch (Exception e) {
+                if (grabber != null) {
                     grabber.stop();
                 }
                 grabber = null;
-                if(e instanceof UnknownHostException){
+                if (e instanceof UnknownHostException) {
                     JOptionPane.showMessageDialog(this,
                             "Could not reach host " + e.getMessage()
                                     + "\nplease check the URL and your Internet connection",
@@ -75,12 +68,12 @@ public class VideoCapturePanel extends JPanel {
                 throw e;
             }
         }
-        try{
+        try {
             synchronized (threadStop) {
                 grabber.start();
             }
-        } catch (Exception e){
-            if(e.getMessage().contains("Could not setup device")){
+        } catch (Exception e) {
+            if (e.getMessage().contains("Could not setup device")) {
                 JOptionPane.showMessageDialog(this,
                         "This feature only works with a camera",
                         "Inane warning",
@@ -89,11 +82,9 @@ public class VideoCapturePanel extends JPanel {
             throw e;
         }
         threadStop.set(false);
-        videoGrabber = new Thread(new Runnable()
-        {
+        videoGrabber = new Thread(new Runnable() {
 
-            public void run()
-            {
+            public void run() {
                 try {
                     getVideoFromSource();
                 } catch (Exception e) {
@@ -104,30 +95,28 @@ public class VideoCapturePanel extends JPanel {
         videoGrabber.start();
     }
 
-
-    public void stopVideo() throws Exception{
+    public void stopVideo() throws Exception {
         synchronized (threadStop) {
             threadStop.set(true);
-            if (grabber != null){
+            if (grabber != null) {
                 grabber.stop();
             }
         }
         //stopRecordingVideo();
     }
 
-
     protected void getVideoFromSource() throws Exception {
 
         IplImage grabbed;
-        while(!threadStop.get() && (grabbed = grabber.grab()) != null){
+        while (!threadStop.get() && (grabbed = grabber.grab()) != null) {
             image = grabbed.getBufferedImage();
             canvas.setImage(image);
             canvas.paint(null);
         }
     }
 
-    public void initGrabber() throws Exception{
-        if(Utils.isSourceUrl(videoInput)) {
+    public void initGrabber() throws Exception {
+        if (Utils.isSourceUrl(videoInput)) {
             progressBar.setValue(0);
             progressBar.setVisible(true);
             Utils.get(videoInput, progressBar);
@@ -136,15 +125,12 @@ public class VideoCapturePanel extends JPanel {
         grabber = featureExtractor.getGrabber(videoInput);
     }
 
-
-
-    public void setVideoInput(String videoInput){
+    public void setVideoInput(String videoInput) {
         this.videoInput = videoInput;
     }
 
-
-    public void setFeatureExtractor(int TYPE){
-        switch (TYPE){
+    public void setFeatureExtractor(int TYPE) {
+        switch (TYPE) {
             case Constants.NO_STICKERS_FE:
                 featureExtractor = new NoMoreStickersFeatureExtractor();
                 break;
@@ -158,8 +144,7 @@ public class VideoCapturePanel extends JPanel {
     }
 
     public String classify(Sample recordedSample) {
-        Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
-        String outputText = MainFrame.getClassifier().test(LipReading.normalize(recordedSample, sfn, cn, tn));
+        String outputText = MainFrame.getClassifier().test(LipReading.normalize(recordedSample));
         return outputText;
     }
 }

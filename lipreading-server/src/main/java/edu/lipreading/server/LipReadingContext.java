@@ -41,16 +41,14 @@ public class LipReadingContext {
             e.printStackTrace();
         }
     }
-    private static final Normalizer cn = new CenterNormalizer();
-    private static final Normalizer tn = new LinearStretchTimeNormalizer();
-    private static final Normalizer sfn = new SkippedFramesNormalizer();
+
     private static final AtomicInteger counter = new AtomicInteger(0);
     private static final ConcurrentMap<Integer, Sample> instances = new ConcurrentHashMap<Integer, Sample>();
 
     public static Sample normalize(Sample sample){
         if(log.isLoggable(Level.FINEST))
             log.finest("normalizing sample with sample id:" + sample.getId());
-        return LipReading.normalize(sample, cn, sfn, tn);
+        return LipReading.normalize(sample);
     }
 
     public static String classify(Sample sample){

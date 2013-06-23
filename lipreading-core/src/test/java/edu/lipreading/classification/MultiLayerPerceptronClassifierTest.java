@@ -41,12 +41,9 @@ public class MultiLayerPerceptronClassifierTest {
 
 	public void testClassifier(String url, String expected) throws Exception{
 		Utils.get(url);
-		Normalizer cn = new CenterNormalizer();
-		Normalizer tn = new LinearStretchTimeNormalizer();
-        Normalizer sfn = new SkippedFramesNormalizer();
 //        AbstractFeatureExtractor fee = new EyesFeatureExtractor();
         AbstractFeatureExtractor fe = new NoMoreStickersFeatureExtractor();
-		Sample sample = LipReading.normalize(fe.extract(Utils.getFileNameFromUrl(url)), sfn, cn, tn);
+		Sample sample = LipReading.normalize(fe.extract(Utils.getFileNameFromUrl(url)));
 		String ans = mpClassifier.test(sample);
 		Assert.assertEquals("expected: " + expected + " but got: " + ans, expected, ans);
 		new File(Utils.getFileNameFromUrl(url)).delete();

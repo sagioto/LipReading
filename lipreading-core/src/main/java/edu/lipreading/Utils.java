@@ -2,10 +2,6 @@ package edu.lipreading;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
 import javazoom.jl.player.Player;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,7 +33,7 @@ public class Utils {
      * @param progressBar
      * @throws IOException
      */
-    public static void get(String urlToDownload, JProgressBar progressBar) throws IOException{
+    public static void get(String urlToDownload, JProgressBar progressBar) throws IOException {
         URL url = new URL(urlToDownload);
         InputStream in = url.openStream();
         String filename = getFileNameFromUrl(urlToDownload);
@@ -46,14 +42,14 @@ public class Utils {
         byte[] buf = new byte[4096];
         int len;
         DecimalFormat formatter = new DecimalFormat("###,###,###,###");
-        System.out.println("downloading " + filename + " (" + formatter.format(size / 1024) +" kB) from " + url + ":");
+        System.out.println("downloading " + filename + " (" + formatter.format(size / 1024) + " kB) from " + url + ":");
         int i = 0;
         int totalLen = 0;
         while ((len = in.read(buf)) >= 0) {
             out.write(buf, 0, len);
             totalLen += len;
             i = (100 * totalLen) / size;
-            if(progressBar != null)
+            if (progressBar != null)
                 progressBar.setValue(i);
             String print = "\r[                                                  ]" + i + "%";
             for (int j = 0; j < i; j += 2) {
@@ -67,7 +63,7 @@ public class Utils {
         out.close();
     }
 
-    public static void get(String urlToDownload) throws IOException{
+    public static void get(String urlToDownload) throws IOException {
         get(urlToDownload, null);
     }
 
@@ -75,7 +71,7 @@ public class Utils {
         return System.getProperty("user.name").equals("travis");
     }
 
-    public static void textToSpeech(String text) throws Exception{
+    public static void textToSpeech(String text) throws Exception {
         text = text.replace(" ", "+").trim();
         HttpClient httpclient = new DefaultHttpClient();
         String stringURL = "http://translate.google.com/translate_tts?ie=utf-8&tl=en&q=" + text;
@@ -112,7 +108,7 @@ public class Utils {
 
     public static String getFileName(String source) {
         String s = System.getProperty("file.separator");
-        if(!s.equals("/"))
+        if (!s.equals("/"))
             s = "\\\\";
         String[] split = source.split(s);
         return split[split.length - 1];
@@ -120,16 +116,15 @@ public class Utils {
 
     public static List<Sample> getTrainingSetFromZip(String zipUrl) throws Exception {
         String name = zipUrl;
-        if(!Utils.isSourceUrl(zipUrl)){
+        if (!Utils.isSourceUrl(zipUrl)) {
             name = zipUrl;
-        }
-        else{
-            if(!new File(Utils.getFileNameFromUrl(name)).exists()){
+        } else {
+            if (!new File(Utils.getFileNameFromUrl(name)).exists()) {
                 Utils.get(zipUrl);
             }
             name = Utils.getFileNameFromUrl(name);
         }
-        ZipFile samplesZip= new ZipFile(name);
+        ZipFile samplesZip = new ZipFile(name);
         List<Sample> trainingSet = new Vector<Sample>();
         Enumeration<? extends ZipEntry> entries = samplesZip.entries();
         while (entries.hasMoreElements()) {
@@ -139,7 +134,6 @@ public class Utils {
         samplesZip.close();
         return trainingSet;
     }
-
 
     public static void dataSetToCSV(List<Sample> trainingSet, String outputFile) throws Exception {
         CSVWriter writer = new CSVWriter(new FileWriter(outputFile));
@@ -154,9 +148,8 @@ public class Utils {
         }
         List<String[]> samplesStrings = new ArrayList<String[]>();
         samplesStrings.add(title);
-        Normalizer sfn = new SkippedFramesNormalizer(), cn = new CenterNormalizer(), tn = new LinearStretchTimeNormalizer();
         for (Sample sample : trainingSet) {
-            sample = LipReading.normalize(sample, sfn, cn, tn);
+            sample = LipReading.normalize(sample);
             samplesStrings.add(sample.toCSV());
         }
         writer.writeAll(samplesStrings);
@@ -192,7 +185,7 @@ public class Utils {
         csvFile.delete();
     }
 
-    public static List<String> readFile(String resource){
+    public static List<String> readFile(String resource) {
         String string = convertStreamToString(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
         return Arrays.asList(string.toLowerCase().split("\n"));
     }
@@ -226,9 +219,9 @@ public class Utils {
         int ans = 0;
         double min = Double.MAX_VALUE;
         for (int i = 0; i < ds.length; i++) {
-            if(includeZero || ds[i] != 0){
+            if (includeZero || ds[i] != 0) {
                 min = Math.min(min, ds[i]);
-                if(min == ds[i])
+                if (min == ds[i])
                     ans = i;
             }
         }
@@ -243,13 +236,13 @@ public class Utils {
         return null != source && source.contains("://");
     }
 
-    public static void writeSampleToXML(String folderPath, String sampleName, Sample sample) throws Exception{
+    public static void writeSampleToXML(String folderPath, String sampleName, Sample sample) throws Exception {
         File samplesDir = new File(folderPath);
         if (!samplesDir.exists())
             samplesDir.mkdirs();
-        File sampleFile = new File(samplesDir.getAbsolutePath()  + "/" + sampleName);
+        File sampleFile = new File(samplesDir.getAbsolutePath() + "/" + sampleName);
         FileOutputStream fos = new FileOutputStream(sampleFile);
-        XStream.write(sampleFile , sample);
+        XStream.write(sampleFile, sample);
         fos.close();
     }
 
@@ -265,9 +258,9 @@ public class Utils {
         sample.setId(sp.getId());
         sample.setLabel(sp.getLabel());
 
-        for(int i=0; i<sp.getMatrix().length; i++) {
+        for (int i = 0; i < sp.getMatrix().length; i++) {
             Vector<Integer> vec = new Vector<Integer>();
-            for(int j=0; j<sp.getMatrix()[i].length; j++) {
+            for (int j = 0; j < sp.getMatrix()[i].length; j++) {
                 vec.add(sp.getMatrix()[i][j]);
             }
             sample.getMatrix().add(vec);
@@ -285,9 +278,9 @@ public class Utils {
         sample.setOriginalMatrixSize(s.getOriginalMatrixSize());
 
         int[][] matrix = new int[s.getMatrix().size()][];
-        for(int i=0; i<matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++) {
             matrix[i] = new int[s.getMatrix().get(i).size()];
-            for(int j=0; j<matrix[i].length; j++) {
+            for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] = s.getMatrix().get(i).get(j);
             }
         }
@@ -295,17 +288,16 @@ public class Utils {
         return sample;
     }
 
-
     public static int[] getCenter(List<Integer> vector) {
-        int[] center = {0,0};
+        int[] center = {0, 0};
         for (int i = 0; i < vector.size(); i++) {
-            if(i % 2 == 0)
+            if (i % 2 == 0)
                 center[X_INDEX] += vector.get(i);
             else
                 center[Y_INDEX] += vector.get(i);
         }
-        center[X_INDEX] = (int)Math.round(((double)center[X_INDEX]) / (vector.size() / 2));
-        center[Y_INDEX] = (int)Math.round(((double)center[Y_INDEX]) / (vector.size() / 2));
+        center[X_INDEX] = (int) Math.round(((double) center[X_INDEX]) / (vector.size() / 2));
+        center[Y_INDEX] = (int) Math.round(((double) center[Y_INDEX]) / (vector.size() / 2));
         return center;
     }
 }
