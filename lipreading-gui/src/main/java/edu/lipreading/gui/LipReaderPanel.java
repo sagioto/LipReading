@@ -108,7 +108,7 @@ public class LipReaderPanel extends VideoCapturePanel {
         lblOutput.setHorizontalAlignment(SwingConstants.CENTER);
         lblOutput.setFont(new Font("Tahoma", Font.PLAIN, 18));
         lblOutput.setForeground(Color.GRAY);
-        lblOutput.setBounds(303, 452, 102, 22);
+        lblOutput.setBounds(253, 452, 200, 22);
         this.add(lblOutput);
 
 
