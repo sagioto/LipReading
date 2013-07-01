@@ -33,6 +33,4 @@ public interface Classifier {
      */
 	public void update(Sample train);
 
-    public void saveToFile(String file);
-	
 }

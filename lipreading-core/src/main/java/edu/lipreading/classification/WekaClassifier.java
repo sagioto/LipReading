@@ -17,7 +17,6 @@ import java.util.List;
  * User: Dagan
  * Date: 24/05/13
  * Time: 20:17
- * To change this template use File | Settings | File Templates.
  */
 public abstract class WekaClassifier implements Classifier {
     private static final int INSTANCE_SIZE = (Constants.FRAMES_COUNT * Constants.POINT_COUNT * 2) + Constants.SAMPLE_ROW_SHIFT;
@@ -104,7 +103,6 @@ public abstract class WekaClassifier implements Classifier {
         }
     }
 
-    @Override
     public void saveToFile(String file) {
         Debug.saveToFile(file, classifier);
     }

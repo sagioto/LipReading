@@ -3,6 +3,7 @@ package edu.lipreading;
 import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.classification.SVMClassifier;
+import edu.lipreading.classification.WekaClassifier;
 import edu.lipreading.normalization.*;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
@@ -40,7 +41,7 @@ public class LipReading {
             XStream.write(sampleName.split("\\.")[0] + ".xml", cn.normalize(fe.extract(sampleName)));
         } else if (argsAsList.contains("-train")) {
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
-            SVMClassifier svmc = new SVMClassifier();
+            WekaClassifier svmc = new SVMClassifier();
             svmc.train(trainingSet);
             svmc.saveToFile(args[argsAsList.lastIndexOf("-arff") + 2]);
         } else if (argsAsList.contains("-dataset")) {
