@@ -187,7 +187,7 @@ public class Utils {
 
     public static List<String> readFile(String resource) {
         String string = convertStreamToString(Thread.currentThread().getContextClassLoader().getResourceAsStream(resource));
-        return Arrays.asList(string.toLowerCase().split("\n"));
+        return Arrays.asList(string.toLowerCase().split("\\r?\\n"));
     }
 
     public static String convertStreamToString(InputStream is) {
