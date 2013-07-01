@@ -38,6 +38,11 @@ public class LipReading {
             String sampleName = args[argsAsList.lastIndexOf("-extract") + 1];
             fe.setOutput(argsAsList.contains("-output"));
             XStream.write(sampleName.split("\\.")[0] + ".xml", cn.normalize(fe.extract(sampleName)));
+        } else if (argsAsList.contains("-train")) {
+            List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
+            SVMClassifier svmc = new SVMClassifier();
+            svmc.train(trainingSet);
+            svmc.saveToFile(args[argsAsList.lastIndexOf("-arff") + 2]);
         } else if (argsAsList.contains("-dataset")) {
             dataset(fe, args[argsAsList.lastIndexOf("-dataset") + 1]);
         } else if (argsAsList.contains("-test") && argsAsList.size() > argsAsList.lastIndexOf("-test") + 2) {
@@ -49,53 +54,64 @@ public class LipReading {
             Utils.dataSetToCSV(trainingSet, args[argsAsList.lastIndexOf("-csv") + 2]);
         } else if (argsAsList.contains("-arffs")) {
             List<Sample> bigDataSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arffs") + 1]);
+            String arffFilePath = args[argsAsList.lastIndexOf("-arffs") + 2];
+            new File(arffFilePath).mkdirs();
+            String arffFile = args[argsAsList.lastIndexOf("-arffs") + 3];
 
-            Map<String, List<Sample>> dataSetMap = new HashMap<String, List<Sample>>();
-            for (Sample sample : bigDataSet) {
-                if (!dataSetMap.containsKey(sample.getLabel())) {
-                    dataSetMap.put(sample.getLabel(), new Vector<Sample>());
-                }
-                dataSetMap.get(sample.getLabel()).add(sample);
-            }
-            int maxSize = Integer.MIN_VALUE;
-            for (List<Sample> samples : dataSetMap.values()) {
-                if (samples.size() > maxSize) {
-                    maxSize = samples.size();
-                }
-            }
-            for (int i = 5; i <= maxSize; i += 5) { //step up starting from 5
-                List<Sample> smallDataSet = createRandomDataSet(dataSetMap, i);
-                String arffFile = args[argsAsList.lastIndexOf("-arffs") + 2];
-                new File(arffFile).mkdirs();
-                arffFile = arffFile + "\\" + args[argsAsList.lastIndexOf("-arffs") + 3] + i + ".arff";
-                System.out.println(arffFile);
-                Utils.dataSetToARFF(smallDataSet, arffFile);
-            }
+            createIncrementalArffs(bigDataSet, arffFilePath, arffFile);
         } else if (argsAsList.contains("-arff")) {
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
             Utils.dataSetToARFF(trainingSet, args[argsAsList.lastIndexOf("-arff") + 2]);
         } else if (argsAsList.contains("-verifyModel")) {
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-verifyModel") + 1]);
             String model = args[argsAsList.lastIndexOf("-verifyModel") + 2];
-
             Classifier classifier = new SVMClassifier(model);
-            int correct = 0;
-            for(Sample sample : trainingSet) {
-                try {
-                    String output = classifier.test(normalize(sample));
-                    if(sample.getLabel().equals(output)) {
-                        correct++;
-                    } else {
-                        System.out.println("Sample: " + sample.getLabel() +  " | Classified as: " + output);
-                    }
-                } catch (Exception e) {}
-            }
-            System.out.println("\nModel Accuracy Rate: " + (correct * 100.0) / trainingSet.size() + "%");
+            testModel(trainingSet, classifier);
         } else {
             System.out.println("Unknown argument");
         }
         System.exit(0);
     }
+
+    private static void createIncrementalArffs(List<Sample> bigDataSet, String arffFilePath, String arffFile) throws Exception {
+        Map<String, List<Sample>> dataSetMap = new HashMap<String, List<Sample>>();
+        for (Sample sample : bigDataSet) {
+            if (!dataSetMap.containsKey(sample.getLabel())) {
+                dataSetMap.put(sample.getLabel(), new Vector<Sample>());
+            }
+            dataSetMap.get(sample.getLabel()).add(sample);
+        }
+        int maxSize = Integer.MIN_VALUE;
+        for (List<Sample> samples : dataSetMap.values()) {
+            if (samples.size() > maxSize) {
+                maxSize = samples.size();
+
+            }
+        }
+        for (int i = 5; i <= maxSize; i += 5) { //step up starting from 5
+            List<Sample> smallDataSet = createRandomDataSet(dataSetMap, i);
+            String arffActualFile = arffFilePath + "\\" + arffFile + i + ".arff";
+            System.out.println(arffActualFile);
+            Utils.dataSetToARFF(smallDataSet, arffActualFile);
+        }
+    }
+
+    private static void testModel(List<Sample> trainingSet, Classifier classifier) {
+        int correct = 0;
+        for (Sample sample : trainingSet) {
+            try {
+                String output = classifier.test(normalize(sample));
+                if (sample.getLabel().equals(output)) {
+                    correct++;
+                } else {
+                    System.out.println("Sample: " + sample.getLabel() + " | Classified as: " + output);
+                }
+            } catch (Exception e) {
+            }
+        }
+        System.out.println("\nModel Accuracy Rate: " + (correct * 100.0) / trainingSet.size() + "%");
+    }
+
 
     private static List<Sample> createRandomDataSet(Map<String, List<Sample>> dataSetMap, int instancesPerWord) {
         List<Sample> smallDataSet = new Vector<Sample>();
@@ -155,6 +171,7 @@ public class LipReading {
 
     /**
      * Normalize sample using predefined normalizers
+     *
      * @param sample
      * @return
      */
@@ -162,8 +179,8 @@ public class LipReading {
         Normalizer sfn = new SkippedFramesNormalizer(),
                 cn = new CenterNormalizer(),
                 /* rotation and resolution cause some trouble right now on models not trained with them.*/
-                 rotn = new RotationNormalizer(),
-                 resn = new ResolutionNormalizer(),
+                rotn = new RotationNormalizer(),
+                resn = new ResolutionNormalizer(),
                 tn = new LinearStretchTimeNormalizer();
         return normalize(sample, sfn, cn, /*rotn, resn,*/ tn);
     }
