@@ -47,8 +47,8 @@ public class EyesFeatureExtractor extends AbstractFeatureExtractor{
         CvPoint leftEye = new CvPoint(frameCoordinates.get(0), frameCoordinates.get(1));
         CvPoint rightEye = new CvPoint(frameCoordinates.get(2), frameCoordinates.get(3));
 
-        cvCircle(grabbed, leftEye, 2, CvScalar.WHITE, 2, 0, 0);
-        cvCircle(grabbed, rightEye, 2, CvScalar.WHITE, 2, 0, 0);
+        cvCircle(grabbed, leftEye, 2, CvScalar.RED, 2, 0, 0);
+        cvCircle(grabbed, rightEye, 2, CvScalar.RED, 2, 0, 0);
 
     }
 
