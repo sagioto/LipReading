@@ -18,6 +18,8 @@ public class MultiLayerPerceptronClassifier extends WekaClassifier{
         super(modelFile);
     }
 
+    public MultiLayerPerceptronClassifier() throws Exception {}
+
     @Override
     protected AbstractClassifier getNewClassifierInstance() {
         return new MultilayerPerceptron();

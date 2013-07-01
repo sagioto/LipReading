@@ -17,7 +17,6 @@ import static java.util.Arrays.*;
  * User: Dagan
  * Date: 24/05/13
  * Time: 20:13
- * To change this template use File | Settings | File Templates.
  */
 public class SVMClassifier extends WekaClassifier {
 
@@ -29,6 +28,8 @@ public class SVMClassifier extends WekaClassifier {
         super(modelFile);
     }
 
+    public SVMClassifier() throws Exception {}
+
     @Override
     protected AbstractClassifier getNewClassifierInstance() {
         return new SMO();
@@ -36,16 +37,17 @@ public class SVMClassifier extends WekaClassifier {
 
     @Override
     public String test(Sample test) {
-        double ans = -1;
+        int ans = -1;
         try {
             Instance sampleToInstance = sampleToInstance(test);
-
             double[] dists = classifier.distributionForInstance(sampleToInstance);
             ans = getMax(dists);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            //classification failed. the user might have clicked too fast or something else happened.
+            //the desired behavior in such case is to return an empty string any way.
+            return "";
         }
-        return ((SMO)classifier).classAttributeNames()[((int) ans)];
+        return ((SMO)classifier).classAttributeNames()[ans];
         //return vocabulary.get((int) ans);
     }
 

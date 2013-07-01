@@ -25,6 +25,8 @@ public abstract class WekaClassifier implements Classifier {
     protected AbstractClassifier classifier;
     private List<Sample> samples;
 
+    public WekaClassifier() throws Exception {}
+
     public WekaClassifier(InputStream modelFileInputStream) throws Exception {
         Object read = SerializationHelper.read(modelFileInputStream);
         this.classifier = (AbstractClassifier) read;
@@ -100,6 +102,11 @@ public abstract class WekaClassifier implements Classifier {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void saveToFile(String file) {
+        Debug.saveToFile(file, classifier);
     }
 
     protected abstract AbstractClassifier getNewClassifierInstance();

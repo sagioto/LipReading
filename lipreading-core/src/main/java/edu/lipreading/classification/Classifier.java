@@ -32,5 +32,7 @@ public interface Classifier {
      * @postcondition Classifier trained model/trainingSet contains given Sample data
      */
 	public void update(Sample train);
+
+    public void saveToFile(String file);
 	
 }
