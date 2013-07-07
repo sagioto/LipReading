@@ -6,6 +6,7 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.*;
 import weka.core.converters.ArffLoader;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public abstract class WekaClassifier implements Classifier {
 
     public void trainFromFile(String arffFilePath) throws Exception {
         ArffLoader loader = new ArffLoader();
-        loader.setSource(new URL(arffFilePath));
+        loader.setSource(new File(arffFilePath).toURI().toURL());
         Instances dataSet = loader.getDataSet();
         dataSet.setClassIndex(0);
         AbstractClassifier c = getNewClassifierInstance();

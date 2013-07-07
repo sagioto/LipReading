@@ -40,10 +40,15 @@ public class LipReading {
             fe.setOutput(argsAsList.contains("-output"));
             XStream.write(sampleName.split("\\.")[0] + ".xml", cn.normalize(fe.extract(sampleName)));
         } else if (argsAsList.contains("-train")) {
-            List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
+            List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-train") + 1]);
+
             WekaClassifier svmc = new SVMClassifier();
-            svmc.train(trainingSet);
-            svmc.saveToFile(args[argsAsList.lastIndexOf("-arff") + 2]);
+            String tmpArff = args[argsAsList.lastIndexOf("-train") + 2] + "tmp.arff";
+            Utils.dataSetToARFF(trainingSet, tmpArff);
+            svmc.trainFromFile(tmpArff);
+            svmc.saveToFile(args[argsAsList.lastIndexOf("-train") + 2]);
+            testModel(trainingSet, svmc);
+            new File(tmpArff).deleteOnExit();
         } else if (argsAsList.contains("-dataset")) {
             dataset(fe, args[argsAsList.lastIndexOf("-dataset") + 1]);
         } else if (argsAsList.contains("-test") && argsAsList.size() > argsAsList.lastIndexOf("-test") + 2) {
