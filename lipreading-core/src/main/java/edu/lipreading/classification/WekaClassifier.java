@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * An abstract super-type wrapper for Weka classifiers. Provides all the basic Classifier functionality for Weka classifiers.
  * Created with IntelliJ IDEA.
  * User: Dagan
  * Date: 24/05/13

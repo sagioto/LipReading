@@ -12,14 +12,13 @@ import java.util.List;
  */
 public class ResolutionNormalizer implements Normalizer {
 
-	public final static int NORMALIZED_WIDTH = 800;
-	public final static int NORMALIZED_HEIGHT = 600;
+	public final static int NORMALIZED_WIDTH = 640;
+	public final static int NORMALIZED_HEIGHT = 480;
 	
 	@Override
 	public Sample normalize(Sample sample) {
-		// TODO need to get the sample's current WIDTH and HEIGHT
-		int sampleWidth = NORMALIZED_WIDTH;
-		int sampleHeight = NORMALIZED_HEIGHT;
+		int sampleWidth = sample.getWidth();
+		int sampleHeight = sample.getHeight();
 		
 		double xStretchFactor = NORMALIZED_WIDTH/sampleWidth; 
 		double yStretchFactor = NORMALIZED_HEIGHT/sampleHeight; 

@@ -21,6 +21,9 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * This class provides static functionality for the LipReading framework.
+ */
 public class Utils {
     public static final int X_INDEX = 0;
     public static final int Y_INDEX = 1;

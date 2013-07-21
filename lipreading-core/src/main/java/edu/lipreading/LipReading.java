@@ -4,14 +4,18 @@ import edu.lipreading.classification.Classifier;
 import edu.lipreading.classification.MultiLayerPerceptronClassifier;
 import edu.lipreading.classification.SVMClassifier;
 import edu.lipreading.classification.WekaClassifier;
-import edu.lipreading.normalization.*;
+import edu.lipreading.normalization.CenterNormalizer;
+import edu.lipreading.normalization.LinearStretchTimeNormalizer;
+import edu.lipreading.normalization.Normalizer;
+import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.ColoredStickersFeatureExtractor;
 import weka.core.xml.XStream;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class LipReading {
@@ -21,6 +25,9 @@ public class LipReading {
         if (args.length == 0 || argsAsList.contains("-help")) {
             System.out.println("usage:");
             System.out.println("-help : prints this message");
+            System.out.println("-arff <input-training-set.zip> <output.arff> : Generates a Weka ARFF file from the given training set zip");
+            System.out.println("-train <input-training-set.zip> <output.model> : Trains a classifier model and saves it to file");
+            System.out.println("-verifyModel <classifier.model> <training-set.zip> : Loads a classifier from file and tests it against the given zip file");
             System.out.println("-extract <video file url, name or 0 for webcam> : extracts Sample object from the file into an xml");
             System.out.println("-output : when used with -extract records an output video");
             System.out.println("-dataset <path of folder of video files> : go through all the video files and" +
@@ -58,13 +65,6 @@ public class LipReading {
         } else if (argsAsList.contains("-csv")) {
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-csv") + 1]);
             Utils.dataSetToCSV(trainingSet, args[argsAsList.lastIndexOf("-csv") + 2]);
-        } else if (argsAsList.contains("-arffs")) {
-            List<Sample> bigDataSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arffs") + 1]);
-            String arffFilePath = args[argsAsList.lastIndexOf("-arffs") + 2];
-            new File(arffFilePath).mkdirs();
-            String arffFile = args[argsAsList.lastIndexOf("-arffs") + 3];
-
-            createIncrementalArffs(bigDataSet, arffFilePath, arffFile);
         } else if (argsAsList.contains("-arff")) {
             List<Sample> trainingSet = Utils.getTrainingSetFromZip(args[argsAsList.lastIndexOf("-arff") + 1]);
             Utils.dataSetToARFF(trainingSet, args[argsAsList.lastIndexOf("-arff") + 2]);
@@ -79,29 +79,6 @@ public class LipReading {
         System.exit(0);
     }
 
-    private static void createIncrementalArffs(List<Sample> bigDataSet, String arffFilePath, String arffFile) throws Exception {
-        Map<String, List<Sample>> dataSetMap = new HashMap<String, List<Sample>>();
-        for (Sample sample : bigDataSet) {
-            if (!dataSetMap.containsKey(sample.getLabel())) {
-                dataSetMap.put(sample.getLabel(), new Vector<Sample>());
-            }
-            dataSetMap.get(sample.getLabel()).add(sample);
-        }
-        int maxSize = Integer.MIN_VALUE;
-        for (List<Sample> samples : dataSetMap.values()) {
-            if (samples.size() > maxSize) {
-                maxSize = samples.size();
-
-            }
-        }
-        for (int i = 5; i <= maxSize; i += 5) { //step up starting from 5
-            List<Sample> smallDataSet = createRandomDataSet(dataSetMap, i);
-            String arffActualFile = arffFilePath + "\\" + arffFile + i + ".arff";
-            System.out.println(arffActualFile);
-            Utils.dataSetToARFF(smallDataSet, arffActualFile);
-        }
-    }
-
     private static void testModel(List<Sample> trainingSet, Classifier classifier) {
         int correct = 0;
         for (Sample sample : trainingSet) {
@@ -113,37 +90,18 @@ public class LipReading {
                     System.out.println("Sample: " + sample.getLabel() + " | Classified as: " + output);
                 }
             } catch (Exception e) {
+                System.out.println("Classifier threw an exception: " + e.getMessage());
             }
         }
         System.out.println("\nModel Accuracy Rate: " + (correct * 100.0) / trainingSet.size() + "%");
     }
 
-
-    private static List<Sample> createRandomDataSet(Map<String, List<Sample>> dataSetMap, int instancesPerWord) {
-        List<Sample> smallDataSet = new Vector<Sample>();
-        for (List<Sample> samples : dataSetMap.values()) {
-            List<Sample> toAdd = new Vector<Sample>();
-            if (samples.size() < instancesPerWord) {
-                toAdd.addAll(samples);
-            } else {
-                while (toAdd.size() < instancesPerWord) {
-                    int index = (int) (Math.random() * samples.size());
-                    if (!toAdd.contains(samples.get(index))) {
-                        toAdd.add(samples.get(index));
-                    }
-                }
-            }
-            smallDataSet.addAll(toAdd);
-        }
-        return smallDataSet;
-    }
-
     private static void test(AbstractFeatureExtractor fe, String testFile, String trainigSetZipFile) throws Exception {
-        File modelFile = new File(Constants.MPC_MODEL_URL);
-        if (Utils.isSourceUrl(Constants.MPC_MODEL_URL)) {
+        File modelFile = new File(Constants.CLASSIFIER_MODEL_URL);
+        if (Utils.isSourceUrl(Constants.CLASSIFIER_MODEL_URL)) {
             modelFile = new File(Utils.getFileNameFromUrl(trainigSetZipFile));
             if (!modelFile.exists()) {
-                Utils.get(Constants.MPC_MODEL_URL);
+                Utils.get(Constants.CLASSIFIER_MODEL_URL);
             }
         }
         Classifier classifier = new MultiLayerPerceptronClassifier(new FileInputStream(modelFile));
@@ -178,17 +136,14 @@ public class LipReading {
     /**
      * Normalize sample using predefined normalizers
      *
-     * @param sample
-     * @return
+     * @param sample the sample to normalize
+     * @return the normalized sample
      */
     public static Sample normalize(Sample sample) {
         Normalizer sfn = new SkippedFramesNormalizer(),
                 cn = new CenterNormalizer(),
-                /* rotation and resolution cause some trouble right now on models not trained with them.*/
-                rotn = new RotationNormalizer(),
-                resn = new ResolutionNormalizer(),
                 tn = new LinearStretchTimeNormalizer();
-        return normalize(sample, sfn, cn, /*rotn, resn,*/ tn);
+        return normalize(sample, sfn, cn, tn);
     }
 
 }

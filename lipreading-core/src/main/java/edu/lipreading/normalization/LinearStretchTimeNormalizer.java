@@ -6,6 +6,11 @@ import edu.lipreading.Sample;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * This normalizer normalizes sample to a constant length.
+ * The length is defined by Constants.FRAMES_COUNT.
+ * This normalization is necessary when working with Weka, as instances must have the same length.
+ */
 public class LinearStretchTimeNormalizer implements Normalizer {
 
     @Override

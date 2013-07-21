@@ -13,6 +13,7 @@ import java.util.List;
 import static java.util.Arrays.*;
 
 /**
+ * This classifier uses Weka's implementation of an SVM classifier (implemented using SMO - Sequential Minimal Optimization)
  * Created with IntelliJ IDEA.
  * User: Dagan
  * Date: 24/05/13

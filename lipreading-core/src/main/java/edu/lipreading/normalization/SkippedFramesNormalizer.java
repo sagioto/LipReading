@@ -5,6 +5,12 @@ import edu.lipreading.Sample;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * This normalizer will normalize samples that have 'missing' frames.
+ * Missing frames are actually frames with '0' values,
+ * that are sometimes caused when recognition performance is poor and some points on the lips aren't recognized properly.
+ * The normalizer uses simple linear interpolation technique to estimate the correct missing values.
+ */
 public class SkippedFramesNormalizer implements Normalizer {
 
 	@Override
