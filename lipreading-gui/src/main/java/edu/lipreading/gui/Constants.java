@@ -1,11 +1,11 @@
 package edu.lipreading.gui;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public class Constants {
     public static final Properties LIP_READING_PROPS = new Properties();
+
     static {
     	InputStream is = ClassLoader.getSystemResourceAsStream("lr-gui.properties");
         try {
@@ -14,7 +14,16 @@ public class Constants {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
+
+        try {
+            is = new FileInputStream(new File("lipreading.properties"));
+            LIP_READING_PROPS.load(is);
+            is.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Can't find local properties file at: " + new File(".").getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error while reading properties file. Will use default properties");
+        }
     }
 
 	public static final String LIP_IMAGE_FILE_PATH = LIP_READING_PROPS.getProperty("LIP_IMAGE_FILE_PATH");
