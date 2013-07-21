@@ -13,10 +13,6 @@ import edu.lipreading.Constants;
 import edu.lipreading.LipReading;
 import edu.lipreading.Sample;
 import edu.lipreading.Utils;
-import edu.lipreading.normalization.CenterNormalizer;
-import edu.lipreading.normalization.LinearStretchTimeNormalizer;
-import edu.lipreading.normalization.Normalizer;
-import edu.lipreading.normalization.SkippedFramesNormalizer;
 import edu.lipreading.vision.AbstractFeatureExtractor;
 import edu.lipreading.vision.NoMoreStickersFeatureExtractor;
 
@@ -57,7 +53,7 @@ public class MultiLayerPerceptronClassifierTest {
 	
 	@AfterClass
 	public static void deleteModelFile() throws UnsupportedEncodingException{
-		new File(Utils.getFileNameFromUrl(Constants.MPC_MODEL_URL)).delete();
+		new File(Utils.getFileNameFromUrl(Constants.CLASSIFIER_MODEL_URL)).delete();
 	}
 
 }
