@@ -23,3 +23,8 @@ Given a video segment, the image-processing algorithm identifies the lips and ex
 This data goes through a series of normalization actions to improve the classification results.
 The last stage of the classification is performed by Machine Learning algorithms implemented by third-party packages we use.
 After classifying a given word, the audio output of the result is played.
+
+-----------------
+
+| (For more)[http://dorleitma1.wix.com/lipreading]
+-----
