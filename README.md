@@ -26,5 +26,5 @@ After classifying a given word, the audio output of the result is played.
 
 -----------------
 
-| (For more)[http://dorleitma1.wix.com/lipreading]
+| [For more](http://dorleitma1.wix.com/lipreading)
 -----
